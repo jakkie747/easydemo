@@ -9,7 +9,7 @@ import Image from 'next/image';
 export default function Home() {
   return (
     <>
-      <section className="w-full pt-12 pb-12 md:pb-24 lg:pb-32 bg-background">
+      <section className="w-full pt-12 bg-background">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center text-center">
             <div className="space-y-4">
