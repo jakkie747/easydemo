@@ -146,7 +146,7 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="sm:max-w-[480px]">
+      <DialogContent className="sm:max-w-[480px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>{mode === 'edit' ? "Edit Event" : "Create New Event"}</DialogTitle>
           <DialogDescription>
@@ -154,7 +154,7 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4 py-4">
             <FormField control={form.control} name="title" render={({ field }) => (
               <FormItem><FormLabel>Title</FormLabel><FormControl><Input placeholder="e.g., Spring Fling" {...field} /></FormControl><FormMessage /></FormItem>
             )} />
@@ -187,7 +187,7 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
                 <Progress value={progress} />
               </div>
             )}
-            <DialogFooter>
+            <DialogFooter className="pt-4">
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
