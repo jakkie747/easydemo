@@ -1,9 +1,9 @@
 import { TeachersClient } from "./client";
-import { teachers } from "@/lib/mock-data";
+import { getTeachers } from "@/lib/firestore";
+import type { Teacher } from "@/lib/types";
 
-export default function TeachersPage() {
-  // In a real app, you would fetch this data from your database.
-  const allTeachers = teachers;
+export default async function TeachersPage() {
+  const allTeachers: Teacher[] = await getTeachers();
 
   return <TeachersClient teachers={allTeachers} />;
 }
