@@ -11,14 +11,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const SendCommunicationInputSchema = z.object({
+const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
   audience: z.enum(['all_parents', 'preschool_parents', 'afterschool_parents']).describe('The target group for this message.'),
   channels: z.array(z.enum(['email', 'push'])).describe('The channels through which to send the message.'),
 });
 export type SendCommunicationInput = z.infer<typeof SendCommunicationInputSchema>;
 
-export const SendCommunicationOutputSchema = z.object({
+const SendCommunicationOutputSchema = z.object({
   sentMessage: z.string().describe('The final, AI-drafted message that was sent.'),
   recipients: z.number().describe('The number of parents the message was sent to.'),
   channelsUsed: z.array(z.string()).describe('A list of channels that were successfully used.'),
