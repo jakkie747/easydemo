@@ -9,7 +9,7 @@ import Image from 'next/image';
 export default function Home() {
   return (
     <>
-      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-secondary/50">
+      <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-background">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
             <div className="flex flex-col justify-center space-y-4">
@@ -17,20 +17,20 @@ export default function Home() {
                 <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
                   The All-in-One Digital Hub for Modern Preschools
                 </h1>
-                <p className="max-w-[600px] text-muted-foreground md:text-xl">
+                <p className="max-w-[600px] text-foreground/80 md:text-xl">
                   Empower teachers, engage parents, and simplify administration. Easyspark is the digital solution designed to bridge the gap between home and school.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button size="lg" asChild>
                   <Link href="/register/preschool">
-                    Register your child
+                    Register for Preschool
                     <Rocket/>
                   </Link>
                 </Button>
-                <Button size="lg" variant="secondary" asChild>
-                  <Link href="/login">
-                    Parent & Admin Login
+                 <Button size="lg" variant="secondary" asChild>
+                  <Link href="/register/afterschool">
+                    Register for Afterschool
                   </Link>
                 </Button>
               </div>
@@ -47,11 +47,11 @@ export default function Home() {
         </div>
       </section>
       
-      <section id="about" className="w-full py-12 md:py-24 lg:py-32">
+      <section id="about" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Why Easyspark?</div>
+              <div className="inline-block rounded-lg bg-background px-3 py-1 text-sm text-secondary-foreground">Why Easyspark?</div>
               <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">A Single Platform for Your Entire School Community</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
                 We provide secure, easy-to-use tools designed to streamline your daily tasks, enhance parent communication, and let your school shine.
@@ -90,7 +90,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="programs" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
+      <section id="programs" className="w-full py-12 md:py-24 lg:py-32 bg-background">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -102,7 +102,7 @@ export default function Home() {
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-2 mt-12">
-            <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+            <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 bg-secondary/50 border-0">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
                   <Sparkles className="text-accent" />
@@ -118,7 +118,7 @@ export default function Home() {
                 </ul>
               </CardContent>
             </Card>
-            <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
+            <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1 bg-secondary/50 border-0">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
                   <User className="text-accent" />
@@ -138,7 +138,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32">
+      <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
@@ -154,7 +154,7 @@ export default function Home() {
               { name: 'Teacher Michael B.', quote: "The AI assistant is a game-changer for lesson planning. I can generate creative ideas in seconds. My kids love the new stories!" },
               { name: 'Parent Jessica P.', quote: "I'm so impressed with the communication. The daily reports on the parent dashboard keep me connected to my child's day." },
             ].map((testimonial) => (
-              <Card key={testimonial.name} className="bg-secondary/50 border-0">
+              <Card key={testimonial.name} className="bg-background/50 border-0 shadow-md">
                 <CardContent className="pt-6">
                   <div className="space-y-4">
                     <Quote className="h-8 w-8 text-muted-foreground" />

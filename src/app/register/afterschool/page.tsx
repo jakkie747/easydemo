@@ -92,9 +92,9 @@ export default function AfterschoolRegistrationPage() {
   };
 
   return (
-    <div className="py-12 px-4">
+    <div className="py-12 px-4 bg-background">
       <div className="container mx-auto">
-        <Card className="max-w-3xl mx-auto shadow-lg">
+        <Card className="max-w-3xl mx-auto shadow-lg border-2 border-primary/20">
           <CardHeader className="text-center">
             <CardTitle className="font-headline text-4xl text-primary">Afterschool Registration</CardTitle>
             <CardDescription>Complete the form to enroll in our afterschool program.</CardDescription>
@@ -104,7 +104,7 @@ export default function AfterschoolRegistrationPage() {
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
                 
                 <section>
-                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline">Child's Information</h3>
+                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">Child's Information</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -157,7 +157,7 @@ export default function AfterschoolRegistrationPage() {
                 </section>
 
                 <section>
-                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline">Parent/Guardian Information</h3>
+                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">Parent/Guardian Information</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <FormField
