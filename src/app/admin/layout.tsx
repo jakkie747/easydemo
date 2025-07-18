@@ -76,7 +76,7 @@ function AdminSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-sidebar-border/60 bg-sidebar text-sidebar-foreground">
+    <Sidebar collapsible="icon" className="hidden border-r bg-sidebar text-sidebar-foreground sm:flex">
       <SidebarHeader>
         <Link href="/admin/dashboard" className="flex items-center gap-2 p-2">
           <Logo className="w-8 h-8 text-accent group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 transition-all" />
@@ -188,7 +188,7 @@ export default function AdminLayout({
     <SidebarProvider defaultOpen>
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <AdminSidebar />
-            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-[var(--sidebar-width-icon)] group-data-[state=expanded]:sm:pl-[var(--sidebar-width)] transition-[padding-left] ease-in-out duration-200">
+            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 transition-[padding-left] group-data-[state=expanded]/sidebar-wrapper:sm:pl-64">
                 <AdminHeader />
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                     {children}
