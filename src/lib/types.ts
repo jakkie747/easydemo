@@ -40,3 +40,13 @@ export type GalleryImage = {
   description?: string;
   storagePath: string;
 };
+
+export type Event = {
+  id: string;
+  title: string;
+  date: string;
+  time: string;
+  description?: string;
+  attendees: number;
+  type: string;
+};

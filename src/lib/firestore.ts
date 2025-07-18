@@ -1,7 +1,7 @@
 
-import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Teacher, Document, Child, Parent, GalleryImage } from "./types";
+import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
 import { deleteFileByUrl } from "./firebase-admin";
 
 const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Teacher => {
@@ -62,6 +62,20 @@ const galleryImageFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): GalleryI
         storagePath: data.storagePath || '',
     };
 };
+
+const eventFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Event => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        title: data.title || '',
+        date: data.date || '',
+        time: data.time || '',
+        description: data.description || '',
+        attendees: data.attendees || 0,
+        type: data.type || '',
+    };
+};
+
 
 export async function getTeachers(): Promise<Teacher[]> {
     try {
@@ -184,6 +198,46 @@ export async function deleteGalleryImage(image: GalleryImage): Promise<void> {
         await deleteDoc(doc(db, 'gallery', image.id));
     } catch (error) {
         console.error("Error deleting gallery image:", error);
+        throw error;
+    }
+}
+
+
+export async function getEvents(): Promise<Event[]> {
+    try {
+        const eventsCol = collection(db, "events");
+        const eventSnapshot = await getDocs(eventsCol);
+        return eventSnapshot.docs.map(doc => eventFromDoc(doc));
+    } catch (error) {
+        console.error("Error fetching events:", error);
+        return [];
+    }
+}
+
+export async function addEvent(event: Omit<Event, 'id'>): Promise<void> {
+    try {
+        await addDoc(collection(db, 'events'), event);
+    } catch (error) {
+        console.error("Error adding event:", error);
+        throw error;
+    }
+}
+
+export async function updateEvent(id: string, event: Omit<Event, 'id'>): Promise<void> {
+    try {
+        const docRef = doc(db, 'events', id);
+        await updateDoc(docRef, event);
+    } catch (error) {
+        console.error("Error updating event:", error);
+        throw error;
+    }
+}
+
+export async function deleteEvent(id: string): Promise<void> {
+    try {
+        await deleteDoc(doc(db, 'events', id));
+    } catch (error) {
+        console.error("Error deleting event:", error);
         throw error;
     }
 }
