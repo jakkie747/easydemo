@@ -70,7 +70,7 @@ function AdminSidebar() {
                                 href={item.href}
                                 className={cn(
                                     "flex items-center gap-3 rounded-lg px-3 py-2 text-sidebar-foreground transition-all hover:bg-sidebar-accent",
-                                    pathname === item.href && "bg-sidebar-accent text-primary"
+                                    pathname === item.href && "bg-sidebar-accent"
                                 )}
                             >
                                 <item.icon className="h-4 w-4" />
