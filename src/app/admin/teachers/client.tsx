@@ -41,7 +41,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
     if (result.success) {
       toast({
         title: "Database Seeded!",
-        description: `${result.count} teachers were added to Firestore.`,
+        description: `${result.count} documents were added to Firestore.`,
       });
       router.refresh();
     } else {
@@ -76,8 +76,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
           <CardDescription>
             {teachers.length > 0
               ? "A list of all the teachers in your center."
-              : "No teachers found. Try seeding the database."
-            }
+              : "No teachers found. Try seeding the database."}
           </CardDescription>
         </CardHeader>
         <CardContent>

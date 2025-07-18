@@ -11,8 +11,6 @@ async function seedCollection(collectionName: string, data: any[], idKey?: strin
     const collectionRef = collection(db, collectionName);
     const snapshot = await getDocs(collectionRef);
     
-    // Simple check if collection has any documents.
-    // A more robust check might be needed depending on requirements.
     if (!snapshot.empty) {
         console.log(`Collection ${collectionName} already contains data. Seeding aborted.`);
         return { name: collectionName, status: 'skipped', count: 0 };
@@ -21,11 +19,9 @@ async function seedCollection(collectionName: string, data: any[], idKey?: strin
     let count = 0;
     for (const item of data) {
         if (idKey && item[idKey]) {
-            // Use a specific key from the item as the document ID
             const docRef = doc(db, collectionName, item[idKey]);
             await setDoc(docRef, item);
         } else {
-             // Let Firestore generate the ID
             const { id, ...itemData } = item;
             await addDoc(collectionRef, itemData);
         }
@@ -50,11 +46,9 @@ async function seedParentsAndAuth() {
 
     for (const parentData of mockParents) {
         try {
-            // Create user in Firebase Auth
             const userCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
             const user = userCredential.user;
 
-            // Use the UID from auth as the ID for the firestore document
             const parentDoc = {
                 id: user.uid,
                 ...parentData
@@ -80,8 +74,8 @@ async function seedParentsAndAuth() {
 export async function seedDatabase() {
   try {
     const results = await Promise.all([
-        seedCollection('teachers', mockTeachers),
-        seedCollection('children', mockChildren),
+        seedCollection('teachers', mockTeachers, 'id'),
+        seedCollection('children', mockChildren, 'id'),
         seedParentsAndAuth(),
     ]);
     
