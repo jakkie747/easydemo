@@ -8,12 +8,14 @@ import { z } from "zod";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useState } from "react";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -27,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const registrationSchema = z.object({
@@ -305,6 +307,11 @@ export default function PreschoolRegistrationPage() {
               </form>
             </Form>
           </CardContent>
+           <CardFooter className="justify-center">
+              <Button variant="link" asChild>
+                  <Link href="/"><ArrowLeft/> Back to Home</Link>
+              </Button>
+          </CardFooter>
         </Card>
       </div>
     </div>
