@@ -12,7 +12,9 @@ import {
   Sparkles,
   GraduationCap,
   Menu,
-  HomeIcon
+  HomeIcon,
+  Settings,
+  LifeBuoy
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -161,8 +163,12 @@ function AdminHeader() {
             <DropdownMenuContent align="end">
                 <DropdownMenuLabel>My Account</DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem>Settings</DropdownMenuItem>
-                <DropdownMenuItem>Support</DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/admin/settings"><Settings className="mr-2 h-4 w-4" />Settings</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                    <Link href="/admin/support"><LifeBuoy className="mr-2 h-4 w-4" />Support</Link>
+                </DropdownMenuItem>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                 <LogOut className="mr-2 h-4 w-4" />

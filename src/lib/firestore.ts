@@ -4,8 +4,9 @@ import { db } from "./firebase";
 import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
 import { deleteFileByUrl, deleteUserByUid } from "./firebase-admin";
 
-const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Teacher => {
-    const data = doc.data();
+const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Teacher => {
+    const data = "data" in doc ? doc.data() : doc;
+    if (!data) throw new Error("Document data is empty.");
     return {
         id: doc.id,
         name: data.name || '',
@@ -38,6 +39,9 @@ const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): 
         classroom: data.classroom || '',
         age: data.age || 0,
         parent: data.parent || '',
+        dob: data.dob || '',
+        allergies: data.allergies || '',
+        emergencyContact: data.emergencyContact || { name: '', relation: '', phone: '' },
     };
 };
 
@@ -50,7 +54,9 @@ const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData):
         name: data.name || '',
         avatar: data.avatar || '',
         email: data.email || '',
+        phone: data.phone || '',
         children: data.children || [],
+        childDetails: data.childDetails || [],
     };
 };
 
@@ -88,6 +94,36 @@ export async function getTeachers(): Promise<Teacher[]> {
     } catch (error) {
         console.error("Error fetching teachers:", error);
         return [];
+    }
+}
+
+export async function addTeacher(teacher: Omit<Teacher, 'id'>): Promise<void> {
+    try {
+        await addDoc(collection(db, 'teachers'), teacher);
+    } catch (error) {
+        console.error("Error adding teacher:", error);
+        throw error;
+    }
+}
+
+export async function updateTeacher(id: string, teacher: Partial<Omit<Teacher, 'id'>>): Promise<void> {
+    try {
+        const docRef = doc(db, 'teachers', id);
+        await updateDoc(docRef, teacher);
+    } catch (error) {
+        console.error("Error updating teacher:", error);
+        throw error;
+    }
+}
+
+export async function deleteTeacher(id: string): Promise<void> {
+    try {
+        // Here you might want to also delete the user from Firebase Auth
+        // by calling a server function if the email is used for auth.
+        await deleteDoc(doc(db, 'teachers', id));
+    } catch (error) {
+        console.error("Error deleting teacher:", error);
+        throw error;
     }
 }
 
@@ -145,7 +181,7 @@ export async function addChild(child: Omit<Child, 'id'>): Promise<void> {
     }
 }
 
-export async function updateChild(id: string, child: Omit<Child, 'id'>): Promise<void> {
+export async function updateChild(id: string, child: Partial<Omit<Child, 'id'>>): Promise<void> {
     try {
         const docRef = doc(db, 'children', id);
         await updateDoc(docRef, child);
@@ -173,7 +209,13 @@ export async function getParent(id: string): Promise<Parent | null> {
         const docSnap = await getDoc(docRef);
 
         if (docSnap.exists()) {
-            return parentFromDoc(docSnap);
+            const parentData = parentFromDoc(docSnap);
+            // Fetch full child details
+            const childDetails = await Promise.all(
+                (parentData.children || []).map(childName => getChildByName(childName))
+            );
+            parentData.childDetails = childDetails.filter(c => c !== null) as Child[];
+            return parentData;
         } else {
             console.log("No such parent document!");
             return null;
@@ -188,12 +230,24 @@ export async function addParent(parent: Parent): Promise<void> {
     try {
         // Use the UID from Auth as the document ID for easy lookup
         const parentRef = doc(db, 'parents', parent.id);
-        await setDoc(parentRef, parent);
+        const { childDetails, ...parentData } = parent;
+        await setDoc(parentRef, parentData);
     } catch (error) {
         console.error("Error adding parent:", error);
         throw error;
     }
 }
+
+export async function updateParent(id: string, parentData: Partial<Parent>): Promise<void> {
+    try {
+        const docRef = doc(db, 'parents', id);
+        await updateDoc(docRef, parentData);
+    } catch (error) {
+        console.error("Error updating parent:", error);
+        throw error;
+    }
+}
+
 
 export async function deleteParent(id: string): Promise<void> {
     try {

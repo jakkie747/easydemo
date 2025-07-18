@@ -24,6 +24,13 @@ export type Child = {
     classroom: string;
     age: number;
     parent: string;
+    dob?: string;
+    allergies?: string;
+    emergencyContact?: {
+        name: string;
+        relation: string;
+        phone: string;
+    };
 };
 
 export type Parent = {
@@ -31,7 +38,9 @@ export type Parent = {
     name: string;
     avatar: string;
     email: string;
+    phone?: string;
     children: string[];
+    childDetails?: Child[];
 };
 
 export type GalleryImage = {
@@ -52,4 +61,3 @@ export type Event = {
   imageUrl?: string;
   imageStoragePath?: string;
 };
-
