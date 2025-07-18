@@ -16,7 +16,7 @@ export default function Home() {
               <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
                 The All-in-One Digital Hub for Modern Preschools
               </h1>
-              <p className="max-w-[600px] text-foreground/80 md:text-xl">
+              <p className="mx-auto max-w-[600px] text-foreground/80 md:text-xl">
                 Empower teachers, engage parents, and simplify administration. Easyspark is the digital solution designed to bridge the gap between home and school.
               </p>
             </div>
