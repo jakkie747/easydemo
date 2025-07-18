@@ -36,8 +36,8 @@ const dailyReport = {
 
 export default function ParentDashboard() {
   return (
-    <div className="bg-muted/40 min-h-[calc(100vh-var(--header-height)-var(--footer-height))]">
-      <main className="container mx-auto p-4 md:p-8">
+    <div className="bg-muted/40 py-8">
+      <div className="container mx-auto px-4 md:px-8">
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-1">
             <Card className="sticky top-24 shadow-md">
@@ -111,7 +111,7 @@ export default function ParentDashboard() {
             </Card>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   )
 }
