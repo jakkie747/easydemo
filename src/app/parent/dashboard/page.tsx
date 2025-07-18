@@ -16,12 +16,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Utensils, ToyBrick, Bed, BookHeart, FilePen, LogOut } from "lucide-react"
-import { useRouter } from 'next/navigation';
-import { getAuth, signOut } from "firebase/auth";
-import { app } from "@/lib/firebase";
-import { useToast } from "@/hooks/use-toast";
-import { Logo } from "@/components/icons"
+import { Utensils, ToyBrick, Bed, BookHeart, FilePen } from "lucide-react"
 
 const dailyReport = {
   activities: [
@@ -40,42 +35,8 @@ const dailyReport = {
 };
 
 export default function ParentDashboard() {
-  const router = useRouter();
-  const { toast } = useToast();
-  const auth = getAuth(app);
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-      router.push('/');
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Logout Failed",
-        description: "An error occurred while logging out.",
-      });
-    }
-  };
-
-
   return (
-    <div className="bg-muted/40 min-h-screen">
-      <header className="bg-background border-b shadow-sm">
-        <div className="container mx-auto flex justify-between items-center p-4">
-          <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-8 w-8 text-primary" />
-            <span className="font-headline text-2xl text-primary">Easyspark</span>
-          </Link>
-          <Button variant="outline" onClick={handleLogout}>
-            <LogOut className="mr-2 h-4 w-4" /> Logout
-          </Button>
-        </div>
-      </header>
+    <div className="bg-muted/40 min-h-[calc(100vh-var(--header-height)-var(--footer-height))]">
       <main className="container mx-auto p-4 md:p-8">
         <div className="grid gap-8 md:grid-cols-3">
           <div className="md:col-span-1">
