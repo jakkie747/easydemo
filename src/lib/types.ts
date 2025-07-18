@@ -33,3 +33,10 @@ export type Parent = {
     email: string;
     children: string[];
 };
+
+export type GalleryImage = {
+  id: string;
+  url: string;
+  description?: string;
+  storagePath: string;
+};

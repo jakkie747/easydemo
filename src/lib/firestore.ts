@@ -1,7 +1,8 @@
 
-import { collection, getDocs, addDoc, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Teacher, Document, Child, Parent } from "./types";
+import type { Teacher, Document, Child, Parent, GalleryImage } from "./types";
+import { deleteFileByUrl } from "./firebase-admin";
 
 const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Teacher => {
     const data = doc.data();
@@ -47,6 +48,16 @@ const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Parent => {
         avatar: data.avatar || '',
         email: data.email || '',
         children: data.children || [],
+    };
+};
+
+const galleryImageFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): GalleryImage => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        url: data.url || '',
+        description: data.description || '',
+        storagePath: data.storagePath || '',
     };
 };
 
@@ -102,5 +113,37 @@ export async function addDocument(doc: Omit<Document, 'id'>) {
     } catch (error) {
         console.error("Error adding document:", error);
         throw error; // Re-throw to be handled by the caller
+    }
+}
+
+export async function getGalleryImages(): Promise<GalleryImage[]> {
+    try {
+        const galleryCol = collection(db, "gallery");
+        const gallerySnapshot = await getDocs(galleryCol);
+        return gallerySnapshot.docs.map(doc => galleryImageFromDoc(doc));
+    } catch (error) {
+        console.error("Error fetching gallery images:", error);
+        return [];
+    }
+}
+
+export async function addGalleryImage(image: Omit<GalleryImage, 'id'>): Promise<void> {
+    try {
+        await addDoc(collection(db, 'gallery'), image);
+    } catch (error) {
+        console.error("Error adding gallery image:", error);
+        throw error;
+    }
+}
+
+export async function deleteGalleryImage(image: GalleryImage): Promise<void> {
+    try {
+        // First, delete the file from Cloud Storage
+        await deleteFileByUrl(image.storagePath);
+        // Then, delete the document from Firestore
+        await deleteDoc(doc(db, 'gallery', image.id));
+    } catch (error) {
+        console.error("Error deleting gallery image:", error);
+        throw error;
     }
 }
