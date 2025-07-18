@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Image from "next/image";
 
 import {
   Card,
@@ -47,11 +48,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Calendar, Users, Edit, Trash2, Loader2, PartyPopper } from "lucide-react";
 import type { Event } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
+import { useUpload } from "@/hooks/use-upload";
 import { addEvent, updateEvent, deleteEvent } from "@/lib/firestore";
+import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({
   title: z.string().min(2, { message: "Title must be at least 2 characters." }),
@@ -64,7 +68,8 @@ const formSchema = z.object({
 
 function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplete: () => void, mode: 'add' | 'edit' }) {
   const [isOpen, setIsOpen] = React.useState(false);
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [file, setFile] = React.useState<File | null>(null);
+  const { upload, progress, isLoading: isUploading } = useUpload();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -86,23 +91,42 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
     },
   });
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files?.[0] ?? null);
+  };
+
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    setIsSubmitting(true);
+    let imageUrl = event?.imageUrl;
+    let imageStoragePath = event?.imageStoragePath;
+
     try {
-      if (mode === 'edit' && event) {
-        await updateEvent(event.id, values);
-        toast({ title: "Event Updated!", description: `${values.title} has been updated.` });
-      } else {
-        await addEvent(values);
-        toast({ title: "Event Created!", description: `${values.title} has been successfully created.` });
-      }
-      form.reset();
-      setIsOpen(false);
-      onComplete();
+        if (file) {
+            const storagePath = `events/${Date.now()}_${file.name}`;
+            const uploadedURL = await upload(file, storagePath);
+            if (uploadedURL) {
+                imageUrl = uploadedURL;
+                imageStoragePath = storagePath;
+            } else {
+                toast({ variant: "destructive", title: "Image Upload Failed", description: "Could not upload the image. Please try again." });
+                return;
+            }
+        }
+
+        const eventData = { ...values, imageUrl, imageStoragePath };
+
+        if (mode === 'edit' && event) {
+            await updateEvent(event.id, eventData);
+            toast({ title: "Event Updated!", description: `${values.title} has been updated.` });
+        } else {
+            await addEvent(eventData);
+            toast({ title: "Event Created!", description: `${values.title} has been successfully created.` });
+        }
+        form.reset();
+        setFile(null);
+        setIsOpen(false);
+        onComplete();
     } catch (error) {
-      toast({ variant: "destructive", title: "Action Failed", description: "Could not save the event. Please try again." });
-    } finally {
-      setIsSubmitting(false);
+        toast({ variant: "destructive", title: "Action Failed", description: "Could not save the event. Please try again." });
     }
   };
 
@@ -116,6 +140,8 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
         <span className="sr-only">Edit</span>
     </Button>
   );
+
+  const isSubmitting = form.formState.isSubmitting || isUploading;
 
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
@@ -151,6 +177,16 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
             <FormField control={form.control} name="description" render={({ field }) => (
               <FormItem><FormLabel>Description</FormLabel><FormControl><Textarea placeholder="Describe the event..." {...field} /></FormControl><FormMessage /></FormItem>
             )} />
+            <div className="space-y-2">
+              <Label htmlFor="file">Event Image</Label>
+              <Input id="file" type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+            {isUploading && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Uploading... {Math.round(progress)}%</p>
+                <Progress value={progress} />
+              </div>
+            )}
             <DialogFooter>
               <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
               <Button type="submit" disabled={isSubmitting}>
@@ -196,6 +232,17 @@ export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
           {initialEvents.map((event) => (
             <Card key={event.id} className="flex flex-col">
+              {event.imageUrl && (
+                 <div className="relative w-full h-48">
+                    <Image
+                        src={event.imageUrl}
+                        alt={event.title}
+                        layout="fill"
+                        objectFit="cover"
+                        className="rounded-t-lg"
+                    />
+                 </div>
+              )}
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div>
@@ -214,7 +261,7 @@ export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
                       <AlertDialogContent>
                           <AlertDialogHeader>
                               <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                              <AlertDialogDescription>This will permanently delete the event. This action cannot be undone.</AlertDialogDescription>
+                              <AlertDialogDescription>This will permanently delete the event and its photo. This action cannot be undone.</AlertDialogDescription>
                           </AlertDialogHeader>
                           <AlertDialogFooter>
                               <AlertDialogCancel>Cancel</AlertDialogCancel>

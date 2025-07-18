@@ -73,6 +73,8 @@ const eventFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Event => {
         description: data.description || '',
         attendees: data.attendees || 0,
         type: data.type || '',
+        imageUrl: data.imageUrl,
+        imageStoragePath: data.imageStoragePath,
     };
 };
 
@@ -235,7 +237,15 @@ export async function updateEvent(id: string, event: Omit<Event, 'id'>): Promise
 
 export async function deleteEvent(id: string): Promise<void> {
     try {
-        await deleteDoc(doc(db, 'events', id));
+        const eventRef = doc(db, 'events', id);
+        const eventSnap = await getDoc(eventRef);
+        if (eventSnap.exists()) {
+            const eventData = eventSnap.data() as Event;
+            if (eventData.imageStoragePath) {
+                await deleteFileByUrl(eventData.imageStoragePath);
+            }
+        }
+        await deleteDoc(eventRef);
     } catch (error) {
         console.error("Error deleting event:", error);
         throw error;

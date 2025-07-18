@@ -49,4 +49,7 @@ export type Event = {
   description?: string;
   attendees: number;
   type: string;
+  imageUrl?: string;
+  imageStoragePath?: string;
 };
+
