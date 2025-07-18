@@ -1,6 +1,14 @@
 # Settings to manage and configure a Firebase App Hosting backend.
 # https://firebase.google.com/docs/app-hosting/configure
 
+# The ID of the backend.
+# This is a user-defined ID and can be any string.
+backendId: easyspark-backend
+
+# The region to deploy the backend to.
+# This should be a region close to your users.
+region: us-central1
+
 runConfig:
   # Increase this value if you'd like to automatically spin up
   # more instances in response to increased traffic.
