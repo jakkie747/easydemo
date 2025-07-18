@@ -47,7 +47,7 @@ export function Header() {
           <Button asChild>
             <Link href="/register/preschool">
               <Sparkles className="mr-2 h-4 w-4"/>
-              Register Now
+              Register your child
             </Link>
           </Button>
           <Sheet>

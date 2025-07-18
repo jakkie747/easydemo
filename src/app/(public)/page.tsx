@@ -24,7 +24,7 @@ export default function Home() {
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button size="lg" asChild>
                   <Link href="/register/preschool">
-                    Register for Preschool
+                    Register your child
                     <Rocket/>
                   </Link>
                 </Button>
@@ -36,7 +36,7 @@ export default function Home() {
               </div>
             </div>
             <Image
-              src="https://placehold.co/600x400.png"
+              src="/hero.png"
               width="600"
               height="400"
               alt="Hero"
