@@ -80,13 +80,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-background p-4">
-       <div className="absolute top-4 left-4">
-        <Link href="/" className="flex items-center gap-2 text-primary hover:text-accent transition-colors">
-          <Logo className="h-6 w-6" />
-          <span className="font-headline text-xl">Easyspark</span>
-        </Link>
-      </div>
+    <div className="flex items-center justify-center min-h-[calc(100vh-var(--header-height)-var(--footer-height))] bg-background p-4">
       <Tabs defaultValue="parent" className="w-full max-w-md">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="parent">Parent</TabsTrigger>

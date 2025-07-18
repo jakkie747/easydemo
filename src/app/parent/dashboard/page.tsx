@@ -16,12 +16,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Utensils, ToyBrick, Bed, BookHeart, FilePen, LogOut } from "lucide-react"
 import { useRouter } from 'next/navigation';
 import { getAuth, signOut } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
+import { Logo } from "@/components/icons"
 
 const dailyReport = {
   activities: [
@@ -68,22 +68,7 @@ export default function ParentDashboard() {
       <header className="bg-background border-b shadow-sm">
         <div className="container mx-auto flex justify-between items-center p-4">
           <Link href="/" className="flex items-center gap-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="h-8 w-8 text-primary"
-            >
-              <path d="m12 3-1.9 4.8-4.8 1.9 4.8 1.9L12 16l1.9-4.8 4.8-1.9-4.8-1.9L12 3z" />
-              <path d="M5 3v4" />
-              <path d="M19 17v4" />
-              <path d="M3 5h4" />
-              <path d="M17 19h4" />
-            </svg>
+            <Logo className="h-8 w-8 text-primary" />
             <span className="font-headline text-2xl text-primary">Easyspark</span>
           </Link>
           <Button variant="outline" onClick={handleLogout}>
@@ -119,7 +104,7 @@ export default function ParentDashboard() {
                  <CardDescription>A summary of Leo's day at Easyspark.</CardDescription>
               </CardHeader>
               <CardContent>
-                <Accordion type="multiple" defaultValue={["item-1"]} className="w-full">
+                <Accordion type="multiple" defaultValue={["item-1", "item-2", "item-3", "item-4"]} className="w-full">
                   <AccordionItem value="item-1">
                     <AccordionTrigger className="text-lg font-semibold"><ToyBrick className="mr-2 text-accent" />Activities</AccordionTrigger>
                     <AccordionContent>
