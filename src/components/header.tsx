@@ -9,6 +9,7 @@ export function Header() {
     { href: "#programs", label: "Programs" },
     { href: "#testimonials", label: "Testimonials" },
     { href: "/login", label: "Parent Login" },
+    { href: "/admin/dashboard", label: "Admin" },
   ];
 
   return (
