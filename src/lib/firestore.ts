@@ -29,7 +29,7 @@ const documentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Document => 
 };
 
 const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Child => {
-    const data = doc.data();
+    const data = "data" in doc ? doc.data() : doc;
     if (!data) throw new Error("Document data is empty.");
     return {
         id: doc.id,
@@ -150,6 +150,17 @@ export async function getParents(): Promise<Parent[]> {
     }
 }
 
+export async function addParent(parent: Omit<Parent, 'id'>): Promise<void> {
+    try {
+        // Use email as the document ID for easy lookup, or let Firestore auto-generate one
+        // For simplicity, we'll let Firestore auto-generate the ID.
+        await addDoc(collection(db, 'parents'), parent);
+    } catch (error) {
+        console.error("Error adding parent:", error);
+        throw error;
+    }
+}
+
 
 export async function getDocuments(): Promise<Document[]> {
     try {
@@ -225,7 +236,7 @@ export async function addEvent(event: Omit<Event, 'id'>): Promise<void> {
     }
 }
 
-export async function updateEvent(id: string, event: Omit<Event, 'id'>): Promise<void> {
+export async function updateEvent(id: string, event: Partial<Omit<Event, 'id'>>): Promise<void> {
     try {
         const docRef = doc(db, 'events', id);
         await updateDoc(docRef, event);
