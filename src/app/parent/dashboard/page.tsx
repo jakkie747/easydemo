@@ -16,7 +16,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Utensils, ToyBrick, Bed, BookHeart, FilePen } from "lucide-react"
+import { Utensils, ToyBrick, Bed, BookHeart, FilePen, LogOut } from "lucide-react"
+import { useRouter } from "next/navigation"
+import { useToast } from "@/hooks/use-toast"
+import { getAuth, signOut } from "firebase/auth"
+import { app } from "@/lib/firebase"
+
 
 const dailyReport = {
   activities: [
@@ -35,6 +40,29 @@ const dailyReport = {
 };
 
 export default function ParentDashboard() {
+  const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth(app);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred while logging out.",
+      });
+    }
+  };
+
+
   return (
     <div className="bg-muted/40 py-8">
       <div className="container mx-auto px-4 md:px-8">
@@ -49,11 +77,14 @@ export default function ParentDashboard() {
                 <CardTitle className="font-headline text-3xl">Leo Bloom</CardTitle>
                 <CardDescription>Preschool - Bumblebees</CardDescription>
               </CardHeader>
-              <CardContent className="text-center">
+              <CardContent className="text-center space-y-2">
                  <Button className="w-full" asChild>
                     <Link href="/parent/profile">
                         <FilePen /> Edit Profile
                     </Link>
+                </Button>
+                 <Button className="w-full" variant="outline" onClick={handleLogout}>
+                    <LogOut /> Log Out
                 </Button>
               </CardContent>
             </Card>

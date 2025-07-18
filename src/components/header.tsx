@@ -1,11 +1,20 @@
 
+"use client";
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/icons"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 import { Menu, Sparkles } from "lucide-react"
+import { usePathname } from "next/navigation";
 
 export function Header() {
+  const pathname = usePathname();
+
+  // Don't show header on parent dashboard/profile pages
+  if (pathname.startsWith('/parent')) {
+    return null;
+  }
+
   const navLinks = [
     { href: "/#about", label: "About" },
     { href: "/#programs", label: "Programs" },

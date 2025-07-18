@@ -78,7 +78,7 @@ function AdminSidebar() {
   return (
     <Sidebar collapsible="icon" className="border-r border-sidebar-border/60 bg-sidebar text-sidebar-foreground">
       <SidebarHeader>
-        <Link href="/" className="flex items-center gap-2 p-2">
+        <Link href="/admin/dashboard" className="flex items-center gap-2 p-2">
           <Logo className="w-8 h-8 text-accent group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 transition-all" />
           <span className="font-headline text-2xl group-data-[collapsible=icon]:hidden">
             Easyspark
