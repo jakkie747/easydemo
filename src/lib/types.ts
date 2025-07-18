@@ -1,3 +1,4 @@
+
 export type Teacher = {
   id: string;
   name: string;
@@ -5,4 +6,13 @@ export type Teacher = {
   classroom: string;
   avatar: string;
   status: 'Active' | 'On Leave';
+};
+
+export type Document = {
+  id: string;
+  name: string;
+  type: string;
+  uploaded: string;
+  size: string;
+  url: string;
 };
