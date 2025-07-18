@@ -79,6 +79,7 @@ Your primary tasks are to:
 3.  Use the provided tools to send the final message through the requested channels (email, push notification).
 4.  Do not ask for confirmation. Execute the tools immediately based on the user's request.
 5.  The list of recipients is a placeholder; for now, assume there are 25 parents in the selected audience. You should pass an array of 25 placeholder emails (e.g., 'parent1@example.com', 'parent2@example.com', ...) to the tools.`,
+  prompt: `{{{message}}}`,
   tools: [sendEmailTool, sendPushNotificationTool],
 });
 
