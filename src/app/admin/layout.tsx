@@ -56,10 +56,7 @@ function AdminSidebar() {
             <div className="flex h-full max-h-screen flex-col gap-2">
                 <div className="flex h-16 items-center border-b px-4 lg:px-6">
                      <Link href="/" className="flex items-center gap-2">
-                        <Logo className="w-8 h-8 text-primary" />
-                        <span className="font-headline text-2xl">
-                            Easyspark
-                        </span>
+                        <Logo className="w-14 h-14" />
                     </Link>
                 </div>
                 <div className="flex-1">
@@ -123,8 +120,7 @@ function AdminHeader() {
             <SheetContent side="left" className="flex flex-col">
                 <nav className="grid gap-2 text-lg font-medium">
                      <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
-                        <Logo className="w-6 h-6 text-primary" />
-                        <span className="font-headline text-xl">Easyspark</span>
+                        <Logo className="w-14 h-14" />
                      </Link>
                       {navItems.map(item => (
                              <Link

@@ -9,8 +9,7 @@ export function Footer() {
       <div className="container px-4 md:px-6 py-8">
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="w-8 h-8 text-primary" />
-            <span className="font-headline text-2xl text-primary">Easyspark</span>
+            <Logo className="w-14 h-14" />
           </Link>
           <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
             <Link href="/#about" className="text-sm hover:text-primary transition-colors">About</Link>
