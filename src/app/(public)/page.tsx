@@ -11,7 +11,7 @@ export default function Home() {
     <>
       <section className="w-full pt-12 pb-12 md:pb-24 lg:pb-32 bg-background">
         <div className="container px-4 md:px-6">
-          <div className="flex flex-col items-center space-y-8 text-center">
+          <div className="flex flex-col items-center text-center">
             <div className="space-y-4">
               <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
                 The All-in-One Digital Hub for Modern Preschools
@@ -20,7 +20,7 @@ export default function Home() {
                 Empower teachers, engage parents, and simplify administration. Easyspark is the digital solution designed to bridge the gap between home and school.
               </p>
             </div>
-            <div className="flex flex-col gap-2 min-[400px]:flex-row">
+            <div className="flex flex-col gap-2 min-[400px]:flex-row mt-8 mb-8">
               <Button size="lg" asChild>
                 <Link href="/register/preschool">
                   Register your child
