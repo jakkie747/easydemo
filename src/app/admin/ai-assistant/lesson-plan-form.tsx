@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,9 +23,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateLessonPlan, GenerateLessonPlanInputSchema, type GenerateLessonPlanOutput } from "@/ai/flows/generate-lesson-plan";
+import { generateLessonPlan, type GenerateLessonPlanOutput } from "@/ai/flows/generate-lesson-plan";
 import { Loader2, Sparkles, BookOpen, ClipboardList, Target, Wrench, CheckCircle, Clock } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const GenerateLessonPlanInputSchema = z.object({
+  topic: z.string().describe('The main topic or theme for the lesson.'),
+  gradeLevel: z.string().describe('The grade level of the students.'),
+  duration: z.string().describe('The estimated duration of the lesson (e.g., 30 minutes, 1 hour).'),
+});
 
 export function LessonPlanForm() {
   const [isLoading, setIsLoading] = useState(false);

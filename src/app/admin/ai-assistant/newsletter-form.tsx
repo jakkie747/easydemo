@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -22,9 +24,15 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateNewsletterSnippet, GenerateNewsletterSnippetInputSchema, type GenerateNewsletterSnippetOutput } from "@/ai/flows/generate-newsletter-snippet";
+import { generateNewsletterSnippet, type GenerateNewsletterSnippetOutput } from "@/ai/flows/generate-newsletter-snippet";
 import { Loader2, Sparkles, Newspaper } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const GenerateNewsletterSnippetInputSchema = z.object({
+  tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']).describe('The desired tone for the newsletter.'),
+  keyPoints: z.string().describe('Bullet points or a brief summary of the topics to cover. Each point should be on a new line.'),
+  specialMentions: z.string().optional().describe('Any special announcements or shout-outs to include.'),
+});
 
 export function NewsletterForm() {
   const [isLoading, setIsLoading] = useState(false);

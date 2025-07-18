@@ -1,8 +1,10 @@
+
 "use client";
 
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Form,
@@ -21,9 +23,15 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { generateStudentPraise, GenerateStudentPraiseInputSchema, type GenerateStudentPraiseOutput } from "@/ai/flows/generate-student-praise";
+import { generateStudentPraise, type GenerateStudentPraiseOutput } from "@/ai/flows/generate-student-praise";
 import { Loader2, Sparkles, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+const GenerateStudentPraiseInputSchema = z.object({
+  studentName: z.string().describe("The student's name."),
+  accomplishment: z.string().describe('A specific, positive observation about the student.'),
+  areaOfFocus: z.enum(['Social Skills', 'Creativity', 'Problem Solving', 'Kindness', 'Effort']).describe('The primary developmental area the accomplishment falls under.'),
+});
 
 export function StudentPraiseForm() {
   const [isLoading, setIsLoading] = useState(false);

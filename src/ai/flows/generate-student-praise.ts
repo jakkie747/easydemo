@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating personalized student praise.
@@ -10,14 +11,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateStudentPraiseInputSchema = z.object({
+const GenerateStudentPraiseInputSchema = z.object({
   studentName: z.string().describe("The student's name."),
   accomplishment: z.string().describe('A specific, positive observation about the student.'),
   areaOfFocus: z.enum(['Social Skills', 'Creativity', 'Problem Solving', 'Kindness', 'Effort']).describe('The primary developmental area the accomplishment falls under.'),
 });
 export type GenerateStudentPraiseInput = z.infer<typeof GenerateStudentPraiseInputSchema>;
 
-export const GenerateStudentPraiseOutputSchema = z.object({
+const GenerateStudentPraiseOutputSchema = z.object({
   praise: z.string().describe('A unique, encouraging, and personalized message of praise for the student.'),
 });
 export type GenerateStudentPraiseOutput = z.infer<typeof GenerateStudentPraiseOutputSchema>;

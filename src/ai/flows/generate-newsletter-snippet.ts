@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating parent newsletter snippets.
@@ -10,14 +11,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateNewsletterSnippetInputSchema = z.object({
+const GenerateNewsletterSnippetInputSchema = z.object({
   tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']).describe('The desired tone for the newsletter.'),
   keyPoints: z.string().describe('Bullet points or a brief summary of the topics to cover. Each point should be on a new line.'),
   specialMentions: z.string().optional().describe('Any special announcements or shout-outs to include.'),
 });
 export type GenerateNewsletterSnippetInput = z.infer<typeof GenerateNewsletterSnippetInputSchema>;
 
-export const GenerateNewsletterSnippetOutputSchema = z.object({
+const GenerateNewsletterSnippetOutputSchema = z.object({
   headline: z.string().describe('A catchy headline for the newsletter snippet.'),
   body: z.string().describe('The full body of the newsletter, formatted with paragraphs.'),
 });

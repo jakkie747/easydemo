@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating lesson plans.
@@ -10,14 +11,14 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'genkit';
 
-export const GenerateLessonPlanInputSchema = z.object({
+const GenerateLessonPlanInputSchema = z.object({
   topic: z.string().describe('The main topic or theme for the lesson.'),
   gradeLevel: z.string().describe('The grade level of the students.'),
   duration: z.string().describe('The estimated duration of the lesson (e.g., 30 minutes, 1 hour).'),
 });
 export type GenerateLessonPlanInput = z.infer<typeof GenerateLessonPlanInputSchema>;
 
-export const GenerateLessonPlanOutputSchema = z.object({
+const GenerateLessonPlanOutputSchema = z.object({
   title: z.string().describe('A creative title for the lesson plan.'),
   learningObjectives: z.array(z.string()).describe('A list of what students will be able to do after the lesson.'),
   materials: z.array(z.string()).describe('A list of materials needed for the lesson.'),
