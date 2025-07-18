@@ -1,9 +1,8 @@
 
 import { collection, getDocs, addDoc, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Teacher, Document } from "./types";
+import type { Teacher, Document, Child, Parent } from "./types";
 
-// A helper function to convert a Firestore document to our Teacher type
 const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Teacher => {
     const data = doc.data();
     return {
@@ -28,25 +27,68 @@ const documentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Document => 
     };
 };
 
+const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Child => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        name: data.name || '',
+        avatar: data.avatar || '',
+        classroom: data.classroom || '',
+        age: data.age || 0,
+        parent: data.parent || '',
+    };
+};
+
+const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Parent => {
+    const data = doc.data();
+    return {
+        id: doc.id,
+        name: data.name || '',
+        avatar: data.avatar || '',
+        email: data.email || '',
+        children: data.children || [],
+    };
+};
 
 export async function getTeachers(): Promise<Teacher[]> {
     try {
         const teachersCol = collection(db, "teachers");
         const teacherSnapshot = await getDocs(teachersCol);
-        const teacherList = teacherSnapshot.docs.map(doc => teacherFromDoc(doc));
-        return teacherList;
+        return teacherSnapshot.docs.map(doc => teacherFromDoc(doc));
     } catch (error) {
         console.error("Error fetching teachers:", error);
         return [];
     }
 }
 
+export async function getChildren(): Promise<Child[]> {
+    try {
+        const childrenCol = collection(db, "children");
+        const childrenSnapshot = await getDocs(childrenCol);
+        return childrenSnapshot.docs.map(doc => childFromDoc(doc));
+    } catch (error) {
+        console.error("Error fetching children:", error);
+        return [];
+    }
+}
+
+export async function getParents(): Promise<Parent[]> {
+    try {
+        const parentsCol = collection(db, "parents");
+        const parentsSnapshot = await getDocs(parentsCol);
+        return parentsSnapshot.docs.map(doc => parentFromDoc(doc));
+    } catch (error) {
+        console.error("Error fetching parents:", error);
+        return [];
+    }
+}
+
+
 export async function getDocuments(): Promise<Document[]> {
     try {
         const documentsCol = collection(db, "documents");
         const documentSnapshot = await getDocs(documentsCol);
-        const documentList = documentSnapshot.docs.map(doc => documentFromDoc(doc));
-        return documentList;
+        return documentSnapshot.docs.map(doc => documentFromDoc(doc));
     } catch (error) {
         console.error("Error fetching documents:", error);
         return [];

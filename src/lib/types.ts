@@ -16,3 +16,20 @@ export type Document = {
   size: string;
   url: string;
 };
+
+export type Child = {
+    id: string;
+    name: string;
+    avatar: string;
+    classroom: string;
+    age: number;
+    parent: string;
+};
+
+export type Parent = {
+    id: string;
+    name: string;
+    avatar: string;
+    email: string;
+    children: string[];
+};

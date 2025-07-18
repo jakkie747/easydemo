@@ -24,16 +24,13 @@ import {
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { MoreHorizontal, PlusCircle } from "lucide-react";
+import { getParents } from "@/lib/firestore";
+import type { Parent } from "@/lib/types";
 
-// Mock data
-const parents = [
-    { id: 'p1', name: 'Anna Bloom', avatar: 'https://i.pravatar.cc/150?u=anna', email: 'anna.bloom@example.com', children: ['Leo Bloom'] },
-    { id: 'p2', name: 'Sarah Martin', avatar: 'https://i.pravatar.cc/150?u=sarah', email: 'sarah.martin@example.com', children: ['Olivia Martin'] },
-    { id: 'p3', name: 'Michael Neeson', avatar: 'https://i.pravatar.cc/150?u=michael', email: 'michael.neeson@example.com', children: ['Liam Neeson'] },
-    { id: 'p4', name: 'Jessica Watson', avatar: 'https://i.pravatar.cc/150?u=jessica', email: 'jessica.watson@example.com', children: ['Emma Watson'] },
-];
 
-export default function ParentsPage() {
+export default async function ParentsPage() {
+  const allParents: Parent[] = await getParents();
+
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
@@ -67,43 +64,51 @@ export default function ParentsPage() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {parents.map((parent) => (
-                <TableRow key={parent.id}>
-                  <TableCell>
-                    <div className="flex items-center gap-3">
-                      <Avatar>
-                        <AvatarImage src={parent.avatar} alt={parent.name} />
-                        <AvatarFallback>{parent.name.charAt(0)}</AvatarFallback>
-                      </Avatar>
-                      <div className="font-medium">{parent.name}</div>
-                    </div>
-                  </TableCell>
-                  <TableCell>{parent.email}</TableCell>
-                  <TableCell>{parent.children.join(', ')}</TableCell>
-                  <TableCell>
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button
-                          aria-haspopup="true"
-                          size="icon"
-                          variant="ghost"
-                        >
-                          <MoreHorizontal />
-                          <span className="sr-only">Toggle menu</span>
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                        <DropdownMenuItem>View Profile</DropdownMenuItem>
-                        <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                        <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                          Delete Account
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </TableCell>
-                </TableRow>
-              ))}
+              {allParents.length > 0 ? (
+                allParents.map((parent) => (
+                  <TableRow key={parent.id}>
+                    <TableCell>
+                      <div className="flex items-center gap-3">
+                        <Avatar>
+                          <AvatarImage src={parent.avatar} alt={parent.name} />
+                          <AvatarFallback>{parent.name.charAt(0)}</AvatarFallback>
+                        </Avatar>
+                        <div className="font-medium">{parent.name}</div>
+                      </div>
+                    </TableCell>
+                    <TableCell>{parent.email}</TableCell>
+                    <TableCell>{parent.children.join(', ')}</TableCell>
+                    <TableCell>
+                      <DropdownMenu>
+                        <DropdownMenuTrigger asChild>
+                          <Button
+                            aria-haspopup="true"
+                            size="icon"
+                            variant="ghost"
+                          >
+                            <MoreHorizontal />
+                            <span className="sr-only">Toggle menu</span>
+                          </Button>
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align="end">
+                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuItem>View Profile</DropdownMenuItem>
+                          <DropdownMenuItem>Reset Password</DropdownMenuItem>
+                          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                            Delete Account
+                          </DropdownMenuItem>
+                        </DropdownMenuContent>
+                      </DropdownMenu>
+                    </TableCell>
+                  </TableRow>
+                ))
+              ) : (
+                 <TableRow>
+                    <TableCell colSpan={4} className="h-24 text-center">
+                      No parents found. Try seeding the database.
+                    </TableCell>
+                  </TableRow>
+              )}
             </TableBody>
           </Table>
         </CardContent>
