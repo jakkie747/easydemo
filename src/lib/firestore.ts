@@ -83,6 +83,15 @@ export async function getChildren(): Promise<Child[]> {
     }
 }
 
+export async function addChild(child: Omit<Child, 'id'>): Promise<void> {
+    try {
+        await addDoc(collection(db, 'children'), child);
+    } catch (error) {
+        console.error("Error adding child:", error);
+        throw error;
+    }
+}
+
 export async function getParents(): Promise<Parent[]> {
     try {
         const parentsCol = collection(db, "parents");
