@@ -69,12 +69,8 @@ export function CreativeAssistantForm() {
   }
 
   return (
-    <div className="grid gap-8 lg:grid-cols-3">
-      <Card className="lg:col-span-1 h-fit">
-        <CardHeader>
-          <CardTitle>Generator</CardTitle>
-        </CardHeader>
-        <CardContent>
+    <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+      <div className="lg:col-span-1 h-fit">
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
               <FormField
@@ -142,9 +138,8 @@ export function CreativeAssistantForm() {
               </Button>
             </form>
           </Form>
-        </CardContent>
-      </Card>
-      <div className="lg:col-span-2">
+      </div>
+      <div className="md:col-span-1 lg:col-span-2">
         {isLoading && (
           <div className="flex flex-col items-center justify-center h-full rounded-lg border border-dashed p-8 text-center animate-pulse">
             <Sparkles className="h-12 w-12 text-muted-foreground" />
@@ -190,7 +185,7 @@ export function CreativeAssistantForm() {
           </div>
         )}
         {!isLoading && !ideas && (
-           <div className="flex flex-col items-center justify-center h-full rounded-lg border border-dashed p-8 text-center">
+           <div className="flex flex-col items-center justify-center h-full rounded-lg border border-dashed p-8 text-center min-h-[400px]">
              <Sparkles className="h-12 w-12 text-muted-foreground" />
              <h3 className="mt-4 text-lg font-semibold">Ready for some inspiration?</h3>
              <p className="mt-2 text-sm text-muted-foreground">
