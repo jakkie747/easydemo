@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Bar, BarChart, CartesianGrid, XAxis } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from "recharts"
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart"
 import { Users, BookOpen, Bell, ArrowUpRight } from "lucide-react"
 
@@ -36,7 +36,7 @@ const chartConfig = {
     label: "Students",
     color: "hsl(var(--primary))",
   },
-}
+} 
 
 export default function Dashboard() {
   return (
@@ -104,6 +104,7 @@ export default function Dashboard() {
                   axisLine={false}
                   tickFormatter={(value) => value.slice(0, 3)}
                 />
+                <YAxis tickLine={false} axisLine={false} />
                 <ChartTooltip
                   cursor={false}
                   content={<ChartTooltipContent hideLabel />}

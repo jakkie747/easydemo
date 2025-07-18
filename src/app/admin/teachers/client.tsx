@@ -1,3 +1,4 @@
+
 "use client";
 
 import {
@@ -37,7 +38,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
             <p className="text-muted-foreground">View, add, edit, or remove teachers from your center.</p>
         </div>
         <Button>
-          <PlusCircle className="mr-2 h-4 w-4" /> Add Teacher
+          <PlusCircle /> Add Teacher
         </Button>
       </div>
       <Card>
@@ -75,7 +76,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
                   <TableCell>{teacher.classroom}</TableCell>
                   <TableCell>{teacher.email}</TableCell>
                   <TableCell>
-                    <Badge variant={teacher.status === "Active" ? "secondary" : "destructive"}>
+                    <Badge variant={teacher.status === "Active" ? "default" : "secondary"}>
                       {teacher.status}
                     </Badge>
                   </TableCell>
@@ -87,7 +88,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
                           size="icon"
                           variant="ghost"
                         >
-                          <MoreHorizontal className="h-4 w-4" />
+                          <MoreHorizontal />
                           <span className="sr-only">Toggle menu</span>
                         </Button>
                       </DropdownMenuTrigger>

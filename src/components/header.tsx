@@ -1,15 +1,16 @@
+
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { Logo } from "@/components/icons"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
-import { Menu } from "lucide-react"
+import { Menu, Sparkles } from "lucide-react"
 
 export function Header() {
   const navLinks = [
-    { href: "#programs", label: "Programs" },
-    { href: "#testimonials", label: "Testimonials" },
-    { href: "/login", label: "Parent Login" },
-    { href: "/admin/dashboard", label: "Admin" },
+    { href: "/#about", label: "About" },
+    { href: "/#programs", label: "Programs" },
+    { href: "/#testimonials", label: "Testimonials" },
+    { href: "/login", label: "Login" },
   ];
 
   return (
@@ -26,15 +27,18 @@ export function Header() {
             <Link
               key={link.href}
               href={link.href}
-              className="transition-colors hover:text-accent"
+              className="transition-colors hover:text-primary"
             >
               {link.label}
             </Link>
           ))}
         </nav>
         <div className="flex items-center gap-4 ml-auto">
-          <Button asChild className="hidden sm:flex bg-accent text-accent-foreground hover:bg-accent/90">
-            <Link href="/register/preschool">Register Now</Link>
+          <Button asChild>
+            <Link href="/register/preschool">
+              <Sparkles className="mr-2 h-4 w-4"/>
+              Register Now
+            </Link>
           </Button>
           <Sheet>
             <SheetTrigger asChild>
@@ -54,7 +58,7 @@ export function Header() {
                     {link.label}
                   </Link>
                 ))}
-                 <Button asChild className="mt-4 bg-accent text-accent-foreground hover:bg-accent/90">
+                 <Button asChild className="mt-4">
                     <Link href="/register/preschool">Register Now</Link>
                 </Button>
               </div>

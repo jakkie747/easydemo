@@ -1,9 +1,9 @@
+
 'use client';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import {
   Bell,
-  BookCopy,
   Users,
   Home,
   Image as ImageIcon,
@@ -12,6 +12,7 @@ import {
   LogOut,
   Sparkles,
   PanelLeft,
+  GraduationCap
 } from 'lucide-react';
 import {
   Sidebar,
@@ -22,7 +23,6 @@ import {
   SidebarMenuButton,
   SidebarFooter,
   SidebarProvider,
-  SidebarInset,
   useSidebar,
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
@@ -36,12 +36,15 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Logo } from '@/components/icons';
+import { getAuth, signOut } from 'firebase/auth';
+import { app } from '@/lib/firebase';
+import { useToast } from '@/hooks/use-toast';
 
 const navItems = [
   { href: '/admin/dashboard', icon: Home, label: 'Dashboard' },
   { href: '/admin/children', icon: Users, label: 'Children' },
-  { href: '/admin/teachers', icon: Contact, label: 'Teachers' },
   { href: '/admin/parents', icon: Users, label: 'Parents' },
+  { href: '/admin/teachers', icon: GraduationCap, label: 'Teachers' },
   { href: '/admin/events', icon: Bell, label: 'Events' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Gallery' },
   { href: '/admin/documents', icon: FileText, label: 'Documents' },
@@ -50,16 +53,37 @@ const navItems = [
 
 function AdminSidebar() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth(app);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/login');
+    } catch (error) {
+      console.error("Logout failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred while logging out.",
+      });
+    }
+  };
 
   return (
-    <Sidebar collapsible="icon" className="border-r border-border/60">
+    <Sidebar collapsible="icon" className="border-r border-sidebar-border/60 bg-sidebar text-sidebar-foreground">
       <SidebarHeader>
-        <div className="flex items-center gap-2 p-2">
-          <Logo className="w-8 h-8 text-primary group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 transition-all" />
+        <Link href="/" className="flex items-center gap-2 p-2">
+          <Logo className="w-8 h-8 text-accent group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 transition-all" />
           <span className="font-headline text-2xl group-data-[collapsible=icon]:hidden">
             Easyspark
           </span>
-        </div>
+        </Link>
       </SidebarHeader>
       <SidebarContent>
         <SidebarMenu>
@@ -67,7 +91,7 @@ function AdminSidebar() {
             <SidebarMenuItem key={item.label}>
               <Link href={item.href}>
                 <SidebarMenuButton
-                  isActive={pathname === item.href}
+                  isActive={pathname.startsWith(item.href)}
                   tooltip={{ children: item.label, side: 'right' }}
                 >
                   <item.icon />
@@ -79,12 +103,10 @@ function AdminSidebar() {
         </SidebarMenu>
       </SidebarContent>
       <SidebarFooter>
-         <Link href="/">
-            <SidebarMenuButton tooltip={{ children: 'Log Out', side: 'right' }}>
-              <LogOut />
-              <span>Log Out</span>
-            </SidebarMenuButton>
-        </Link>
+          <SidebarMenuButton onClick={handleLogout} tooltip={{ children: 'Log Out', side: 'right' }}>
+            <LogOut />
+            <span>Log Out</span>
+          </SidebarMenuButton>
       </SidebarFooter>
     </Sidebar>
   );
@@ -92,6 +114,29 @@ function AdminSidebar() {
 
 function AdminHeader() {
   const { toggleSidebar } = useSidebar();
+  const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth(app);
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+      router.push('/login');
+    } catch (error) {
+       console.error("Logout failed:", error);
+      toast({
+        variant: "destructive",
+        title: "Logout Failed",
+        description: "An error occurred while logging out.",
+      });
+    }
+  };
+
+
   return (
     <header className="sticky top-0 z-30 flex h-14 items-center gap-4 border-b bg-background px-4 sm:static sm:h-auto sm:border-0 sm:bg-transparent sm:px-6">
       <Button
@@ -123,8 +168,8 @@ function AdminHeader() {
             <DropdownMenuItem>Settings</DropdownMenuItem>
             <DropdownMenuItem>Support</DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem asChild>
-              <Link href="/">Log Out</Link>
+            <DropdownMenuItem onClick={handleLogout}>
+              Log Out
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
@@ -143,7 +188,7 @@ export default function AdminLayout({
     <SidebarProvider defaultOpen>
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <AdminSidebar />
-            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 group-data-[state=expanded]:sm:pl-[--sidebar-width]">
+            <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14 group-data-[state=expanded]:sm:pl-[var(--sidebar-width)]">
                 <AdminHeader />
                 <main className="grid flex-1 items-start gap-4 p-4 sm:px-6 sm:py-0 md:gap-8">
                     {children}

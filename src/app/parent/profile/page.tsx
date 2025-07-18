@@ -1,3 +1,5 @@
+
+"use client"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import {
@@ -15,35 +17,38 @@ import {
   TabsList,
   TabsTrigger,
 } from "@/components/ui/tabs"
-import { ArrowLeft } from "lucide-react"
+import { ArrowLeft, User, Shield, KeyRound } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 
 export default function ProfilePage() {
   return (
-    <div className="bg-background min-h-screen">
-       <header className="bg-primary text-primary-foreground p-4 shadow-md">
-        <div className="container mx-auto flex items-center">
-            <Button variant="secondary" size="sm" asChild>
+    <div className="bg-muted/40 min-h-screen">
+       <header className="bg-background border-b shadow-sm">
+        <div className="container mx-auto flex items-center p-4">
+            <Button variant="outline" size="sm" asChild>
                 <Link href="/parent/dashboard">
-                    <ArrowLeft className="mr-2 h-4 w-4" />
+                    <ArrowLeft />
                     Back to Dashboard
                 </Link>
             </Button>
         </div>
       </header>
       <main className="container mx-auto p-4 md:p-8 flex justify-center">
-        <Tabs defaultValue="child-info" className="w-full max-w-2xl">
-          <TabsList className="grid w-full grid-cols-3">
+        <Tabs defaultValue="child-info" className="w-full max-w-3xl">
+          <TabsList className="grid w-full grid-cols-4">
             <TabsTrigger value="child-info">Child's Info</TabsTrigger>
             <TabsTrigger value="parent-info">My Info</TabsTrigger>
             <TabsTrigger value="contacts">Emergency</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
+
+          {/* Child Info Tab */}
           <TabsContent value="child-info">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Child's Information</CardTitle>
+                <CardTitle className="font-headline flex items-center gap-2"><User/>Child's Information</CardTitle>
                 <CardDescription>
-                  Manage your child's profile details.
+                  Manage your child's profile details. This information helps us provide the best care.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -65,14 +70,18 @@ export default function ProfilePage() {
                   <Label htmlFor="allergies">Allergies & Medical Notes</Label>
                   <Textarea id="allergies" placeholder="e.g., Peanuts, lactose intolerant" defaultValue="None"/>
                 </div>
-                <Button>Save Changes</Button>
+                <div className="flex justify-end">
+                    <Button>Save Changes</Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Parent Info Tab */}
           <TabsContent value="parent-info">
             <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Parent/Guardian Information</CardTitle>
+                <CardTitle className="font-headline flex items-center gap-2"><User/>Parent/Guardian Information</CardTitle>
                 <CardDescription>
                   Update your contact information here.
                 </CardDescription>
@@ -90,26 +99,31 @@ export default function ProfilePage() {
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input id="email" type="email" defaultValue="anna.bloom@example.com" />
+                  <Input id="email" type="email" defaultValue="anna.bloom@example.com" disabled />
+                   <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="phone">Phone Number</Label>
                   <Input id="phone" type="tel" defaultValue="123-456-7890" />
                 </div>
-                <Button>Save Changes</Button>
+                <div className="flex justify-end">
+                    <Button>Save Changes</Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
+          
+          {/* Emergency Contacts Tab */}
           <TabsContent value="contacts">
              <Card>
               <CardHeader>
-                <CardTitle className="font-headline">Emergency Contacts</CardTitle>
+                <CardTitle className="font-headline flex items-center gap-2"><Shield/>Emergency Contacts</CardTitle>
                 <CardDescription>
                   Manage your emergency contacts. Please provide at least one.
                 </CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                 <div className="space-y-4 border p-4 rounded-lg">
+                 <div className="space-y-4 border p-4 rounded-lg relative">
                     <h3 className="font-semibold">Contact 1</h3>
                     <div className="space-y-2">
                         <Label htmlFor="contact1-name">Full Name</Label>
@@ -124,10 +138,42 @@ export default function ProfilePage() {
                         <Input id="contact1-phone" type="tel" defaultValue="123-456-7891" />
                     </div>
                  </div>
-                <Button>Save Changes</Button>
+                 <div className="flex justify-end">
+                    <Button>Save Changes</Button>
+                </div>
               </CardContent>
             </Card>
           </TabsContent>
+
+          {/* Account Tab */}
+           <TabsContent value="account">
+            <Card>
+              <CardHeader>
+                <CardTitle className="font-headline flex items-center gap-2"><KeyRound/>Account Settings</CardTitle>
+                <CardDescription>
+                  Manage your account password.
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">Current Password</Label>
+                  <Input id="current-password" type="password" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">New Password</Label>
+                  <Input id="new-password" type="password" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">Confirm New Password</Label>
+                  <Input id="confirm-password" type="password" />
+                </div>
+                 <div className="flex justify-end">
+                    <Button>Update Password</Button>
+                </div>
+              </CardContent>
+            </Card>
+          </TabsContent>
+
         </Tabs>
       </main>
     </div>

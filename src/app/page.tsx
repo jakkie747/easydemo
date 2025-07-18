@@ -1,10 +1,11 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
-import { Rocket, Sparkles, Sun, Palette, BookOpen, User, Quote } from 'lucide-react';
+import { Rocket, Sparkles, Sun, Palette, BookOpen, User, Quote, Users, GraduationCap, HeartHandshake } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -12,31 +13,31 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       <Header />
       <main className="flex-1">
-        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-primary text-primary-foreground">
+        <section className="w-full py-12 md:py-24 lg:py-32 xl:py-48 bg-secondary/50">
           <div className="container px-4 md:px-6">
             <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
               <div className="flex flex-col justify-center space-y-4">
-                <div className="space-y-2">
-                  <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-accent">
-                    Easyspark: Nurturing Bright Futures
+                <div className="space-y-4">
+                  <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
+                    Nurturing Bright Futures, One Spark at a Time
                   </h1>
-                  <p className="max-w-[600px] text-primary-foreground/80 md:text-xl">
+                  <p className="max-w-[600px] text-muted-foreground md:text-xl">
                     Discover a place where curiosity is sparked, creativity is celebrated, and every child's potential is nurtured. Join our preschool and afterschool family today.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 min-[400px]:flex-row">
-                  <Link href="/register/preschool">
-                    <Button size="lg" className="bg-accent text-accent-foreground hover:bg-accent/90">
+                  <Button size="lg" asChild>
+                    <Link href="/register/preschool">
                       Enroll in Preschool
-                      <Rocket className="ml-2" />
-                    </Button>
-                  </Link>
-                  <Link href="/register/afterschool">
-                    <Button size="lg" variant="secondary">
+                      <Rocket/>
+                    </Link>
+                  </Button>
+                  <Button size="lg" variant="secondary" asChild>
+                    <Link href="/register/afterschool">
                       Join Afterschool Fun
-                      <Sparkles className="ml-2" />
-                    </Button>
-                  </Link>
+                      <Sparkles/>
+                    </Link>
+                  </Button>
                 </div>
               </div>
               <Image
@@ -45,13 +46,56 @@ export default function Home() {
                 height="400"
                 alt="Hero"
                 data-ai-hint="happy children playing"
-                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last"
+                className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last shadow-lg"
               />
             </div>
           </div>
         </section>
         
-        <section id="programs" className="w-full py-12 md:py-24 lg:py-32">
+        <section id="about" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Our Philosophy</div>
+                <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">Why Choose Easyspark?</h2>
+                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  We believe in a holistic approach to early childhood education, focusing on nurturing the whole child.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
+              <div className="grid gap-1 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
+                    <GraduationCap className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">Expert Educators</h3>
+                <p className="text-muted-foreground">
+                  Our team of passionate and certified teachers is dedicated to creating a supportive learning atmosphere.
+                </p>
+              </div>
+              <div className="grid gap-1 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
+                    <HeartHandshake className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">Safe & Nurturing</h3>
+                <p className="text-muted-foreground">
+                  We provide a secure and welcoming environment where children feel safe to explore, learn, and grow.
+                </p>
+              </div>
+              <div className="grid gap-1 text-center">
+                <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
+                    <Users className="h-8 w-8" />
+                </div>
+                <h3 className="text-xl font-bold font-headline">Community Focused</h3>
+                <p className="text-muted-foreground">
+                  We foster a strong sense of community between parents, teachers, and children.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="programs" className="w-full py-12 md:py-24 lg:py-32 bg-secondary/50">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -63,7 +107,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-2 mt-12">
-              <Card className="hover:shadow-lg transition-shadow duration-300">
+              <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
                     <Sun className="text-accent" />
@@ -79,7 +123,7 @@ export default function Home() {
                   </ul>
                 </CardContent>
               </Card>
-              <Card className="hover:shadow-lg transition-shadow duration-300">
+              <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
                     <Palette className="text-accent" />
@@ -99,7 +143,7 @@ export default function Home() {
           </div>
         </section>
 
-        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32 bg-secondary">
+        <section id="testimonials" className="w-full py-12 md:py-24 lg:py-32">
           <div className="container px-4 md:px-6">
             <div className="flex flex-col items-center justify-center space-y-4 text-center">
               <div className="space-y-2">
@@ -115,7 +159,7 @@ export default function Home() {
                 { name: 'Michael B.', quote: "The afterschool program is fantastic. My son gets his homework done and has a blast with his friends. It's a lifesaver!" },
                 { name: 'Jessica P.', quote: "I'm so impressed with the communication. The daily reports on the parent dashboard keep me connected to my child's day." },
               ].map((testimonial) => (
-                <Card key={testimonial.name} className="bg-background">
+                <Card key={testimonial.name} className="bg-secondary/50 border-0">
                   <CardContent className="pt-6">
                     <div className="space-y-4">
                       <Quote className="h-8 w-8 text-muted-foreground" />
