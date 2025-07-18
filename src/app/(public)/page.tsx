@@ -1,8 +1,9 @@
+
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Rocket, Sparkles, Sun, Palette, BookOpen, User, Quote, Users, GraduationCap, HeartHandshake } from 'lucide-react';
+import { Rocket, Sparkles, Sun, Palette, BookOpen, User, Quote, Users, ShieldCheck, Cpu } from 'lucide-react';
 import Image from 'next/image';
 
 export default function Home() {
@@ -14,23 +15,22 @@ export default function Home() {
             <div className="flex flex-col justify-center space-y-4">
               <div className="space-y-4">
                 <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
-                  Nurturing Bright Futures, One Spark at a Time
+                  The All-in-One Digital Hub for Modern Preschools
                 </h1>
                 <p className="max-w-[600px] text-muted-foreground md:text-xl">
-                  Discover a place where curiosity is sparked, creativity is celebrated, and every child's potential is nurtured. Join our preschool and afterschool family today.
+                  Empower teachers, engage parents, and simplify administration. Easyspark is the digital solution designed to bridge the gap between home and school.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button size="lg" asChild>
                   <Link href="/register/preschool">
-                    Enroll in Preschool
+                    Register Your School
                     <Rocket/>
                   </Link>
                 </Button>
                 <Button size="lg" variant="secondary" asChild>
-                  <Link href="/register/afterschool">
-                    Join Afterschool Fun
-                    <Sparkles/>
+                  <Link href="/login">
+                    Parent & Admin Login
                   </Link>
                 </Button>
               </div>
@@ -40,7 +40,7 @@ export default function Home() {
               width="600"
               height="400"
               alt="Hero"
-              data-ai-hint="happy children playing"
+              data-ai-hint="happy children using tablets with teacher"
               className="mx-auto aspect-video overflow-hidden rounded-xl object-cover sm:w-full lg:order-last shadow-lg"
             />
           </div>
@@ -51,39 +51,39 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Our Philosophy</div>
-              <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">Why Choose Easyspark?</h2>
+              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Why Easyspark?</div>
+              <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">A Single Platform for Your Entire School Community</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                We believe in a holistic approach to early childhood education, focusing on nurturing the whole child.
+                We provide secure, easy-to-use tools designed to streamline your daily tasks, enhance parent communication, and let your school shine.
               </p>
             </div>
           </div>
-          <div className="mx-auto grid max-w-5xl items-center gap-6 py-12 lg:grid-cols-3 lg:gap-12">
+          <div className="mx-auto grid max-w-5xl items-start gap-6 py-12 lg:grid-cols-3 lg:gap-12">
             <div className="grid gap-1 text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
-                  <GraduationCap className="h-8 w-8" />
+                  <Cpu className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold font-headline">Expert Educators</h3>
+              <h3 className="text-xl font-bold font-headline">Empower Teachers</h3>
               <p className="text-muted-foreground">
-                Our team of passionate and certified teachers is dedicated to creating a supportive learning atmosphere.
-              </p>
-            </div>
-            <div className="grid gap-1 text-center">
-              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
-                  <HeartHandshake className="h-8 w-8" />
-              </div>
-              <h3 className="text-xl font-bold font-headline">Safe & Nurturing</h3>
-              <p className="text-muted-foreground">
-                We provide a secure and welcoming environment where children feel safe to explore, learn, and grow.
+                Our AI Assistant and communication tools let teachers focus on what they do best—teaching!
               </p>
             </div>
             <div className="grid gap-1 text-center">
               <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
                   <Users className="h-8 w-8" />
               </div>
-              <h3 className="text-xl font-bold font-headline">Community Focused</h3>
+              <h3 className="text-xl font-bold font-headline">Engage Parents</h3>
               <p className="text-muted-foreground">
-                We foster a strong sense of community between parents, teachers, and children.
+                Give parents the peace of mind they crave with daily digital reports and seamless communication in a secure portal.
+              </p>
+            </div>
+            <div className="grid gap-1 text-center">
+              <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground mb-4">
+                  <ShieldCheck className="h-8 w-8" />
+              </div>
+              <h3 className="text-xl font-bold font-headline">Simplify Administration</h3>
+              <p className="text-muted-foreground">
+                Manage student profiles, enrollment, and school content from a single, centralized dashboard.
               </p>
             </div>
           </div>
@@ -94,10 +94,10 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Our Programs</div>
-              <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">A World of Discovery Awaits</h2>
+              <div className="inline-block rounded-lg bg-secondary px-3 py-1 text-sm text-secondary-foreground">Our Features</div>
+              <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">Tools to Supercharge Your School</h2>
               <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                Our programs are designed to provide a safe, engaging, and enriching environment that fosters growth, learning, and fun.
+                From AI-powered creativity to effortless administration, Easyspark is packed with features for everyone.
               </p>
             </div>
           </div>
@@ -105,32 +105,32 @@ export default function Home() {
             <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
-                  <Sun className="text-accent" />
-                  Preschool Program
+                  <Sparkles className="text-accent" />
+                  For Teachers & Admins
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-muted-foreground">Our preschool program focuses on play-based learning, social-emotional development, and kindergarten readiness. We create a nurturing space for your little ones to shine.</p>
+                <p className="text-muted-foreground">Focus on what matters most. Our platform provides the tools to make your job easier and more creative.</p>
                 <ul className="list-disc list-inside text-muted-foreground space-y-1 pt-2">
-                  <li>Early literacy and numeracy skills</li>
-                  <li>Creative arts and music exploration</li>
-                  <li>Outdoor play and nature discovery</li>
+                  <li><strong>AI Creative Assistant:</strong> Instantly generate story starters & activity ideas.</li>
+                  <li><strong>Effortless Child Management:</strong> Manage profiles from a central dashboard.</li>
+                  <li><strong>Simplified Content Management:</strong> Easily update events, gallery, and documents.</li>
                 </ul>
               </CardContent>
             </Card>
             <Card className="hover:shadow-lg transition-shadow duration-300 transform hover:-translate-y-1">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 font-headline text-2xl text-primary">
-                  <Palette className="text-accent" />
-                  Afterschool Program
+                  <User className="text-accent" />
+                  For Parents
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-2">
-                <p className="text-muted-foreground">A stimulating and fun environment for school-aged children. We offer homework help, creative projects, and a variety of clubs to explore new interests.</p>
+                <p className="text-muted-foreground">Stay connected to your child's day with a secure, private portal dedicated to their progress and your peace of mind.</p>
                  <ul className="list-disc list-inside text-muted-foreground space-y-1 pt-2">
-                  <li>Homework assistance and tutoring</li>
-                  <li>STEM, Arts, and Sports clubs</li>
-                  <li>Building friendships in a safe setting</li>
+                  <li><strong>Daily Digital Reports:</strong> Get updates on mood, meals, naps, and activities.</li>
+                  <li><strong>Secure Parent Portal:</strong> Access everything in one place, from any device.</li>
+                  <li><strong>Stay Informed:</strong> Browse the latest photos, events, and important documents.</li>
                 </ul>
               </CardContent>
             </Card>
@@ -142,17 +142,17 @@ export default function Home() {
         <div className="container px-4 md:px-6">
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
-               <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">Words from Our Happy Parents</h2>
+               <h2 className="text-3xl font-bold font-headline tracking-tighter sm:text-5xl text-primary">Words from Our Community</h2>
                <p className="max-w-[900px] text-muted-foreground md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                We are proud of the community we've built. See what parents have to say about their experience at Easyspark.
+                We are proud to bridge the gap between home and school. See what our users have to say about their experience.
                </p>
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-start gap-8 sm:grid-cols-2 md:gap-12 lg:max-w-none lg:grid-cols-3 mt-12">
             {[
-              { name: 'Sarah L.', quote: "Easyspark has been a second home for our daughter. The teachers are so caring and the activities are always so creative!" },
-              { name: 'Michael B.', quote: "The afterschool program is fantastic. My son gets his homework done and has a blast with his friends. It's a lifesaver!" },
-              { name: 'Jessica P.', quote: "I'm so impressed with the communication. The daily reports on the parent dashboard keep me connected to my child's day." },
+              { name: 'Director Sarah L.', quote: "Easyspark has revolutionized our admin tasks. The child management dashboard saves us hours every week!" },
+              { name: 'Teacher Michael B.', quote: "The AI assistant is a game-changer for lesson planning. I can generate creative ideas in seconds. My kids love the new stories!" },
+              { name: 'Parent Jessica P.', quote: "I'm so impressed with the communication. The daily reports on the parent dashboard keep me connected to my child's day." },
             ].map((testimonial) => (
               <Card key={testimonial.name} className="bg-secondary/50 border-0">
                 <CardContent className="pt-6">
