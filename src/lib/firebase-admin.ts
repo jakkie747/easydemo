@@ -22,6 +22,8 @@ if (!admin.apps.length) {
 }
 
 const storage = admin.apps.length ? admin.storage() : null;
+const auth = admin.apps.length ? admin.auth() : null;
+
 
 export async function deleteFileByUrl(filePath: string) {
   if (!storage) {
@@ -43,5 +45,25 @@ export async function deleteFileByUrl(filePath: string) {
     }
     console.error(`Error deleting file from Storage at path: ${filePath}`, error);
     throw new Error('Could not delete file from storage.');
+  }
+}
+
+export async function deleteUserByUid(uid: string) {
+  if (!auth) {
+    console.error("Firebase Admin SDK not initialized. Cannot delete user.");
+    throw new Error("Authentication service is not available.");
+  }
+
+  try {
+    await auth.deleteUser(uid);
+    console.log(`Successfully deleted user with UID: ${uid}`);
+    return { success: true };
+  } catch (error: any) {
+     if (error.code === 'auth/user-not-found') {
+      console.warn(`User with UID ${uid} not found in Firebase Auth, but proceeding as if deleted.`);
+      return { success: true, message: "User not found, but considered deleted." };
+    }
+    console.error(`Error deleting user with UID: ${uid}`, error);
+    throw new Error('Could not delete user.');
   }
 }

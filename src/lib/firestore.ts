@@ -1,8 +1,8 @@
 
-import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where, getDocsFromCache } from "firebase/firestore";
 import { db } from "./firebase";
 import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
-import { deleteFileByUrl } from "./firebase-admin";
+import { deleteFileByUrl, deleteUserByUid } from "./firebase-admin";
 
 const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Teacher => {
     const data = doc.data();
@@ -42,8 +42,9 @@ const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): 
 };
 
 
-const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Parent => {
-    const data = doc.data();
+const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Parent => {
+    const data = "data" in doc ? doc.data() : doc;
+     if (!data) throw new Error("Document data is empty.");
     return {
         id: doc.id,
         name: data.name || '',
@@ -108,6 +109,22 @@ export async function getChild(id: string): Promise<Child | null> {
 }
 
 
+export async function getChildByName(name: string): Promise<Child | null> {
+    try {
+        const q = query(collection(db, "children"), where("name", "==", name));
+        const querySnapshot = await getDocs(q);
+        if (!querySnapshot.empty) {
+            // Assuming name is unique, return the first result
+            return childFromDoc(querySnapshot.docs[0]);
+        }
+        return null;
+    } catch (error) {
+        console.error("Error fetching child by name:", error);
+        return null;
+    }
+}
+
+
 export async function getChildren(): Promise<Child[]> {
     try {
         const childrenCol = collection(db, "children");
@@ -150,16 +167,46 @@ export async function getParents(): Promise<Parent[]> {
     }
 }
 
-export async function addParent(parent: Omit<Parent, 'id'>): Promise<void> {
+export async function getParent(id: string): Promise<Parent | null> {
     try {
-        // Use email as the document ID for easy lookup, or let Firestore auto-generate one
-        // For simplicity, we'll let Firestore auto-generate the ID.
-        await addDoc(collection(db, 'parents'), parent);
+        const docRef = doc(db, 'parents', id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return parentFromDoc(docSnap);
+        } else {
+            console.log("No such parent document!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching parent:", error);
+        return null;
+    }
+}
+
+export async function addParent(parent: Parent): Promise<void> {
+    try {
+        // Use the UID from Auth as the document ID for easy lookup
+        const parentRef = doc(db, 'parents', parent.id);
+        await setDoc(parentRef, parent);
     } catch (error) {
         console.error("Error adding parent:", error);
         throw error;
     }
 }
+
+export async function deleteParent(id: string): Promise<void> {
+    try {
+        // This function needs to be called from a server-side context
+        // to have the permission to delete a user.
+        await deleteUserByUid(id);
+        await deleteDoc(doc(db, 'parents', id));
+    } catch (error) {
+        console.error("Error deleting parent:", error);
+        throw error;
+    }
+}
+
 
 
 export async function getDocuments(): Promise<Document[]> {
@@ -173,10 +220,10 @@ export async function getDocuments(): Promise<Document[]> {
     }
 }
 
-export async function addDocument(doc: Omit<Document, 'id'>) {
+export async function addDocument(docData: Omit<Document, 'id'>) {
     try {
         const documentsCollection = collection(db, 'documents');
-        await addDoc(documentsCollection, doc);
+        await addDoc(documentsCollection, docData);
     } catch (error) {
         console.error("Error adding document:", error);
         throw error; // Re-throw to be handled by the caller

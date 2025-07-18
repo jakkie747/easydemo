@@ -51,10 +51,10 @@ export const children: Child[] = [
   { id: 'c5', name: 'Noah Brown', avatar: 'https://i.pravatar.cc/150?u=noah', classroom: 'Little Sprouts', age: 3, parent: 'Chris Brown' },
 ];
 
-export const parents: Parent[] = [
-    { id: 'p1', name: 'Anna Bloom', avatar: 'https://i.pravatar.cc/150?u=anna', email: 'anna.bloom@example.com', children: ['Leo Bloom'] },
-    { id: 'p2', name: 'Sarah Martin', avatar: 'https://i.pravatar.cc/150?u=sarah', email: 'sarah.martin@example.com', children: ['Olivia Martin'] },
-    { id: 'p3', name: 'Michael Neeson', avatar: 'https://i.pravatar.cc/150?u=michael', email: 'michael.neeson@example.com', children: ['Liam Neeson'] },
-    { id: 'p4', name: 'Jessica Watson', avatar: 'https://i.pravatar.cc/150?u=jessica', email: 'jessica.watson@example.com', children: ['Emma Watson'] },
-    { id: 'p5', name: 'Chris Brown', avatar: 'https://i.pravatar.cc/150?u=chris', email: 'chris.brown@example.com', children: ['Noah Brown'] },
+export const parents: Omit<Parent,'id'>[] = [
+    { name: 'Anna Bloom', avatar: 'https://i.pravatar.cc/150?u=anna', email: 'm@example.com', children: ['Leo Bloom'] },
+    { name: 'Sarah Martin', avatar: 'https://i.pravatar.cc/150?u=sarah', email: 'sarah.martin@example.com', children: ['Olivia Martin'] },
+    { name: 'Michael Neeson', avatar: 'https://i.pravatar.cc/150?u=michael', email: 'michael.neeson@example.com', children: ['Liam Neeson'] },
+    { name: 'Jessica Watson', avatar: 'https://i.pravatar.cc/150?u=jessica', email: 'jessica.watson@example.com', children: ['Emma Watson'] },
+    { name: 'Chris Brown', avatar: 'https://i.pravatar.cc/150?u=chris', email: 'chris.brown@example.com', children: ['Noah Brown'] },
 ];

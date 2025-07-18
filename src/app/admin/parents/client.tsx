@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
+import { getAuth, createUserWithEmailAndPassword, sendPasswordResetEmail } from "firebase/auth";
 import { app } from "@/lib/firebase";
 
 import {
@@ -42,6 +42,17 @@ import {
   DialogClose,
 } from "@/components/ui/dialog";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import {
   Form,
   FormControl,
   FormField,
@@ -59,7 +70,7 @@ import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
 import type { Parent } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addParent } from "@/lib/firestore";
+import { addParent, deleteParent } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -89,7 +100,8 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
 
     try {
       // First, create the user in Firebase Auth
-      await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const userCredential = await createUserWithEmailAndPassword(auth, values.email, values.password);
+      const user = userCredential.user;
 
       // Second, if there's a file, upload it
       if (file) {
@@ -104,6 +116,7 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
 
       // Third, save the parent's data to Firestore
       await addParent({
+        id: user.uid, // Use the UID from Auth as the document ID
         name: values.name,
         email: values.email,
         avatar: avatarUrl,
@@ -121,6 +134,7 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
         if (error.code === 'auth/email-already-in-use') {
             errorMessage = "This email address is already in use.";
         }
+        console.error("Registration failed:", error)
         toast({ variant: "destructive", title: "Registration Failed", description: errorMessage });
     }
   };
@@ -193,6 +207,52 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
 
 export function ParentsClient({ initialParents }: { initialParents: Parent[] }) {
   const router = useRouter();
+  const { toast } = useToast();
+  const auth = getAuth(app);
+  const [isProcessing, setIsProcessing] = React.useState(false);
+
+
+  const handleResetPassword = async (email: string) => {
+    setIsProcessing(true);
+    try {
+        await sendPasswordResetEmail(auth, email);
+        toast({
+            title: "Password Reset Email Sent",
+            description: `An email has been sent to ${email} with instructions to reset the password.`,
+        });
+    } catch (error) {
+        console.error("Error sending password reset email:", error);
+        toast({
+            variant: "destructive",
+            title: "Failed to Send Email",
+            description: "There was a problem sending the password reset email.",
+        });
+    } finally {
+        setIsProcessing(false);
+    }
+  }
+
+  const handleDeleteParent = async (parent: Parent) => {
+    setIsProcessing(true);
+    try {
+        await deleteParent(parent.id);
+        toast({
+            title: "Parent Account Deleted",
+            description: `${parent.name}'s account and data have been removed.`,
+        });
+        router.refresh();
+    } catch (error) {
+         console.error("Error deleting parent:", error);
+        toast({
+            variant: "destructive",
+            title: "Deletion Failed",
+            description: "There was a problem deleting the parent account.",
+        });
+    } finally {
+        setIsProcessing(false);
+    }
+  }
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -253,11 +313,54 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>View Profile</DropdownMenuItem>
-                          <DropdownMenuItem>Reset Password</DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                            Delete Account
+                          <DropdownMenuItem onClick={() => router.push(`/admin/parents/${parent.id}`)}>
+                            View Profile
                           </DropdownMenuItem>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                    Reset Password
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Reset Password?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This will send a password reset link to {parent.email}. Are you sure you want to proceed?
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleResetPassword(parent.email)} disabled={isProcessing}>
+                                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Email"}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                          
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
+                                    Delete Account
+                                </DropdownMenuItem>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                                <AlertDialogHeader>
+                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                        This action cannot be undone. This will permanently delete the parent account for {parent.name} and all associated data.
+                                    </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                    <AlertDialogAction onClick={() => handleDeleteParent(parent)} disabled={isProcessing} className="bg-destructive hover:bg-destructive/90">
+                                       {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+                                    </AlertDialogAction>
+                                </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </TableCell>
