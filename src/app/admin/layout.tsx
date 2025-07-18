@@ -8,13 +8,13 @@ import {
   Home,
   Image as ImageIcon,
   FileText,
-  Contact,
   LogOut,
   Sparkles,
   PanelLeft,
   GraduationCap
 } from 'lucide-react';
 import {
+  SidebarProvider,
   Sidebar,
   SidebarHeader,
   SidebarContent,
@@ -22,8 +22,7 @@ import {
   SidebarMenuItem,
   SidebarMenuButton,
   SidebarFooter,
-  SidebarProvider,
-  useSidebar,
+  useSidebar
 } from '@/components/ui/sidebar';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -76,7 +75,7 @@ function AdminSidebar() {
   };
 
   return (
-    <Sidebar collapsible="icon" className="hidden border-r bg-sidebar text-sidebar-foreground sm:flex">
+    <Sidebar>
       <SidebarHeader>
         <Link href="/admin/dashboard" className="flex items-center gap-2 p-2">
           <Logo className="w-8 h-8 text-accent group-data-[collapsible=icon]:w-6 group-data-[collapsible=icon]:h-6 transition-all" />
@@ -185,7 +184,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <SidebarProvider defaultOpen>
+    <SidebarProvider>
         <div className="flex min-h-screen w-full flex-col bg-muted/40">
             <AdminSidebar />
             <div className="flex flex-col sm:gap-4 sm:py-4 sm:pl-14">
