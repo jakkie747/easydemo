@@ -1,5 +1,5 @@
 
-import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc } from "firebase/firestore";
 import { db } from "./firebase";
 import type { Teacher, Document, Child, Parent, GalleryImage } from "./types";
 import { deleteFileByUrl } from "./firebase-admin";
@@ -28,8 +28,9 @@ const documentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Document => 
     };
 };
 
-const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Child => {
+const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Child => {
     const data = doc.data();
+    if (!data) throw new Error("Document data is empty.");
     return {
         id: doc.id,
         name: data.name || '',
@@ -39,6 +40,7 @@ const childFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Child => {
         parent: data.parent || '',
     };
 };
+
 
 const parentFromDoc = (doc: QueryDocumentSnapshot<DocumentData>): Parent => {
     const data = doc.data();
@@ -72,6 +74,24 @@ export async function getTeachers(): Promise<Teacher[]> {
     }
 }
 
+export async function getChild(id: string): Promise<Child | null> {
+    try {
+        const docRef = doc(db, 'children', id);
+        const docSnap = await getDoc(docRef);
+
+        if (docSnap.exists()) {
+            return childFromDoc(docSnap);
+        } else {
+            console.log("No such document!");
+            return null;
+        }
+    } catch (error) {
+        console.error("Error fetching child:", error);
+        return null;
+    }
+}
+
+
 export async function getChildren(): Promise<Child[]> {
     try {
         const childrenCol = collection(db, "children");
@@ -91,6 +111,17 @@ export async function addChild(child: Omit<Child, 'id'>): Promise<void> {
         throw error;
     }
 }
+
+export async function updateChild(id: string, child: Omit<Child, 'id'>): Promise<void> {
+    try {
+        const docRef = doc(db, 'children', id);
+        await updateDoc(docRef, child);
+    } catch (error) {
+        console.error("Error updating child:", error);
+        throw error;
+    }
+}
+
 
 export async function getParents(): Promise<Parent[]> {
     try {

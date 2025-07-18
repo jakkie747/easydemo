@@ -58,7 +58,7 @@ import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
 import type { Child } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addChild } from "@/lib/firestore";
+import { addChild, updateChild } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -67,6 +67,125 @@ const formSchema = z.object({
   parent: z.string().min(2, { message: "Parent's name is required." }),
   avatar: z.any().optional(),
 });
+
+function EditChildDialog({ child, onChildUpdated }: { child: Child; onChildUpdated: () => void }) {
+  const [file, setFile] = React.useState<File | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { upload, progress, isLoading: isUploading } = useUpload();
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: child.name,
+      classroom: child.classroom,
+      age: child.age,
+      parent: child.parent,
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files?.[0] ?? null);
+  };
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    let avatarUrl = child.avatar;
+
+    if (file) {
+      const storagePath = `avatars/${Date.now()}_${file.name}`;
+      const uploadedURL = await upload(file, storagePath);
+      if (uploadedURL) {
+        avatarUrl = uploadedURL;
+      } else {
+        toast({ variant: "destructive", title: "Avatar Upload Failed", description: "Could not upload the new avatar. Please try again." });
+        return;
+      }
+    }
+
+    try {
+      await updateChild(child.id, {
+        ...values,
+        avatar: avatarUrl,
+      });
+
+      toast({ title: "Child Updated!", description: `${values.name}'s profile has been updated.` });
+      form.reset(values);
+      setFile(null);
+      setIsOpen(false);
+      onChildUpdated();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Update Failed", description: "Could not update the child's profile. Please try again." });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Profile</DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit {child.name}'s Profile</DialogTitle>
+          <DialogDescription>
+            Update the details for this child below.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="classroom" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Classroom</FormLabel>
+                <FormControl><Input placeholder="e.g., Bumblebees" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="age" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age</FormLabel>
+                <FormControl><Input type="number" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="parent" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parent's Name</FormLabel>
+                <FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div className="space-y-2">
+              <Label htmlFor="file">Change Avatar</Label>
+              <Input id="file" type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+            {isUploading && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Uploading... {Math.round(progress)}%</p>
+                <Progress value={progress} />
+              </div>
+            )}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit" disabled={isUploading}>
+                {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
 
 function AddChildDialog({ onChildAdded }: { onChildAdded: () => void }) {
   const [file, setFile] = React.useState<File | null>(null);
@@ -250,8 +369,10 @@ export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end">
                           <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem>View Daily Report</DropdownMenuItem>
-                          <DropdownMenuItem>Edit Profile</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => router.push(`/admin/children/${child.id}/report`)}>
+                            View Daily Report
+                          </DropdownMenuItem>
+                          <EditChildDialog child={child} onChildUpdated={() => router.refresh()} />
                           <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
                             Remove Child
                           </DropdownMenuItem>
