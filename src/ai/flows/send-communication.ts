@@ -93,24 +93,24 @@ const sendCommunicationFlow = ai.defineFlow(
   async (input) => {
     
     const llmResponse = await prompt(input);
-    const toolCalls = llmResponse.toolCalls();
+    const toolRequests = llmResponse.toolRequests;
 
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
 
-    for (const toolCall of toolCalls) {
+    for (const toolRequest of toolRequests) {
         // Assume the 'body' argument contains the AI-drafted message
-        if (toolCall.args.body) {
-            finalMessage = toolCall.args.body;
+        if (toolRequest.tool.input.body) {
+            finalMessage = toolRequest.tool.input.body;
         }
 
-        const toolResponse = await ai.runTool(toolCall);
+        const toolResponse = await ai.runTool(toolRequest);
         
         // If the tool call was successful, add the channel to our list
         if (toolResponse.success) {
-            if (toolCall.name === 'sendEmail') {
+            if (toolRequest.tool.name === 'sendEmail') {
                 successfulChannels.push('email');
-            } else if (toolCall.name === 'sendPushNotification') {
+            } else if (toolRequest.tool.name === 'sendPushNotification') {
                 successfulChannels.push('push');
             }
         }
