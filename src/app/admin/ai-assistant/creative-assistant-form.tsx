@@ -69,8 +69,8 @@ export function CreativeAssistantForm() {
   }
 
   return (
-    <div className="grid gap-8 md:grid-cols-3">
-      <Card className="md:col-span-1 h-fit">
+    <div className="grid gap-8 lg:grid-cols-3">
+      <Card className="lg:col-span-1 h-fit">
         <CardHeader>
           <CardTitle>Generator</CardTitle>
         </CardHeader>
@@ -144,7 +144,7 @@ export function CreativeAssistantForm() {
           </Form>
         </CardContent>
       </Card>
-      <div className="md:col-span-2">
+      <div className="lg:col-span-2">
         {isLoading && (
           <div className="flex flex-col items-center justify-center h-full rounded-lg border border-dashed p-8 text-center animate-pulse">
             <Sparkles className="h-12 w-12 text-muted-foreground" />
