@@ -13,6 +13,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
@@ -27,8 +28,9 @@ import {
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useToast } from "@/hooks/use-toast"
-import { Loader2 } from "lucide-react"
+import { Loader2, ArrowLeft } from "lucide-react"
 import { useState } from "react"
+import Link from "next/link"
 
 const formSchema = z.object({
   email: z.string().email({ message: "Invalid email address." }),
@@ -135,6 +137,11 @@ export default function LoginPage() {
             <CardContent>
               <LoginForm userType="parent" />
             </CardContent>
+            <CardFooter className="justify-center">
+                 <Button variant="link" asChild>
+                    <Link href="/"><ArrowLeft/> Back to Home</Link>
+                </Button>
+            </CardFooter>
           </Card>
         </TabsContent>
         <TabsContent value="admin">
@@ -148,6 +155,11 @@ export default function LoginPage() {
             <CardContent>
               <LoginForm userType="admin" />
             </CardContent>
+             <CardFooter className="justify-center">
+                <Button variant="link" asChild>
+                    <Link href="/"><ArrowLeft/> Back to Home</Link>
+                </Button>
+            </CardFooter>
           </Card>
         </TabsContent>
       </Tabs>

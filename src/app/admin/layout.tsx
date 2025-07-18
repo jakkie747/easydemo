@@ -11,7 +11,8 @@ import {
   LogOut,
   Sparkles,
   GraduationCap,
-  Menu
+  Menu,
+  HomeIcon
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -142,7 +143,9 @@ function AdminHeader() {
         
         {/* Desktop Header */}
         <div className="w-full flex-1">
-             {/* You can add a search bar here if needed in the future */}
+             <Button variant="outline" size="sm" asChild>
+                <Link href="/"><HomeIcon/> Home</Link>
+             </Button>
         </div>
         
         <DropdownMenu>
