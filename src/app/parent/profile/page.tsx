@@ -7,7 +7,7 @@ import { z } from "zod";
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth";
+import { useAuth } from "@/hooks/use-auth.tsx";
 import { useEffect, useState } from "react";
 import type { Parent, Child } from "@/lib/types";
 import { getParent, updateParent, updateChild } from "@/lib/firestore";
@@ -66,30 +66,37 @@ export default function ProfilePage() {
   const [dataLoading, setDataLoading] = useState(true);
 
   // Forms
-  const childForm = useForm<z.infer<typeof childInfoSchema>>();
-  const parentForm = useForm<z.infer<typeof parentInfoSchema>>();
-  const emergencyForm = useForm<z.infer<typeof emergencyContactSchema>>();
-  const accountForm = useForm<z.infer<typeof accountSchema>>();
+  const childForm = useForm<z.infer<typeof childInfoSchema>>({ resolver: zodResolver(childInfoSchema) });
+  const parentForm = useForm<z.infer<typeof parentInfoSchema>>({ resolver: zodResolver(parentInfoSchema) });
+  const emergencyForm = useForm<z.infer<typeof emergencyContactSchema>>({ resolver: zodResolver(emergencyContactSchema) });
+  const accountForm = useForm<z.infer<typeof accountSchema>>({ resolver: zodResolver(accountSchema) });
 
   useEffect(() => {
     if (user) {
       const fetchData = async () => {
         setDataLoading(true);
-        const parent = await getParent(user.uid);
-        setParentData(parent);
-        if (parent && parent.childDetails && parent.childDetails.length > 0) {
-            const mainChild = parent.childDetails[0];
-            setChildData(mainChild);
-            // Initialize forms
-            childForm.reset({ name: mainChild.name, dob: mainChild.dob, allergies: mainChild.allergies });
-            parentForm.reset({ name: parent.name, phone: parent.phone });
-            emergencyForm.reset(mainChild.emergencyContact);
+        try {
+            const parent = await getParent(user.uid);
+            setParentData(parent);
+            if (parent && parent.childDetails && parent.childDetails.length > 0) {
+                const mainChild = parent.childDetails[0];
+                setChildData(mainChild);
+                // Initialize forms
+                childForm.reset({ name: mainChild.name, dob: mainChild.dob, allergies: mainChild.allergies });
+                parentForm.reset({ name: parent.name, phone: parent.phone });
+                if (mainChild.emergencyContact) {
+                    emergencyForm.reset(mainChild.emergencyContact);
+                }
+            }
+        } catch(e) {
+            console.error(e)
+        } finally {
+            setDataLoading(false);
         }
-        setDataLoading(false);
       };
       fetchData();
     }
-  }, [user, childForm, parentForm, emergencyForm]);
+  }, [user]);
 
   const onChildSubmit = async (values: z.infer<typeof childInfoSchema>) => {
     if (!childData) return;
