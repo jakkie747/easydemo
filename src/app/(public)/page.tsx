@@ -24,7 +24,7 @@ export default function Home() {
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button size="lg" asChild>
                   <Link href="/register/preschool">
-                    Register Your School
+                    Register your child
                     <Rocket/>
                   </Link>
                 </Button>
