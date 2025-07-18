@@ -23,7 +23,7 @@ export function Footer() {
             <Link href="#" aria-label="Dribbble"><Dribbble className="w-5 h-5 hover:text-primary transition-colors" /></Link>
           </div>
         </div>
-        <div className="mt-8 pt-8 border-t text-center text-sm text-muted-foreground">
+        <div className="mt-8 text-center text-sm text-muted-foreground">
           © {new Date().getFullYear()} Easyspark Demo. All rights reserved.
         </div>
       </div>
