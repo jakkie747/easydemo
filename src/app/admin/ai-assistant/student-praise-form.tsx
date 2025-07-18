@@ -137,7 +137,7 @@ export function StudentPraiseForm() {
              <CardContent className="pt-6">
                 <div className="text-center">
                     <Star className="h-12 w-12 text-accent mx-auto mb-4" />
-                    <blockquote className="text-xl italic text-primary-foreground font-semibold">
+                    <blockquote className="text-xl italic text-foreground font-semibold">
                         "{praise.praise}"
                     </blockquote>
                 </div>
