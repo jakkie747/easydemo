@@ -76,7 +76,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
           <CardDescription>
             {teachers.length > 0
               ? "A list of all the teachers in your center."
-              "No teachers found. Try seeding the database."
+              : "No teachers found. Try seeding the database."
             }
           </CardDescription>
         </CardHeader>
