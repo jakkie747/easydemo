@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 
 const GenerateNewsletterSnippetInputSchema = z.object({
@@ -31,7 +30,7 @@ export async function generateNewsletterSnippet(input: GenerateNewsletterSnippet
 
 const prompt = ai.definePrompt({
   name: 'generateNewsletterSnippetPrompt',
-  model: googleAI('gemini-pro'),
+  model: 'googleai/gemini-pro',
   inputSchema: GenerateNewsletterSnippetInputSchema,
   outputSchema: GenerateNewsletterSnippetOutputSchema,
   prompt: `You are an expert at writing communications for a preschool/daycare. Your task is to write a newsletter snippet for parents based on the provided information.

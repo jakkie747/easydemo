@@ -11,7 +11,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 
 const GenerateActivityIdeasInputSchema = z.object({
@@ -38,7 +37,7 @@ export async function generateActivityIdeas(input: GenerateActivityIdeasInput): 
 
 const prompt = ai.definePrompt({
   name: 'generateActivityIdeasPrompt',
-  model: googleAI('gemini-pro'),
+  model: 'googleai/gemini-pro',
   inputSchema: GenerateActivityIdeasInputSchema,
   outputSchema: GenerateActivityIdeasOutputSchema,
   prompt: `You are a creative assistant for teachers, helping them generate story starters and activity ideas for their class.
