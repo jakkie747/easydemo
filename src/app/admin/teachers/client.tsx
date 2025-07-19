@@ -221,8 +221,10 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = React.useState(false);
+  const [isSeeding, setIsSeeding] = React.useState(false);
 
   const handleSeed = async () => {
+    setIsSeeding(true);
     const result = await seedDatabase();
     if (result.success) {
       toast({
@@ -237,6 +239,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
         description: result.message,
       });
     }
+    setIsSeeding(false);
   };
 
   const handleDelete = async (teacherId: string) => {
@@ -261,8 +264,9 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
             <p className="text-muted-foreground">View, add, edit, or remove teachers from your center.</p>
         </div>
         <div className="flex gap-2">
-           <Button variant="outline" onClick={handleSeed}>
-              <Database className="mr-2 h-4 w-4" /> Seed Database
+           <Button variant="outline" onClick={handleSeed} disabled={isSeeding}>
+              {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
+              Seed Database
             </Button>
             <TeacherFormDialog mode="add" onComplete={() => router.refresh()} />
         </div>

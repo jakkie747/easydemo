@@ -97,7 +97,7 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
   };
 
   const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    let avatarUrl = "https://placehold.co/150x150.png";
+    let avatarUrl = "https://i.pravatar.cc/150?u=" + values.email;
 
     try {
       // First, create the user in Firebase Auth
@@ -210,11 +210,11 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
-  const [isProcessing, setIsProcessing] = React.useState(false);
+  const [isProcessing, setIsProcessing] = React.useState<string | false>(false);
 
 
   const handleResetPassword = async (email: string) => {
-    setIsProcessing(true);
+    setIsProcessing(email);
     try {
         await sendPasswordResetEmail(auth, email);
         toast({
@@ -234,7 +234,7 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
   }
 
   const handleDeleteParent = async (parent: Parent) => {
-    setIsProcessing(true);
+    setIsProcessing(parent.id);
     try {
         await deleteParent(parent.id);
         toast({
@@ -333,8 +333,8 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleResetPassword(parent.email)} disabled={isProcessing}>
-                                        {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Email"}
+                                    <AlertDialogAction onClick={() => handleResetPassword(parent.email)} disabled={isProcessing === parent.email}>
+                                        {isProcessing === parent.email ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Email"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>
@@ -355,8 +355,8 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
                                 </AlertDialogHeader>
                                 <AlertDialogFooter>
                                     <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteParent(parent)} disabled={isProcessing} className="bg-destructive hover:bg-destructive/90">
-                                       {isProcessing ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+                                    <AlertDialogAction onClick={() => handleDeleteParent(parent)} disabled={isProcessing === parent.id} className="bg-destructive hover:bg-destructive/90">
+                                       {isProcessing === parent.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
                                     </AlertDialogAction>
                                 </AlertDialogFooter>
                             </AlertDialogContent>

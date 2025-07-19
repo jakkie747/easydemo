@@ -11,22 +11,12 @@ async function seedCollection(collectionName: string, data: any[], idKey?: strin
     const collectionRef = collection(db, collectionName);
     let count = 0;
     for (const item of data) {
-        let docRef;
-        if (idKey && item[idKey]) {
-            docRef = doc(db, collectionName, item[idKey]);
-        } else {
-            const { id, ...itemData } = item;
-            docRef = doc(collectionRef, id); // Create a new doc reference if no idKey
-        }
+        const docId = idKey ? item[idKey] : item.id;
+        const docRef = doc(collectionRef, docId);
         
         const docSnap = await getDoc(docRef);
         if (!docSnap.exists()) {
-             if (idKey && item[idKey]) {
-                await setDoc(docRef, item);
-             } else {
-                const { id, ...itemData } = item;
-                await addDoc(collectionRef, itemData);
-             }
+            await setDoc(docRef, item);
             count++;
         }
     }
@@ -43,16 +33,21 @@ async function seedParentsAndAuth() {
 
     for (const parentData of mockParents) {
         try {
-            const userCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
-            const userId = userCredential.user.uid;
-            
-            const docRef = doc(db, collectionName, userId);
-            const parentDoc = {
-                id: userId,
-                ...parentData
-            };
-            await setDoc(docRef, parentDoc);
-            count++;
+            // Check if user already exists
+            const q = query(collection(db, collectionName), where("email", "==", parentData.email));
+            const querySnapshot = await getDocs(q);
+            if (querySnapshot.empty) {
+                const userCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
+                const userId = userCredential.user.uid;
+                
+                const docRef = doc(db, collectionName, userId);
+                const parentDoc = {
+                    id: userId,
+                    ...parentData
+                };
+                await setDoc(docRef, parentDoc);
+                count++;
+            }
         } catch (error: any) {
              if (error.code !== 'auth/email-already-in-use') {
                 console.error(`Error seeding parent ${parentData.email}:`, error);

@@ -19,6 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const auth = getAuth(app);
     const unsubscribe = onAuthStateChanged(auth, (user) => {
+      // For this demo, we are not setting an admin user in the auth state
+      // a real app would have role-based access control.
       setUser(user);
       setLoading(false);
     });

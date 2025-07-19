@@ -11,7 +11,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'genkit/zod';
 
 const GenerateActivityIdeasInputSchema = z.object({
   topic: z.string().describe('The topic or theme for the story starters and activity ideas.'),
@@ -32,7 +32,7 @@ const GenerateActivityIdeasOutputSchema = z.object({
 export type GenerateActivityIdeasOutput = z.infer<typeof GenerateActivityIdeasOutputSchema>;
 
 export async function generateActivityIdeas(input: GenerateActivityIdeasInput): Promise<GenerateActivityIdeasOutput> {
-  return generateActivityIdeasFlow(input);
+  return generateActivityIdeasFlow.invoke(input);
 }
 
 const prompt = ai.definePrompt({
@@ -57,7 +57,7 @@ const generateActivityIdeasFlow = ai.defineFlow(
     outputSchema: GenerateActivityIdeasOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt.generate({input});
     return output!;
   }
 );

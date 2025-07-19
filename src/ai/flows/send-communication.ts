@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'genkit/zod';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -112,8 +112,8 @@ const sendCommunicationFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llmResponse = await prompt(input);
-    const toolRequests = llmResponse.toolRequests;
+    const llmResponse = await prompt.generate({input});
+    const toolRequests = llmResponse.toolRequests();
 
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
@@ -124,10 +124,10 @@ const sendCommunicationFlow = ai.defineFlow(
             finalMessage = toolRequest.tool.input.body;
         }
 
-        const { success } = await ai.runTool(toolRequest);
+        const { output } = await ai.runTool(toolRequest);
         
         // If the tool call was successful, add the channel to our list
-        if (success) {
+        if (output?.success) {
             if (toolRequest.tool.name === 'sendEmail') {
                 successfulChannels.push('email');
             } else if (toolRequest.tool.name === 'sendPushNotification') {
@@ -148,5 +148,5 @@ const sendCommunicationFlow = ai.defineFlow(
 
 
 export async function sendCommunication(input: SendCommunicationInput): Promise<SendCommunicationOutput> {
-  return sendCommunicationFlow(input);
+  return sendCommunicationFlow.invoke(input);
 }

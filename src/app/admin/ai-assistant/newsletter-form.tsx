@@ -29,9 +29,9 @@ import { Loader2, Sparkles, Newspaper } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const GenerateNewsletterSnippetInputSchema = z.object({
-  tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']).describe('The desired tone for the newsletter.'),
-  keyPoints: z.string().describe('Bullet points or a brief summary of the topics to cover. Each point should be on a new line.'),
-  specialMentions: z.string().optional().describe('Any special announcements or shout-outs to include.'),
+  tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']),
+  keyPoints: z.string().min(1, 'Key points are required.'),
+  specialMentions: z.string().optional(),
 });
 
 export function NewsletterForm() {

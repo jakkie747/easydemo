@@ -10,8 +10,6 @@ import type { Event, GalleryImage } from './types';
 
 export async function deleteParent(id: string): Promise<void> {
   try {
-    // This function needs to be called from a server-side context
-    // to have the permission to delete a user.
     await deleteUserByUid(id);
     await deleteDoc(doc(db, 'parents', id));
   } catch (error) {
@@ -31,9 +29,9 @@ export async function deleteTeacher(id: string): Promise<void> {
 
 export async function deleteGalleryImage(image: GalleryImage): Promise<void> {
     try {
-        // First, delete the file from Cloud Storage
-        await deleteStorageFile(image.storagePath);
-        // Then, delete the document from Firestore
+        if (image.storagePath) {
+            await deleteStorageFile(image.storagePath);
+        }
         await deleteDoc(doc(db, 'gallery', image.id));
     } catch (error) {
         console.error("Error deleting gallery image:", error);

@@ -106,9 +106,9 @@ export default function PreschoolRegistrationPage() {
   };
 
   return (
-    <div className="py-12 px-4">
+    <div className="py-12 px-4 bg-background">
       <div className="container mx-auto">
-        <Card className="max-w-3xl mx-auto">
+        <Card className="max-w-3xl mx-auto shadow-lg border-2 border-primary/20">
           <CardHeader className="text-center">
             <CardTitle className="font-headline text-4xl text-primary">Preschool Registration</CardTitle>
             <CardDescription>Complete the form below to enroll your child in our preschool program.</CardDescription>
@@ -119,7 +119,7 @@ export default function PreschoolRegistrationPage() {
                 
                 {/* Child's Information Section */}
                 <section>
-                  <h3 className="text-lg font-semibold border-b mb-4 pb-2">1. Child's Information</h3>
+                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">1. Child's Information</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <FormField
@@ -180,7 +180,7 @@ export default function PreschoolRegistrationPage() {
 
                 {/* Parent's Information Section */}
                 <section>
-                  <h3 className="text-lg font-semibold border-b mb-4 pb-2">2. Parent/Guardian & Account Info</h3>
+                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">2. Parent/Guardian & Account Info</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                        <FormField
@@ -254,7 +254,7 @@ export default function PreschoolRegistrationPage() {
                 
                 {/* Emergency Contact Section */}
                  <section>
-                  <h3 className="text-lg font-semibold border-b mb-4 pb-2">3. Emergency Contact</h3>
+                  <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">3. Emergency Contact</h3>
                    <div className="space-y-4">
                      <FormField
                       control={form.control}

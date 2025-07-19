@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'genkit/zod';
 
 const GenerateStudentPraiseInputSchema = z.object({
   studentName: z.string().describe("The student's name."),
@@ -24,7 +24,7 @@ const GenerateStudentPraiseOutputSchema = z.object({
 export type GenerateStudentPraiseOutput = z.infer<typeof GenerateStudentPraiseOutputSchema>;
 
 export async function generateStudentPraise(input: GenerateStudentPraiseInput): Promise<GenerateStudentPraiseOutput> {
-  return generateStudentPraiseFlow(input);
+  return generateStudentPraiseFlow.invoke(input);
 }
 
 const prompt = ai.definePrompt({
@@ -48,7 +48,7 @@ const generateStudentPraiseFlow = ai.defineFlow(
     outputSchema: GenerateStudentPraiseOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt.generate({input});
     return output!;
   }
 );

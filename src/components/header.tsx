@@ -10,8 +10,8 @@ import { usePathname } from "next/navigation";
 export function Header() {
   const pathname = usePathname();
 
-  // Don't show header on parent dashboard/profile pages
-  if (pathname.startsWith('/parent')) {
+  // Don't show header on parent dashboard/profile or admin pages
+  if (pathname.startsWith('/parent') || pathname.startsWith('/admin')) {
     return null;
   }
 

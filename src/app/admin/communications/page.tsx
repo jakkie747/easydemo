@@ -41,7 +41,7 @@ const formSchema = z.object({
   message: z.string().min(10, {
     message: "Message must be at least 10 characters.",
   }),
-  audience: z.string().min(1, { message: "Please select an audience." }),
+  audience: z.enum(['all_parents', 'preschool_parents', 'afterschool_parents']),
   channels: z.array(z.string()).refine((value) => value.some((item) => item), {
     message: "You have to select at least one channel.",
   }),

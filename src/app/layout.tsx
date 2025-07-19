@@ -21,6 +21,9 @@ const fontLilitaOne = Lilita_One({
 export const metadata: Metadata = {
   title: 'Easyspark | Childcare Management Made Easy',
   description: 'The all-in-one solution for managing your daycare or preschool.',
+  icons: {
+    icon: '/logo.png',
+  },
 };
 
 export default function RootLayout({

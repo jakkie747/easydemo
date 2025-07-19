@@ -12,7 +12,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, User, Mail, Users, Baby } from "lucide-react";
+import { ArrowLeft, Mail, Baby } from "lucide-react";
 
 export default async function ParentProfilePage({ params }: { params: { id: string } }) {
   const parent: Parent | null = await getParent(params.id);

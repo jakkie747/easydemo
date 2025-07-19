@@ -90,7 +90,7 @@ export default function Dashboard() {
         <CardContent>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {navItems.map((item) => (
-              <Link href={item.href} key={item.label}>
+              <Link href={item.href} key={item.label} passHref>
                 <div className="p-4 rounded-lg border bg-card text-card-foreground shadow-sm hover:bg-accent hover:text-accent-foreground transition-colors h-full flex flex-col">
                   <item.icon className="h-8 w-8 text-primary mb-2" />
                   <h3 className="text-lg font-semibold">{item.label}</h3>

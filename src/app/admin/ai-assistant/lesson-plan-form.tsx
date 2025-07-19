@@ -28,9 +28,9 @@ import { Loader2, Sparkles, BookOpen, ClipboardList, Target, Wrench, CheckCircle
 import { useToast } from "@/hooks/use-toast";
 
 const GenerateLessonPlanInputSchema = z.object({
-  topic: z.string().describe('The main topic or theme for the lesson.'),
-  gradeLevel: z.string().describe('The grade level of the students.'),
-  duration: z.string().describe('The estimated duration of the lesson (e.g., 30 minutes, 1 hour).'),
+  topic: z.string().min(1, 'Topic is required.'),
+  gradeLevel: z.string().min(1, 'Grade level is required.'),
+  duration: z.string().min(1, 'Duration is required.'),
 });
 
 export function LessonPlanForm() {

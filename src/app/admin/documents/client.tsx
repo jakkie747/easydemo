@@ -51,7 +51,7 @@ function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
   const [fileType, setFileType] = React.useState("");
   const [isOpen, setIsOpen] = React.useState(false);
 
-  const { upload, progress, downloadURL, isLoading: isUploading } = useUpload();
+  const { upload, progress, isLoading: isUploading } = useUpload();
   const { toast } = useToast();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {

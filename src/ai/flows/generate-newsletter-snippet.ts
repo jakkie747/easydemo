@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'genkit/zod';
 
 const GenerateNewsletterSnippetInputSchema = z.object({
   tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']).describe('The desired tone for the newsletter.'),
@@ -25,7 +25,7 @@ const GenerateNewsletterSnippetOutputSchema = z.object({
 export type GenerateNewsletterSnippetOutput = z.infer<typeof GenerateNewsletterSnippetOutputSchema>;
 
 export async function generateNewsletterSnippet(input: GenerateNewsletterSnippetInput): Promise<GenerateNewsletterSnippetOutput> {
-  return generateNewsletterSnippetFlow(input);
+  return generateNewsletterSnippetFlow.invoke(input);
 }
 
 const prompt = ai.definePrompt({
@@ -55,7 +55,7 @@ const generateNewsletterSnippetFlow = ai.defineFlow(
     outputSchema: GenerateNewsletterSnippetOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt.generate({input});
     return output!;
   }
 );

@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit';
+import {z} from 'genkit/zod';
 
 const GenerateLessonPlanInputSchema = z.object({
   topic: z.string().describe('The main topic or theme for the lesson.'),
@@ -32,7 +32,7 @@ const GenerateLessonPlanOutputSchema = z.object({
 export type GenerateLessonPlanOutput = z.infer<typeof GenerateLessonPlanOutputSchema>;
 
 export async function generateLessonPlan(input: GenerateLessonPlanInput): Promise<GenerateLessonPlanOutput> {
-  return generateLessonPlanFlow(input);
+  return generateLessonPlanFlow.invoke(input);
 }
 
 const prompt = ai.definePrompt({
@@ -56,7 +56,7 @@ const generateLessonPlanFlow = ai.defineFlow(
     outputSchema: GenerateLessonPlanOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await prompt.generate({input});
     return output!;
   }
 );

@@ -1,9 +1,18 @@
 
+"use client";
 import Link from "next/link"
 import { Logo } from "@/components/icons"
 import { Github, Twitter, Dribbble } from "lucide-react"
+import { usePathname } from "next/navigation";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  // Don't show footer on parent dashboard/profile or admin pages
+  if (pathname.startsWith('/parent') || pathname.startsWith('/admin')) {
+    return null;
+  }
+
   return (
     <footer className="w-full bg-secondary text-secondary-foreground">
       <div className="container px-4 md:px-6 py-8">

@@ -22,15 +22,15 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { generateStudentPraise, type GenerateStudentPraiseOutput } from "@/ai/flows/generate-student-praise";
 import { Loader2, Sparkles, Star } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 
 const GenerateStudentPraiseInputSchema = z.object({
-  studentName: z.string().describe("The student's name."),
-  accomplishment: z.string().describe('A specific, positive observation about the student.'),
-  areaOfFocus: z.enum(['Social Skills', 'Creativity', 'Problem Solving', 'Kindness', 'Effort']).describe('The primary developmental area the accomplishment falls under.'),
+  studentName: z.string().min(1, "Student's name is required."),
+  accomplishment: z.string().min(1, 'An accomplishment is required.'),
+  areaOfFocus: z.enum(['Social Skills', 'Creativity', 'Problem Solving', 'Kindness', 'Effort']),
 });
 
 export function StudentPraiseForm() {

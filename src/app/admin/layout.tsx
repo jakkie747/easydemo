@@ -33,9 +33,6 @@ import {
   SheetTrigger
 } from '@/components/ui/sheet';
 import { Logo } from '@/components/icons';
-import { getAuth, signOut } from 'firebase/auth';
-import { app } from '@/lib/firebase';
-import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 
 
@@ -58,7 +55,7 @@ function AdminSidebar() {
             <div className="flex h-full max-h-screen flex-col gap-2">
                 <div className="flex h-16 items-center border-b px-4 lg:px-6">
                      <Link href="/" className="flex items-center gap-2">
-                        <Logo className="w-14 h-14" />
+                        <Logo />
                     </Link>
                 </div>
                 <div className="flex-1">
@@ -86,26 +83,11 @@ function AdminSidebar() {
 
 function AdminHeader() {
   const router = useRouter();
-  const { toast } = useToast();
-  const auth = getAuth(app);
-  const pathname = usePathname();
-
-  const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-      router.push('/login');
-    } catch (error) {
-       console.error("Logout failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Logout Failed",
-        description: "An error occurred while logging out.",
-      });
-    }
+  
+  const handleLogout = () => {
+    // In a real app, you would call signOut from Firebase Auth
+    console.log("Logging out...");
+    router.push('/login');
   };
 
 
@@ -122,15 +104,14 @@ function AdminHeader() {
             <SheetContent side="left" className="flex flex-col">
                 <nav className="grid gap-2 text-lg font-medium">
                      <Link href="/" className="flex items-center gap-2 text-lg font-semibold mb-4">
-                        <Logo className="w-14 h-14" />
+                        <Logo />
                      </Link>
                       {navItems.map(item => (
                              <Link
                                 key={item.label}
                                 href={item.href}
                                 className={cn(
-                                    "flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground",
-                                    pathname === item.href && "bg-muted text-foreground"
+                                    "flex items-center gap-4 rounded-xl px-3 py-2 text-muted-foreground hover:text-foreground"
                                 )}
                             >
                                 <item.icon className="h-5 w-5" />

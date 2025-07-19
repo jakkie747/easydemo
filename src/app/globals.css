@@ -36,6 +36,10 @@
     --ring: 206 100% 15%;
     
     --radius: 0.5rem;
+
+    --sidebar-background: hsl(var(--primary));
+    --sidebar-foreground: hsl(var(--primary-foreground));
+    --sidebar-accent: hsl(var(--accent));
   }
  
   .dark {
@@ -66,6 +70,10 @@
     --border: 206 100% 25%;
     --input: 206 100% 25%;
     --ring: 45 100% 50%;
+
+    --sidebar-background: hsl(var(--background));
+    --sidebar-foreground: hsl(var(--foreground));
+    --sidebar-accent: hsl(var(--accent));
   }
 }
 
@@ -82,4 +90,21 @@
   .font-sans {
     font-family: var(--font-poppins), sans-serif;
   }
+}
+
+@layer components {
+    .bg-sidebar {
+        background-color: var(--sidebar-background) !important;
+    }
+    .text-sidebar-foreground {
+        color: var(--sidebar-foreground) !important;
+    }
+    .hover\:bg-sidebar-accent:hover {
+        background-color: var(--sidebar-accent) !important;
+        color: hsl(var(--accent-foreground)) !important;
+    }
+    .bg-sidebar-accent {
+         background-color: var(--sidebar-accent) !important;
+         color: hsl(var(--accent-foreground)) !important;
+    }
 }

@@ -87,16 +87,20 @@ export default function ProfilePage() {
                 if (mainChild.emergencyContact) {
                     emergencyForm.reset(mainChild.emergencyContact);
                 }
+            } else if (parent) {
+                // Initialize parent form even if no child is linked yet
+                parentForm.reset({ name: parent.name, phone: parent.phone });
             }
         } catch(e) {
-            console.error(e)
+            console.error(e);
+            toast({variant: "destructive", title: "Failed to load data", description: "Could not load your profile information."})
         } finally {
             setDataLoading(false);
         }
       };
       fetchData();
     }
-  }, [user]);
+  }, [user, childForm, parentForm, emergencyForm, toast]);
 
   const onChildSubmit = async (values: z.infer<typeof childInfoSchema>) => {
     if (!childData) return;
@@ -170,7 +174,7 @@ export default function ProfilePage() {
           </Button>
         </div>
         <main className="flex justify-center">
-          <Tabs defaultValue="child-info" className="w-full max-w-3xl">
+          <Tabs defaultValue="parent-info" className="w-full max-w-3xl">
             <TabsList className="grid w-full grid-cols-4">
               <TabsTrigger value="child-info">Child's Info</TabsTrigger>
               <TabsTrigger value="parent-info">My Info</TabsTrigger>
@@ -189,17 +193,19 @@ export default function ProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                    <FormField control={childForm.control} name="name" render={({ field }) => (
-                        <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={childForm.control} name="dob" render={({ field }) => (
-                        <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
-                    <FormField control={childForm.control} name="allergies" render={({ field }) => (
-                        <FormItem><FormLabel>Allergies & Medical Notes</FormLabel><FormControl><Textarea placeholder="e.g., Peanuts, lactose intolerant" {...field} /></FormControl><FormMessage /></FormItem>
-                    )} />
+                    {!childData ? <p className="text-muted-foreground">No child linked to this account yet.</p> : <>
+                        <FormField control={childForm.control} name="name" render={({ field }) => (
+                            <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={childForm.control} name="dob" render={({ field }) => (
+                            <FormItem><FormLabel>Date of Birth</FormLabel><FormControl><Input type="date" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={childForm.control} name="allergies" render={({ field }) => (
+                            <FormItem><FormLabel>Allergies & Medical Notes</FormLabel><FormControl><Textarea placeholder="e.g., Peanuts, lactose intolerant" {...field} /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </>}
                   <div className="flex justify-end">
-                      <Button type="submit" disabled={childForm.formState.isSubmitting}>
+                      <Button type="submit" disabled={childForm.formState.isSubmitting || !childData}>
                         {childForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
                       </Button>
@@ -255,6 +261,7 @@ export default function ProfilePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
+                 {!childData ? <p className="text-muted-foreground">No child linked to this account yet.</p> : <>
                   <div className="space-y-4 border p-4 rounded-lg relative">
                       <h3 className="font-semibold">Contact 1</h3>
                       <FormField control={emergencyForm.control} name="name" render={({ field }) => (
@@ -267,8 +274,9 @@ export default function ProfilePage() {
                             <FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                   </div>
+                  </>}
                   <div className="flex justify-end">
-                      <Button type="submit" disabled={emergencyForm.formState.isSubmitting}>
+                      <Button type="submit" disabled={emergencyForm.formState.isSubmitting || !childData}>
                         {emergencyForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
                       </Button>
