@@ -10,6 +10,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -89,9 +90,9 @@ const sendWhatsAppTool = ai.defineTool(
 );
 
 
-const communicationPrompt = ai.definePrompt({
+const communicationDraftPrompt = ai.definePrompt({
     name: 'communicationDraftPrompt',
-    model: 'googleai/gemini-pro',
+    model: googleAI('gemini-pro'),
     inputSchema: z.object({
         message: z.string(),
     }),
@@ -114,7 +115,7 @@ const sendCommunicationFlow = ai.defineFlow(
   },
   async (input) => {
     // 1. Generate the polished message from the user's notes.
-    const { output } = await communicationPrompt({ message: input.message });
+    const { output } = await communicationDraftPrompt({ message: input.message });
     if (!output) {
       throw new Error("Failed to draft the message.");
     }
