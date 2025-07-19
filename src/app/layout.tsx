@@ -3,7 +3,6 @@ import type { Metadata } from 'next';
 import { Poppins, Lilita_One } from 'next/font/google';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
-import './globals.css';
 import { AuthProvider } from '@/hooks/use-auth.tsx';
 
 const fontPoppins = Poppins({
