@@ -2,6 +2,45 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Calendar, ArrowRight } from 'lucide-react';
+
+const upcomingEvents = [
+    {
+        title: "Spring Fling Festival",
+        date: "May 25, 2024",
+        description: "Join us for a day of games, food, and fun for the whole family as we celebrate spring."
+    },
+    {
+        title: "Parent-Teacher Conferences",
+        date: "June 5, 2024",
+        description: "A great opportunity to discuss your child's progress and development with their teachers."
+    },
+    {
+        title: "Annual Art Show",
+        date: "June 15, 2024",
+        description: "Come see the amazing artwork created by our talented little artists throughout the year."
+    }
+];
+
+const galleryImages = [
+    {
+        src: "https://placehold.co/400x300.png",
+        alt: "Children painting together",
+        "data-ai-hint": "children painting",
+    },
+    {
+        src: "https://placehold.co/400x300.png",
+        alt: "Kids playing on a playground",
+        "data-ai-hint": "kids playground",
+    },
+    {
+        src: "https://placehold.co/400x300.png",
+        alt: "A child reading a book in a cozy corner",
+        "data-ai-hint": "child reading",
+    }
+];
+
 
 export default function Home() {
   return (
@@ -26,7 +65,7 @@ export default function Home() {
             </div>
           </div>
           <Image
-            src="/hero.png"
+            src="https://placehold.co/400x250.png"
             alt="Children playing happily at a daycare"
             data-ai-hint="children playing"
             width={400}
@@ -61,24 +100,59 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Testimonials Section */}
-      <section id="testimonials" className="bg-primary/5 py-20">
+      {/* Events and Gallery Section */}
+      <section id="latest" className="bg-primary/5 py-20">
         <div className="container mx-auto px-4">
-           <h2 className="font-headline text-4xl font-bold text-primary text-center">What Parents Are Saying</h2>
-           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div className="bg-card p-6 rounded-lg shadow-md">
-                <blockquote className="italic text-muted-foreground">"Easyspark has been a lifesaver! The daily reports keep me connected to my daughter's day, and the staff is amazing."</blockquote>
-                <p className="mt-4 font-semibold text-primary">- Sarah L.</p>
-              </div>
-               <div className="bg-card p-6 rounded-lg shadow-md">
-                <blockquote className="italic text-muted-foreground">"The registration process was so smooth, and we love the photo gallery. It feels like we're part of our son's day even when we're at work."</blockquote>
-                <p className="mt-4 font-semibold text-primary">- Mike J.</p>
-              </div>
-               <div className="bg-card p-6 rounded-lg shadow-md">
-                <blockquote className="italic text-muted-foreground">"The AI tools for the teachers are brilliant. The creative ideas and lesson plans are top-notch. Highly recommend!"</blockquote>
-                <p className="mt-4 font-semibold text-primary">- Emily C.</p>
-              </div>
-           </div>
+          
+          {/* Upcoming Events */}
+          <div className="mb-16">
+            <h2 className="font-headline text-4xl font-bold text-primary text-center">Upcoming Events</h2>
+            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto text-center">Stay up to date with our latest activities and gatherings.</p>
+            <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+                {upcomingEvents.map((event, index) => (
+                    <Card key={index} className="flex flex-col">
+                        <CardHeader>
+                            <CardTitle className="font-headline text-xl text-accent">{event.title}</CardTitle>
+                            <CardDescription className="flex items-center gap-2 pt-1"><Calendar className="h-4 w-4"/> {event.date}</CardDescription>
+                        </CardHeader>
+                        <CardContent className="flex-grow">
+                            <p className="text-muted-foreground">{event.description}</p>
+                        </CardContent>
+                    </Card>
+                ))}
+            </div>
+            <div className="mt-8 text-center">
+                <Button variant="outline" asChild>
+                    <Link href="/admin/events">View All Events <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+            </div>
+          </div>
+          
+          {/* Gallery */}
+          <div>
+            <h2 className="font-headline text-4xl font-bold text-primary text-center">From Our Gallery</h2>
+            <p className="mt-2 text-muted-foreground max-w-2xl mx-auto text-center">A glimpse into the daily life and special moments at Easyspark.</p>
+            <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+              {galleryImages.map((image, index) => (
+                <div key={index} className="overflow-hidden rounded-lg shadow-md">
+                  <Image
+                    src={image.src}
+                    alt={image.alt}
+                    width={400}
+                    height={300}
+                    data-ai-hint={image['data-ai-hint']}
+                    className="w-full h-full object-cover aspect-video transition-transform duration-300 hover:scale-105"
+                  />
+                </div>
+              ))}
+            </div>
+             <div className="mt-8 text-center">
+                <Button variant="outline" asChild>
+                    <Link href="/admin/gallery">View Full Gallery <ArrowRight className="ml-2 h-4 w-4" /></Link>
+                </Button>
+            </div>
+          </div>
+
         </div>
       </section>
     </>
