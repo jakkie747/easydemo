@@ -54,30 +54,43 @@ export default function LoginPage() {
   const onSubmit = async (values: LoginFormValues, role: Role) => {
     setIsLoading(true);
     try {
+      // Handle special admin/teacher logins first
       if (role === 'admin' && values.email === "admin@easyspark.com" && values.password === "password123") {
          toast({
           title: "Admin Login Successful!",
           description: "Redirecting to the admin dashboard.",
         });
         router.push("/admin/dashboard");
-      } else if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
+        return; // Important: exit after successful login
+      } 
+      
+      if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
         toast({
           title: "Teacher Login Successful!",
           description: "Redirecting to the teacher dashboard.",
         });
         // TODO: Redirect to teacher dashboard when it's created
         router.push("/admin/dashboard"); // Placeholder redirect
-      } else if (role === 'parent') {
+        return; // Important: exit after successful login
+      } 
+      
+      // Handle parent login for all other cases
+      if (role === 'parent') {
         await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
           title: "Login Successful!",
           description: "Welcome back! Redirecting to your dashboard.",
         });
         router.push("/parent/dashboard");
+      } else {
+        // This case will now only be hit if it's a non-parent role with wrong credentials
+         toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Invalid credentials for this role.",
+        });
       }
-      else {
-        throw new Error("Invalid credentials or role.");
-      }
+
     } catch (error) {
       console.error(error);
       toast({
