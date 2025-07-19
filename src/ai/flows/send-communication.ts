@@ -26,69 +26,24 @@ const SendCommunicationOutputSchema = z.object({
 });
 export type SendCommunicationOutput = z.infer<typeof SendCommunicationOutputSchema>;
 
-// Mock/Placeholder Tools
-const sendEmailTool = ai.defineTool(
-    {
-        name: 'sendEmail',
-        description: 'Sends an email to a list of recipients.',
-        inputSchema: z.object({
-            subject: z.string(),
-            body: z.string(),
-            recipients: z.array(z.string()),
-        }),
-        outputSchema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-        }),
-    },
-    async (input) => {
-        console.log('Simulating sending email:', input);
-        // In a real app, you would integrate with an email service like SendGrid or Mailgun.
-        return { success: true, message: `Email sent to ${input.recipients.length} recipients.` };
-    }
-);
+// Mock/Placeholder Functions
+async function sendEmail(subject: string, body: string, recipientsCount: number) {
+    console.log('Simulating sending email to', recipientsCount, 'recipients.');
+    // In a real app, you would integrate with an email service like SendGrid or Mailgun.
+    return { success: true };
+}
 
-const sendPushNotificationTool = ai.defineTool(
-    {
-        name: 'sendPushNotification',
-        description: 'Sends a push notification to a list of recipients.',
-        inputSchema: z.object({
-            title: z.string(),
-            body: z.string(),
-            recipients: z.array(z.string()),
-        }),
-        outputSchema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-        }),
-    },
-    async (input) => {
-        console.log('Simulating sending push notification:', input);
-        // In a real app, you would integrate with Firebase Cloud Messaging (FCM).
-        return { success: true, message: `Push notification sent to ${input.recipients.length} recipients.` };
-    }
-);
+async function sendPushNotification(title: string, body: string, recipientsCount: number) {
+    console.log('Simulating sending push notification to', recipientsCount, 'recipients.');
+    // In a real app, you would integrate with Firebase Cloud Messaging (FCM).
+    return { success: true };
+}
 
-const sendWhatsAppTool = ai.defineTool(
-    {
-        name: 'sendWhatsApp',
-        description: 'Sends a WhatsApp message to a list of recipients.',
-        inputSchema: z.object({
-            body: z.string(),
-            recipients: z.array(z.string()),
-        }),
-        outputSchema: z.object({
-            success: z.boolean(),
-            message: z.string(),
-        }),
-    },
-    async (input) => {
-        console.log('Simulating sending WhatsApp message:', input);
-        // In a real app, you would integrate with a service like Twilio.
-        return { success: true, message: `WhatsApp message sent to ${input.recipients.length} recipients.` };
-    }
-);
-
+async function sendWhatsApp(body: string, recipientsCount: number) {
+    console.log('Simulating sending WhatsApp message to', recipientsCount, 'recipients.');
+    // In a real app, you would integrate with a service like Twilio.
+    return { success: true };
+}
 
 const communicationDraftPrompt = ai.definePrompt({
     name: 'communicationDraftPrompt',
@@ -122,7 +77,6 @@ const sendCommunicationFlow = ai.defineFlow(
 
     const { subject, body } = output;
     const recipientsCount = 25; // Placeholder value
-    const placeholderRecipients = Array.from({ length: recipientsCount }, (_, i) => `parent${i + 1}@example.com`);
     const successfulChannels: string[] = [];
     
     // 2. Send the message through the selected channels.
@@ -130,13 +84,13 @@ const sendCommunicationFlow = ai.defineFlow(
         try {
             let result;
             if (channel === 'email') {
-                result = await sendEmailTool({ subject, body, recipients: placeholderRecipients });
+                result = await sendEmail(subject, body, recipientsCount);
                 if (result.success) successfulChannels.push('email');
             } else if (channel === 'push') {
-                result = await sendPushNotificationTool({ title: subject, body, recipients: placeholderRecipients });
+                result = await sendPushNotification(subject, body, recipientsCount);
                 if (result.success) successfulChannels.push('push');
             } else if (channel === 'whatsapp') {
-                result = await sendWhatsAppTool({ body, recipients: placeholderRecipients });
+                result = await sendWhatsApp(body, recipientsCount);
                 if (result.success) successfulChannels.push('whatsapp');
             }
         } catch (e) {
