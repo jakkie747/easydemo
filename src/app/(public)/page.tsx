@@ -37,10 +37,10 @@ export default async function Home() {
           </div>
           <Image
             src="/hero.png"
-            alt="Children playing happily at a daycare"
+            alt="Easyspark Logo with sparks"
             width={800}
             height={600}
-            className="rounded-full aspect-video object-cover mx-auto mt-10 shadow-lg w-full max-w-lg h-auto"
+            className="rounded-full aspect-square object-cover mx-auto mt-10 shadow-lg w-full max-w-lg h-auto"
             priority
           />
         </div>
