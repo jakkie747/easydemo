@@ -29,9 +29,9 @@ export default function Home() {
             src="/hero.png"
             alt="Children playing happily at a daycare"
             data-ai-hint="children playing"
-            width={500}
-            height={313}
-            className="rounded-full shadow-xl mx-auto mt-12"
+            width={400}
+            height={250}
+            className="rounded-full shadow-xl mx-auto mt-10"
             priority
           />
         </div>
