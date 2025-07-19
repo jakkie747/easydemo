@@ -1,8 +1,7 @@
 
-import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where, getDocsFromCache } from "firebase/firestore";
+import { collection, getDocs, addDoc, deleteDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where } from "firebase/firestore";
 import { db } from "./firebase";
 import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
-import { deleteFileByUrl, deleteUserByUid } from "./firebase-admin";
 
 const teacherFromDoc = (doc: QueryDocumentSnapshot<DocumentData> | DocumentData): Teacher => {
     const data = "data" in doc ? doc.data() : doc;
@@ -112,17 +111,6 @@ export async function updateTeacher(id: string, teacher: Partial<Omit<Teacher, '
         await updateDoc(docRef, teacher);
     } catch (error) {
         console.error("Error updating teacher:", error);
-        throw error;
-    }
-}
-
-export async function deleteTeacher(id: string): Promise<void> {
-    try {
-        // Here you might want to also delete the user from Firebase Auth
-        // by calling a server function if the email is used for auth.
-        await deleteDoc(doc(db, 'teachers', id));
-    } catch (error) {
-        console.error("Error deleting teacher:", error);
         throw error;
     }
 }
@@ -248,21 +236,6 @@ export async function updateParent(id: string, parentData: Partial<Parent>): Pro
     }
 }
 
-
-export async function deleteParent(id: string): Promise<void> {
-    try {
-        // This function needs to be called from a server-side context
-        // to have the permission to delete a user.
-        await deleteUserByUid(id);
-        await deleteDoc(doc(db, 'parents', id));
-    } catch (error) {
-        console.error("Error deleting parent:", error);
-        throw error;
-    }
-}
-
-
-
 export async function getDocuments(): Promise<Document[]> {
     try {
         const documentsCol = collection(db, "documents");
@@ -304,19 +277,6 @@ export async function addGalleryImage(image: Omit<GalleryImage, 'id'>): Promise<
     }
 }
 
-export async function deleteGalleryImage(image: GalleryImage): Promise<void> {
-    try {
-        // First, delete the file from Cloud Storage
-        await deleteFileByUrl(image.storagePath);
-        // Then, delete the document from Firestore
-        await deleteDoc(doc(db, 'gallery', image.id));
-    } catch (error) {
-        console.error("Error deleting gallery image:", error);
-        throw error;
-    }
-}
-
-
 export async function getEvents(): Promise<Event[]> {
     try {
         const eventsCol = collection(db, "events");
@@ -343,23 +303,6 @@ export async function updateEvent(id: string, event: Partial<Omit<Event, 'id'>>)
         await updateDoc(docRef, event);
     } catch (error) {
         console.error("Error updating event:", error);
-        throw error;
-    }
-}
-
-export async function deleteEvent(id: string): Promise<void> {
-    try {
-        const eventRef = doc(db, 'events', id);
-        const eventSnap = await getDoc(eventRef);
-        if (eventSnap.exists()) {
-            const eventData = eventSnap.data() as Event;
-            if (eventData.imageStoragePath) {
-                await deleteFileByUrl(eventData.imageStoragePath);
-            }
-        }
-        await deleteDoc(eventRef);
-    } catch (error) {
-        console.error("Error deleting event:", error);
         throw error;
     }
 }

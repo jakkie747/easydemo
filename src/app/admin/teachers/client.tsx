@@ -75,7 +75,8 @@ import { MoreHorizontal, PlusCircle, Database, Loader2 } from "lucide-react";
 import type { Teacher } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addTeacher, updateTeacher, deleteTeacher } from "@/lib/firestore";
+import { addTeacher, updateTeacher } from "@/lib/firestore";
+import { deleteTeacher } from "@/lib/firebase-server";
 import { seedDatabase } from "@/lib/seed";
 
 const formSchema = z.object({

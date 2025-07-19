@@ -39,7 +39,8 @@ import { PlusCircle, Trash2, Loader2, ImagePlus } from "lucide-react";
 import type { GalleryImage } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addGalleryImage, deleteGalleryImage } from "@/lib/firestore";
+import { addGalleryImage } from "@/lib/firestore";
+import { deleteGalleryImage } from "@/lib/firebase-server";
 
 const formSchema = z.object({
   description: z.string().optional(),

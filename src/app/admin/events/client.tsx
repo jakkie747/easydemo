@@ -54,7 +54,8 @@ import { PlusCircle, Calendar, Users, Edit, Trash2, Loader2, PartyPopper } from 
 import type { Event } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
-import { addEvent, updateEvent, deleteEvent } from "@/lib/firestore";
+import { addEvent, updateEvent } from "@/lib/firestore";
+import { deleteEvent } from "@/lib/firebase-server";
 import { Progress } from "@/components/ui/progress";
 
 const formSchema = z.object({

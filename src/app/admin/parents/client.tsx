@@ -70,7 +70,8 @@ import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
 import type { Parent } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addParent, deleteParent } from "@/lib/firestore";
+import { addParent } from "@/lib/firestore";
+import { deleteParent } from "@/lib/firebase-server";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
