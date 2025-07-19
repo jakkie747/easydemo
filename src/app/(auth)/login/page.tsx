@@ -30,6 +30,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -37,6 +38,7 @@ const loginSchema = z.object({
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
+type Role = "parent" | "teacher" | "admin";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
@@ -49,23 +51,32 @@ export default function LoginPage() {
     defaultValues: { email: "", password: "" },
   });
 
-  const onSubmit = async (values: LoginFormValues) => {
+  const onSubmit = async (values: LoginFormValues, role: Role) => {
     setIsLoading(true);
     try {
-      // For this demo, we'll hardcode the admin login
-      if (values.email === "admin@easyspark.com" && values.password === "password123") {
+      if (role === 'admin' && values.email === "admin@easyspark.com" && values.password === "password123") {
          toast({
           title: "Admin Login Successful!",
           description: "Redirecting to the admin dashboard.",
         });
         router.push("/admin/dashboard");
-      } else {
+      } else if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
+        toast({
+          title: "Teacher Login Successful!",
+          description: "Redirecting to the teacher dashboard.",
+        });
+        // TODO: Redirect to teacher dashboard when it's created
+        router.push("/admin/dashboard"); // Placeholder redirect
+      } else if (role === 'parent') {
         await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
           title: "Login Successful!",
           description: "Welcome back! Redirecting to your dashboard.",
         });
         router.push("/parent/dashboard");
+      }
+      else {
+        throw new Error("Invalid credentials or role.");
       }
     } catch (error) {
       console.error(error);
@@ -79,55 +90,79 @@ export default function LoginPage() {
     }
   };
 
+  const LoginForm = ({ role }: { role: Role }) => (
+     <Form {...form}>
+        <form onSubmit={form.handleSubmit(values => onSubmit(values, role))} className="space-y-4">
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Email</FormLabel>
+                <FormControl>
+                  <Input type="email" placeholder="you@example.com" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem>
+                <FormLabel>Password</FormLabel>
+                <FormControl>
+                  <Input type="password" placeholder="••••••••" {...field} />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
+          </Button>
+        </form>
+      </Form>
+  )
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
       <Card className="w-full max-w-md mx-auto">
         <CardHeader className="text-center">
-          <CardTitle className="font-headline text-3xl">Parent Login</CardTitle>
-          <CardDescription>Enter your credentials to access your dashboard.</CardDescription>
+          <CardTitle className="font-headline text-3xl">Welcome Back!</CardTitle>
+          <CardDescription>Select your role and sign in to continue.</CardDescription>
         </CardHeader>
         <CardContent>
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                      <Input type="email" placeholder="you@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Sign In
-              </Button>
-            </form>
-          </Form>
-           <div className="mt-4 text-center text-sm">
-            Don't have an account?{" "}
-            <Link href="/register/preschool" className="underline">
-              Register here
-            </Link>
-          </div>
+            <Tabs defaultValue="parent" className="w-full">
+                <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="parent">Parent</TabsTrigger>
+                    <TabsTrigger value="teacher">Teacher</TabsTrigger>
+                    <TabsTrigger value="admin">Admin</TabsTrigger>
+                </TabsList>
+                <TabsContent value="parent" className="pt-4">
+                    <LoginForm role="parent" />
+                    <div className="mt-4 text-center text-sm">
+                        Don't have an account?{" "}
+                        <Link href="/register/preschool" className="underline">
+                        Register here
+                        </Link>
+                    </div>
+                </TabsContent>
+                 <TabsContent value="teacher" className="pt-4">
+                    <LoginForm role="teacher" />
+                     <div className="mt-4 text-center text-sm text-muted-foreground">
+                        Use teacher@easyspark.com / password123
+                    </div>
+                </TabsContent>
+                 <TabsContent value="admin" className="pt-4">
+                    <LoginForm role="admin" />
+                     <div className="mt-4 text-center text-sm text-muted-foreground">
+                        Use admin@easyspark.com / password123
+                    </div>
+                </TabsContent>
+            </Tabs>
         </CardContent>
         <CardFooter className="justify-center">
             <Button variant="link" asChild>
