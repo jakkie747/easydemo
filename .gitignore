@@ -4,7 +4,6 @@
 /node_modules
 /.pnp
 .pnp.js
-.yarn/install-state.gz
 
 # Testing
 /coverage
@@ -16,26 +15,29 @@
 # Production
 /build
 
-# Other
+# Misc
 .DS_Store
 *.pem
 
-# dotenv environment variables file
-.env
-.env.local
-.env.development.local
-.env.test.local
-.env.production.local
-
-# Vercel
-.vercel
-
-# Misc
-.eslintcache
-.stylelintcache
-*.log
+# Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
+
+# Local env files
+.env*.local
+.env
+
+# IDE files
+.vscode
+.idea
+
+# Genkit
+.genkit/cache
+.genkit/log.json
+
+# Firebase
+.firebase
+firebase.json
+database-debug.log
+storage-debug.log
