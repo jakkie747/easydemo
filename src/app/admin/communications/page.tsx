@@ -18,7 +18,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { sendCommunication, type SendCommunicationOutput } from "@/ai/flows/send-communication";
+import { sendCommunicationAction } from "./actions"; // Updated import
+import type { SendCommunicationOutput } from "@/ai/flows/send-communication";
 import { Loader2, Send, MessageSquare, Mail, Bell, MessageCircle } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -65,7 +66,7 @@ export default function CommunicationsPage() {
     setIsLoading(true);
     setResult(null);
     try {
-      const response = await sendCommunication({
+      const response = await sendCommunicationAction({ // Updated function call
         ...values,
         channels: values.channels as Array<'email' | 'push' | 'whatsapp'>
       });

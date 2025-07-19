@@ -26,28 +26,13 @@ const SendCommunicationOutputSchema = z.object({
 });
 export type SendCommunicationOutput = z.infer<typeof SendCommunicationOutputSchema>;
 
-// Mock/Placeholder Functions
-async function sendEmail(subject: string, body: string, recipientsCount: number) {
-    console.log('Simulating sending email to', recipientsCount, 'recipients.');
-    // In a real app, you would integrate with an email service like SendGrid or Mailgun.
-    return { success: true };
-}
+// This file is being deprecated in favor of a standard server action in `src/app/admin/communications/actions.ts`
+// This is to work around a persistent serialization issue with Genkit flows and Next.js.
+// The core prompt logic is kept here for the new action to use.
 
-async function sendPushNotification(title: string, body: string, recipientsCount: number) {
-    console.log('Simulating sending push notification to', recipientsCount, 'recipients.');
-    // In a real app, you would integrate with Firebase Cloud Messaging (FCM).
-    return { success: true };
-}
-
-async function sendWhatsApp(body: string, recipientsCount: number) {
-    console.log('Simulating sending WhatsApp message to', recipientsCount, 'recipients.');
-    // In a real app, you would integrate with a service like Twilio.
-    return { success: true };
-}
-
-const communicationDraftPrompt = ai.definePrompt({
+export const communicationDraftPrompt = ai.definePrompt({
     name: 'communicationDraftPrompt',
-    model: googleAI('gemini-pro'),
+    model: 'googleai/gemini-pro',
     inputSchema: z.object({
         message: z.string(),
     }),
@@ -62,52 +47,7 @@ User notes: {{{message}}}
 `,
 });
 
-const sendCommunicationFlow = ai.defineFlow(
-  {
-    name: 'sendCommunicationFlow',
-    inputSchema: SendCommunicationInputSchema,
-    outputSchema: SendCommunicationOutputSchema,
-  },
-  async (input) => {
-    // 1. Generate the polished message from the user's notes.
-    const { output } = await communicationDraftPrompt({ message: input.message });
-    if (!output) {
-      throw new Error("Failed to draft the message.");
-    }
-
-    const { subject, body } = output;
-    const recipientsCount = 25; // Placeholder value
-    const successfulChannels: string[] = [];
-    
-    // 2. Send the message through the selected channels.
-    for (const channel of input.channels) {
-        try {
-            let result;
-            if (channel === 'email') {
-                result = await sendEmail(subject, body, recipientsCount);
-                if (result.success) successfulChannels.push('email');
-            } else if (channel === 'push') {
-                result = await sendPushNotification(subject, body, recipientsCount);
-                if (result.success) successfulChannels.push('push');
-            } else if (channel === 'whatsapp') {
-                result = await sendWhatsApp(body, recipientsCount);
-                if (result.success) successfulChannels.push('whatsapp');
-            }
-        } catch (e) {
-            console.error(`Error sending via ${channel}:`, e);
-        }
-    }
-
-    // 3. Return a clean, serializable result.
-    return {
-      sentMessage: body,
-      recipients: recipientsCount,
-      channelsUsed: successfulChannels,
-    };
-  }
-);
-
-
+// Deprecated function. Use the server action instead.
 export async function sendCommunication(input: SendCommunicationInput): Promise<SendCommunicationOutput> {
-  return sendCommunicationFlow(input);
+  throw new Error("This function is deprecated. Please use the server action in `src/app/admin/communications/actions.ts`");
 }
