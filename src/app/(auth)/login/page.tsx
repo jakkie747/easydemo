@@ -29,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, ArrowLeft } from "lucide-react";
+import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 const loginSchema = z.object({
@@ -42,6 +42,7 @@ type Role = "parent" | "teacher" | "admin";
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
@@ -126,7 +127,19 @@ export default function LoginPage() {
               <FormItem>
                 <FormLabel>Password</FormLabel>
                 <FormControl>
-                  <Input type="password" placeholder="••••••••" {...field} />
+                    <div className="relative">
+                        <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                        <Button
+                            type="button"
+                            variant="ghost"
+                            size="icon"
+                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                            onClick={() => setShowPassword(!showPassword)}
+                        >
+                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                            <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                        </Button>
+                    </div>
                 </FormControl>
                 <FormMessage />
               </FormItem>
