@@ -36,9 +36,8 @@ export default async function Home() {
             </div>
           </div>
           <Image
-            src="https://placehold.co/1200x600.png"
+            src="/hero.png"
             alt="Children playing happily at a daycare"
-            data-ai-hint="children playing"
             width={1200}
             height={600}
             className="rounded-lg shadow-xl mx-auto mt-10 w-full max-w-4xl h-auto"
