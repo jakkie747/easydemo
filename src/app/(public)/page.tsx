@@ -7,7 +7,7 @@ export default function Home() {
   return (
     <>
       {/* Hero Section */}
-      <section className="bg-primary/5 py-12 md:py-16">
+      <section className="bg-primary/5 py-8 md:py-10">
         <div className="container mx-auto px-4 text-center">
           <div className="max-w-4xl mx-auto">
             <h1 className="font-headline text-4xl md:text-6xl font-bold text-primary">
@@ -29,8 +29,8 @@ export default function Home() {
             src="/hero.png"
             alt="Children playing happily at a daycare"
             data-ai-hint="children playing"
-            width={600}
-            height={375}
+            width={500}
+            height={313}
             className="rounded-full shadow-xl mx-auto mt-12"
             priority
           />
