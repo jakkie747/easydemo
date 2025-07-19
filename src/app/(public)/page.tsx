@@ -8,15 +8,15 @@ export default function Home() {
     <>
       {/* Hero Section */}
       <section className="bg-primary/5 py-20 md:py-32">
-        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
-          <div>
+        <div className="container mx-auto px-4 text-center">
+          <div className="max-w-4xl mx-auto">
             <h1 className="font-headline text-5xl md:text-7xl font-bold text-primary">
               Simplify Your Childcare Management
             </h1>
             <p className="mt-4 text-lg text-foreground/80">
               Easyspark is the all-in-one platform to manage your preschool or daycare. Handle registrations, parent communication, and daily reports with ease.
             </p>
-            <div className="mt-8 flex gap-4">
+            <div className="mt-8 flex justify-center gap-4">
               <Button size="lg" asChild>
                 <Link href="/register/preschool">Enroll Now</Link>
               </Button>
@@ -25,13 +25,14 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div>
-            <Image 
+          <div className="mt-12">
+            <Image
               src="/hero-image.png"
-              alt="Children playing happily at a daycare" 
-              width={600} 
-              height={400}
-              className="rounded-lg shadow-xl"
+              alt="Children playing happily at a daycare"
+              data-ai-hint="children playing"
+              width={800}
+              height={500}
+              className="rounded-lg shadow-xl mx-auto"
               priority
             />
           </div>
