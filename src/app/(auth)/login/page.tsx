@@ -40,29 +40,84 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 type Role = "parent" | "teacher" | "admin";
 
+const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (values: LoginFormValues, role: Role) => void; isLoading: boolean; }) => {
+    const [showPassword, setShowPassword] = useState(false);
+
+    const form = useForm<LoginFormValues>({
+        resolver: zodResolver(loginSchema),
+        defaultValues: {
+            email: role === 'admin' ? "admin@easyspark.com" : role === 'teacher' ? "teacher@easyspark.com" : "",
+            password: role === 'admin' || role === 'teacher' ? "password123" : "",
+        },
+    });
+
+     return (
+        <Form {...form}>
+            <form onSubmit={form.handleSubmit(values => onLogin(values, role))} className="space-y-4">
+            <FormField
+                control={form.control}
+                name="email"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Email</FormLabel>
+                    <FormControl>
+                    <Input type="email" placeholder="you@example.com" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="password"
+                render={({ field }) => (
+                <FormItem>
+                    <FormLabel>Password</FormLabel>
+                    <FormControl>
+                        <div className="relative">
+                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                            <Button
+                                type="button"
+                                variant="ghost"
+                                size="icon"
+                                className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                                onClick={() => setShowPassword(!showPassword)}
+                            >
+                                {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
+                            </Button>
+                        </div>
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
+            </Button>
+            </form>
+        </Form>
+    );
+};
+
+
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
-    defaultValues: { email: "", password: "" },
-  });
-
   const onSubmit = async (values: LoginFormValues, role: Role) => {
     setIsLoading(true);
     try {
-      // Handle special admin/teacher logins first
       if (role === 'admin' && values.email === "admin@easyspark.com" && values.password === "password123") {
          toast({
           title: "Admin Login Successful!",
           description: "Redirecting to the admin dashboard.",
         });
         router.push("/admin/dashboard");
-        return; // Important: exit after successful login
+        return; 
       } 
       
       if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
@@ -70,12 +125,10 @@ export default function LoginPage() {
           title: "Teacher Login Successful!",
           description: "Redirecting to the teacher dashboard.",
         });
-        // TODO: Redirect to teacher dashboard when it's created
-        router.push("/admin/dashboard"); // Placeholder redirect
-        return; // Important: exit after successful login
+        router.push("/admin/dashboard");
+        return; 
       } 
       
-      // Handle parent login for all other cases
       if (role === 'parent') {
         await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
@@ -84,7 +137,6 @@ export default function LoginPage() {
         });
         router.push("/parent/dashboard");
       } else {
-        // This case will now only be hit if it's a non-parent role with wrong credentials
          toast({
             variant: "destructive",
             title: "Login Failed",
@@ -104,54 +156,6 @@ export default function LoginPage() {
     }
   };
 
-  const LoginForm = ({ role }: { role: Role }) => (
-     <Form {...form}>
-        <form onSubmit={form.handleSubmit(values => onSubmit(values, role))} className="space-y-4">
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input type="email" placeholder="you@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="password"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Password</FormLabel>
-                <FormControl>
-                    <div className="relative">
-                        <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                            <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
-                        </Button>
-                    </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
-          </Button>
-        </form>
-      </Form>
-  )
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-background p-4">
@@ -168,7 +172,7 @@ export default function LoginPage() {
                     <TabsTrigger value="admin">Admin</TabsTrigger>
                 </TabsList>
                 <TabsContent value="parent" className="pt-4">
-                    <LoginForm role="parent" />
+                    <LoginForm role="parent" onLogin={onSubmit} isLoading={isLoading} />
                     <div className="mt-4 text-center text-sm">
                         Don't have an account?{" "}
                         <Link href="/register/preschool" className="underline">
@@ -177,13 +181,13 @@ export default function LoginPage() {
                     </div>
                 </TabsContent>
                  <TabsContent value="teacher" className="pt-4">
-                    <LoginForm role="teacher" />
+                    <LoginForm role="teacher" onLogin={onSubmit} isLoading={isLoading} />
                      <div className="mt-4 text-center text-sm text-muted-foreground">
                         Use teacher@easyspark.com / password123
                     </div>
                 </TabsContent>
                  <TabsContent value="admin" className="pt-4">
-                    <LoginForm role="admin" />
+                    <LoginForm role="admin" onLogin={onSubmit} isLoading={isLoading} />
                      <div className="mt-4 text-center text-sm text-muted-foreground">
                         Use admin@easyspark.com / password123
                     </div>
