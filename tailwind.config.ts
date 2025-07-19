@@ -1,5 +1,6 @@
 
 import type {Config} from 'tailwindcss';
+const { fontFamily } = require("tailwindcss/defaultTheme")
 
 export default {
   darkMode: ['class'],
@@ -18,9 +19,8 @@ export default {
     },
     extend: {
       fontFamily: {
-        body: ['Poppins', 'sans-serif'],
-        headline: ['Lilita One', 'sans-serif'],
-        code: ['monospace'],
+        body: ['var(--font-body)', ...fontFamily.sans],
+        headline: ['var(--font-headline)', ...fontFamily.sans],
       },
       colors: {
         border: "hsl(var(--border))",
