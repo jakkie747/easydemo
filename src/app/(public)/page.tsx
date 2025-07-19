@@ -26,7 +26,7 @@ export default function Home() {
             </div>
           </div>
           <Image
-            src="/hero-image.png"
+            src="https://placehold.co/800x500.png"
             alt="Children playing happily at a daycare"
             data-ai-hint="children playing"
             width={800}
