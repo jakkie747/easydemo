@@ -11,7 +11,6 @@
 import {ai} from '@/ai/genkit';
 import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
-import { runTool } from 'genkit/experimental';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -93,7 +92,7 @@ const sendWhatsAppTool = ai.defineTool(
 
 const communicationPrompt = ai.definePrompt({
   name: 'communicationPrompt',
-  model: googleAI('gemini-pro'),
+  model: 'googleai/gemini-pro',
   inputSchema: SendCommunicationInputSchema,
   system: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
 Your primary tasks are to:
@@ -105,7 +104,6 @@ Your primary tasks are to:
   prompt: `{{{message}}}`,
   tools: [sendEmailTool, sendPushNotificationTool, sendWhatsAppTool],
 });
-
 
 const sendCommunicationFlow = ai.defineFlow(
   {
@@ -119,25 +117,37 @@ const sendCommunicationFlow = ai.defineFlow(
     
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
+    let allToolOutputs = [];
 
     for (const toolRequest of llmResponse.toolRequests) {
-        // Assume the 'body' argument contains the AI-drafted message
-        if (toolRequest.input.body) {
+        if (toolRequest.input?.body) {
             finalMessage = toolRequest.input.body;
         }
 
-        const { output } = await runTool(toolRequest);
-        
-        // If the tool call was successful, add the channel to our list
-        if (output?.success) {
-            if (toolRequest.name === 'sendEmail') {
-                successfulChannels.push('email');
-            } else if (toolRequest.name === 'sendPushNotification') {
-                successfulChannels.push('push');
-            } else if (toolRequest.name === 'sendWhatsApp') {
-                successfulChannels.push('whatsapp');
-            }
+        let output;
+        let success = false;
+
+        switch (toolRequest.name) {
+            case 'sendEmail':
+                output = await sendEmailTool(toolRequest.input);
+                if (output.success) successfulChannels.push('email');
+                break;
+            case 'sendPushNotification':
+                output = await sendPushNotificationTool(toolRequest.input);
+                if (output.success) successfulChannels.push('push');
+                break;
+            case 'sendWhatsApp':
+                output = await sendWhatsAppTool(toolRequest.input);
+                if (output.success) successfulChannels.push('whatsapp');
+                break;
+            default:
+                throw new Error(`Unsupported tool: ${toolRequest.name}`);
         }
+
+        allToolOutputs.push({
+            tool: `tool/${toolRequest.name}`,
+            output,
+        });
     }
 
     return {
