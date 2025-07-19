@@ -112,54 +112,54 @@ const sendCommunicationFlow = ai.defineFlow(
     outputSchema: SendCommunicationOutputSchema,
   },
   async (input) => {
-    
     const llmResponse = await communicationPrompt(input);
     const toolRequests = llmResponse.toolRequests;
 
-    let finalMessage = input.message;
-    let successfulChannels: string[] = [];
+    let finalMessage = input.message; // Default to original message
+    const successfulChannels: string[] = [];
+    const recipientsCount = 25; // Placeholder value
 
+    // Find the message body from the first available tool request
     if (toolRequests.length > 0) {
-      const firstRequestBody = toolRequests[0].input?.body;
-      if (typeof firstRequestBody === 'string') {
-        finalMessage = firstRequestBody;
-      }
+        const firstRequestWithBody = toolRequests.find(req => req.input && typeof req.input.body === 'string');
+        if (firstRequestWithBody) {
+            finalMessage = firstRequestWithBody.input.body;
+        }
     }
     
+    // Process each tool request
     for (const toolRequest of toolRequests) {
-        let output;
-        let success = false;
-        let channelName = '';
-
-        switch (toolRequest.name) {
-            case 'sendEmail':
-                output = await sendEmailTool(toolRequest.input);
-                success = output.success;
-                channelName = 'email';
-                break;
-            case 'sendPushNotification':
-                output = await sendPushNotificationTool(toolRequest.input);
-                success = output.success;
-                channelName = 'push';
-                break;
-            case 'sendWhatsApp':
-                output = await sendWhatsAppTool(toolRequest.input);
-                success = output.success;
-                channelName = 'whatsapp';
-                break;
-            default:
-                console.warn(`Unsupported tool: ${toolRequest.name}`);
-                continue;
+        if (!toolRequest.input) {
+            console.warn(`Tool request for '${toolRequest.name}' had no input.`);
+            continue;
         }
 
-        if (success) {
-            successfulChannels.push(channelName);
+        let output;
+        try {
+            switch (toolRequest.name) {
+                case 'sendEmail':
+                    output = await sendEmailTool(toolRequest.input);
+                    if (output.success) successfulChannels.push('email');
+                    break;
+                case 'sendPushNotification':
+                    output = await sendPushNotificationTool(toolRequest.input);
+                    if (output.success) successfulChannels.push('push');
+                    break;
+                case 'sendWhatsApp':
+                    output = await sendWhatsAppTool(toolRequest.input);
+                    if (output.success) successfulChannels.push('whatsapp');
+                    break;
+                default:
+                    console.warn(`Unsupported tool: ${toolRequest.name}`);
+            }
+        } catch (e) {
+            console.error(`Error executing tool '${toolRequest.name}':`, e);
         }
     }
 
     return {
       sentMessage: finalMessage,
-      recipients: 25, // Placeholder value
+      recipients: recipientsCount,
       channelsUsed: successfulChannels,
     };
   }
