@@ -1,4 +1,3 @@
-
 "use client"
 
 import Link from "next/link";
@@ -15,20 +14,16 @@ import {
   Bell,
   Image as ImageIcon,
   FileText,
-  Sparkles,
   GraduationCap,
-  MessageSquare
 } from "lucide-react"
 
 const navItems = [
   { href: '/admin/children', icon: Users, label: 'Children', description: 'Manage student profiles.' },
   { href: '/admin/parents', icon: Users, label: 'Parents', description: 'Manage parent accounts.' },
   { href: '/admin/teachers', icon: GraduationCap, label: 'Teachers', description: 'Manage teacher profiles.' },
-  { href: '/admin/communications', icon: MessageSquare, label: 'Communications', description: 'Send messages to parents.' },
   { href: '/admin/events', icon: Bell, label: 'Events', description: 'Create and manage events.' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Gallery', description: 'Manage the photo gallery.' },
   { href: '/admin/documents', icon: FileText, label: 'Documents', description: 'Upload and manage files.' },
-  { href: '/admin/ai-assistant', icon: Sparkles, label: 'AI Assistant', description: 'Generate creative content.' },
 ];
 
 export default function Dashboard() {

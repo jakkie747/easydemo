@@ -1,4 +1,3 @@
-
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -9,13 +8,11 @@ import {
   Image as ImageIcon,
   FileText,
   LogOut,
-  Sparkles,
   GraduationCap,
   Menu,
   HomeIcon,
   Settings,
   LifeBuoy,
-  MessageSquare
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -41,11 +38,9 @@ const navItems = [
   { href: '/admin/children', icon: Users, label: 'Children' },
   { href: '/admin/parents', icon: Users, label: 'Parents' },
   { href: '/admin/teachers', icon: GraduationCap, label: 'Teachers' },
-  { href: '/admin/communications', icon: MessageSquare, label: 'Communications' },
   { href: '/admin/events', icon: Bell, label: 'Events' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Gallery' },
   { href: '/admin/documents', icon: FileText, label: 'Documents' },
-  { href: '/admin/ai-assistant', icon: Sparkles, label: 'AI Assistant' },
 ];
 
 function AdminSidebar() {
