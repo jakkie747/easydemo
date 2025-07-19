@@ -4,30 +4,15 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar, ArrowRight } from 'lucide-react';
-import { getGalleryImages } from '@/lib/firestore';
-import type { GalleryImage } from '@/lib/types';
-
-const upcomingEvents = [
-    {
-        title: "Spring Fling Festival",
-        date: "May 25, 2024",
-        description: "Join us for a day of games, food, and fun for the whole family as we celebrate spring."
-    },
-    {
-        title: "Parent-Teacher Conferences",
-        date: "June 5, 2024",
-        description: "A great opportunity to discuss your child's progress and development with their teachers."
-    },
-    {
-        title: "Annual Art Show",
-        date: "June 15, 2024",
-        description: "Come see the amazing artwork created by our talented little artists throughout the year."
-    }
-];
+import { getGalleryImages, getEvents } from '@/lib/firestore';
+import type { GalleryImage, Event } from '@/lib/types';
 
 export default async function Home() {
   const allGalleryImages: GalleryImage[] = await getGalleryImages();
   const galleryImages = allGalleryImages.slice(0, 3);
+
+  const allEvents: Event[] = await getEvents();
+  const upcomingEvents = allEvents.slice(0, 3);
 
   return (
     <>
@@ -96,7 +81,7 @@ export default async function Home() {
             <p className="mt-2 text-muted-foreground max-w-2xl mx-auto text-center">Stay up to date with our latest activities and gatherings.</p>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
                 {upcomingEvents.map((event, index) => (
-                    <Card key={index} className="flex flex-col">
+                    <Card key={event.id} className="flex flex-col">
                         <CardHeader>
                             <CardTitle className="font-headline text-xl text-accent">{event.title}</CardTitle>
                             <CardDescription className="flex items-center gap-2 pt-1"><Calendar className="h-4 w-4"/> {event.date}</CardDescription>
