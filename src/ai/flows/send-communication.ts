@@ -10,7 +10,6 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
-import {googleAI} from '@genkit-ai/googleai';
 import { runTool } from 'genkit/experimental';
 
 const SendCommunicationInputSchema = z.object({
@@ -91,7 +90,7 @@ const sendWhatsAppTool = ai.defineTool(
 );
 
 
-const prompt = ai.definePrompt({
+const communicationPrompt = ai.definePrompt({
   name: 'communicationPrompt',
   inputSchema: SendCommunicationInputSchema,
   system: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
@@ -114,13 +113,7 @@ const sendCommunicationFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llmResponse = await ai.generate({
-        model: googleAI('gemini-pro'),
-        prompt: prompt.prompt!,
-        input,
-        system: prompt.system,
-        tools: prompt.tools,
-    });
+    const llmResponse = await communicationPrompt(input);
     
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
