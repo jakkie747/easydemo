@@ -25,17 +25,15 @@ export default function Home() {
               </Button>
             </div>
           </div>
-          <div className="mt-12">
-            <Image
-              src="/hero-image.png"
-              alt="Children playing happily at a daycare"
-              data-ai-hint="children playing"
-              width={800}
-              height={500}
-              className="rounded-lg shadow-xl mx-auto"
-              priority
-            />
-          </div>
+          <Image
+            src="/hero-image.png"
+            alt="Children playing happily at a daycare"
+            data-ai-hint="children playing"
+            width={800}
+            height={500}
+            className="rounded-lg shadow-xl mx-auto mt-12"
+            priority
+          />
         </div>
       </section>
 
