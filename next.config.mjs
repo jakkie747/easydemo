@@ -1,7 +1,18 @@
-
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Your Next.js config options go here.
+  reactStrictMode: true,
+  images: {
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'placehold.co',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.pravatar.cc',
+      }
+    ],
+  },
 };
 
 export default nextConfig;
