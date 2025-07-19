@@ -9,7 +9,6 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 
 const SendCommunicationInputSchema = z.object({
@@ -91,18 +90,20 @@ const sendWhatsAppTool = ai.defineTool(
 
 
 const communicationPrompt = ai.definePrompt({
-  name: 'communicationPrompt',
-  model: 'googleai/gemini-pro',
-  inputSchema: SendCommunicationInputSchema,
-  system: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
-Your primary tasks are to:
-1.  Take the user's message/notes and expand it into a well-formatted and professional announcement.
-2.  Determine the subject line or title for the message.
-3.  Use the provided tools to send the final message through the requested channels (email, push notification, whatsapp).
-4.  Do not ask for confirmation. Execute the tools immediately based on the user's request.
-5.  The list of recipients is a placeholder; for now, assume there are 25 parents in the selected audience. You should pass an array of 25 placeholder emails or phone numbers (e.g., 'parent1@example.com', 'parent2@example.com', ...) to the tools.`,
-  prompt: `{{{message}}}`,
-  tools: [sendEmailTool, sendPushNotificationTool, sendWhatsAppTool],
+    name: 'communicationDraftPrompt',
+    model: 'googleai/gemini-pro',
+    inputSchema: z.object({
+        message: z.string(),
+    }),
+    outputSchema: z.object({
+        subject: z.string().describe("A suitable subject line or title for the message."),
+        body: z.string().describe("The full, professionally drafted message body."),
+    }),
+    prompt: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
+Take the user's message/notes below and expand it into a well-formatted and professional announcement.
+
+User notes: {{{message}}}
+`,
 });
 
 const sendCommunicationFlow = ai.defineFlow(
@@ -112,53 +113,39 @@ const sendCommunicationFlow = ai.defineFlow(
     outputSchema: SendCommunicationOutputSchema,
   },
   async (input) => {
-    const llmResponse = await communicationPrompt(input);
-    const toolRequests = llmResponse.toolRequests;
-
-    let finalMessage = input.message; // Default to original message
-    const successfulChannels: string[] = [];
-    const recipientsCount = 25; // Placeholder value
-
-    // Find the message body from the first available tool request
-    if (toolRequests.length > 0) {
-        const firstRequestWithBody = toolRequests.find(req => req.input && typeof req.input.body === 'string');
-        if (firstRequestWithBody) {
-            finalMessage = firstRequestWithBody.input.body;
-        }
+    // 1. Generate the polished message from the user's notes.
+    const { output } = await communicationPrompt({ message: input.message });
+    if (!output) {
+      throw new Error("Failed to draft the message.");
     }
-    
-    // Process each tool request
-    for (const toolRequest of toolRequests) {
-        if (!toolRequest.input) {
-            console.warn(`Tool request for '${toolRequest.name}' had no input.`);
-            continue;
-        }
 
-        let output;
+    const { subject, body } = output;
+    const recipientsCount = 25; // Placeholder value
+    const placeholderRecipients = Array.from({ length: recipientsCount }, (_, i) => `parent${i + 1}@example.com`);
+    const successfulChannels: string[] = [];
+    
+    // 2. Send the message through the selected channels.
+    for (const channel of input.channels) {
         try {
-            switch (toolRequest.name) {
-                case 'sendEmail':
-                    output = await sendEmailTool(toolRequest.input);
-                    if (output.success) successfulChannels.push('email');
-                    break;
-                case 'sendPushNotification':
-                    output = await sendPushNotificationTool(toolRequest.input);
-                    if (output.success) successfulChannels.push('push');
-                    break;
-                case 'sendWhatsApp':
-                    output = await sendWhatsAppTool(toolRequest.input);
-                    if (output.success) successfulChannels.push('whatsapp');
-                    break;
-                default:
-                    console.warn(`Unsupported tool: ${toolRequest.name}`);
+            let result;
+            if (channel === 'email') {
+                result = await sendEmailTool({ subject, body, recipients: placeholderRecipients });
+                if (result.success) successfulChannels.push('email');
+            } else if (channel === 'push') {
+                result = await sendPushNotificationTool({ title: subject, body, recipients: placeholderRecipients });
+                if (result.success) successfulChannels.push('push');
+            } else if (channel === 'whatsapp') {
+                result = await sendWhatsAppTool({ body, recipients: placeholderRecipients });
+                if (result.success) successfulChannels.push('whatsapp');
             }
         } catch (e) {
-            console.error(`Error executing tool '${toolRequest.name}':`, e);
+            console.error(`Error sending via ${channel}:`, e);
         }
     }
 
+    // 3. Return a clean, serializable result.
     return {
-      sentMessage: finalMessage,
+      sentMessage: body,
       recipients: recipientsCount,
       channelsUsed: successfulChannels,
     };
