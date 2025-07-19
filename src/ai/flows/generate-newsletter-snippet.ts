@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI assistant for generating parent newsletter snippets.
@@ -10,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const GenerateNewsletterSnippetInputSchema = z.object({
   tone: z.enum(['Friendly & Fun', 'Professional & Informative', 'Warm & Caring']).describe('The desired tone for the newsletter.'),
@@ -55,7 +55,16 @@ const generateNewsletterSnippetFlow = ai.defineFlow(
     outputSchema: GenerateNewsletterSnippetOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await ai.generate({
+      model: googleAI('gemini-pro'),
+      prompt: {
+        template: prompt.prompt,
+        input: input,
+      },
+      output: {
+        schema: prompt.output.schema,
+      },
+    });
     return output!;
   }
 );

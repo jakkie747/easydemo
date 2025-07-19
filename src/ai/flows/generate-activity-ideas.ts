@@ -1,4 +1,3 @@
-
 // src/ai/flows/generate-activity-ideas.ts
 'use server';
 
@@ -12,6 +11,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const GenerateActivityIdeasInputSchema = z.object({
   topic: z.string().describe('The topic or theme for the story starters and activity ideas.'),
@@ -57,7 +57,16 @@ const generateActivityIdeasFlow = ai.defineFlow(
     outputSchema: GenerateActivityIdeasOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await ai.generate({
+      model: googleAI('gemini-pro'),
+      prompt: {
+        template: prompt.prompt,
+        input: input,
+      },
+      output: {
+        schema: prompt.output.schema,
+      },
+    });
     return output!;
   }
 );

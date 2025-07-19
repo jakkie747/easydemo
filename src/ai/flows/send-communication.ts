@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview An AI agent for sending communications to parents.
@@ -10,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -112,7 +112,15 @@ const sendCommunicationFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llmResponse = await prompt(input);
+    const llmResponse = await ai.generate({
+        model: googleAI('gemini-pro'),
+        prompt: {
+            template: prompt.prompt!,
+            input: input,
+        },
+        system: prompt.system,
+        tools: prompt.tools,
+    });
     const toolRequests = llmResponse.toolRequests();
 
     let finalMessage = input.message;

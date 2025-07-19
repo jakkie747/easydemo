@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI assistant for generating personalized student praise.
@@ -10,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const GenerateStudentPraiseInputSchema = z.object({
   studentName: z.string().describe("The student's name."),
@@ -48,7 +48,16 @@ const generateStudentPraiseFlow = ai.defineFlow(
     outputSchema: GenerateStudentPraiseOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await ai.generate({
+      model: googleAI('gemini-pro'),
+      prompt: {
+        template: prompt.prompt,
+        input: input,
+      },
+      output: {
+        schema: prompt.output.schema,
+      },
+    });
     return output!;
   }
 );

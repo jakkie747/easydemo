@@ -1,4 +1,3 @@
-
 'use server';
 /**
  * @fileOverview AI assistant for generating lesson plans.
@@ -10,6 +9,7 @@
 
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
+import {googleAI} from '@genkit-ai/googleai';
 
 const GenerateLessonPlanInputSchema = z.object({
   topic: z.string().describe('The main topic or theme for the lesson.'),
@@ -56,7 +56,16 @@ const generateLessonPlanFlow = ai.defineFlow(
     outputSchema: GenerateLessonPlanOutputSchema,
   },
   async input => {
-    const {output} = await prompt(input);
+    const {output} = await ai.generate({
+      model: googleAI('gemini-pro'),
+      prompt: {
+        template: prompt.prompt,
+        input: input,
+      },
+      output: {
+        schema: prompt.output.schema,
+      },
+    });
     return output!;
   }
 );
