@@ -15,6 +15,7 @@ import {
   Card,
   CardContent,
   CardDescription,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
@@ -28,7 +29,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2 } from "lucide-react";
+import { Loader2, ArrowLeft } from "lucide-react";
 
 const loginSchema = z.object({
   email: z.string().email("Please enter a valid email address."),
@@ -128,6 +129,11 @@ export default function LoginPage() {
             </Link>
           </div>
         </CardContent>
+        <CardFooter className="justify-center">
+            <Button variant="link" asChild>
+                <Link href="/"><ArrowLeft/> Back to Home</Link>
+            </Button>
+        </CardFooter>
       </Card>
     </div>
   );
