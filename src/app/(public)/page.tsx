@@ -2,7 +2,7 @@
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from '@/components/ui/card';
 import { Calendar, ArrowRight } from 'lucide-react';
 import { getGalleryImages, getEvents } from '@/lib/firestore';
 import type { GalleryImage, Event } from '@/lib/types';
@@ -80,8 +80,19 @@ export default async function Home() {
             <h2 className="font-headline text-4xl font-bold text-primary text-center">Upcoming Events</h2>
             <p className="mt-2 text-muted-foreground max-w-2xl mx-auto text-center">Stay up to date with our latest activities and gatherings.</p>
             <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
-                {upcomingEvents.map((event, index) => (
+                {upcomingEvents.map((event) => (
                     <Card key={event.id} className="flex flex-col">
+                        {event.imageUrl && (
+                          <div className="relative w-full h-40">
+                              <Image
+                                  src={event.imageUrl}
+                                  alt={event.title}
+                                  layout="fill"
+                                  objectFit="cover"
+                                  className="rounded-t-lg"
+                              />
+                          </div>
+                        )}
                         <CardHeader>
                             <CardTitle className="font-headline text-xl text-accent">{event.title}</CardTitle>
                             <CardDescription className="flex items-center gap-2 pt-1"><Calendar className="h-4 w-4"/> {event.date}</CardDescription>
