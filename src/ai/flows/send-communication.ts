@@ -114,40 +114,47 @@ const sendCommunicationFlow = ai.defineFlow(
   async (input) => {
     
     const llmResponse = await communicationPrompt(input);
-    
+    const toolRequests = llmResponse.toolRequests;
+
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
-    let allToolOutputs = [];
 
-    for (const toolRequest of llmResponse.toolRequests) {
-        if (toolRequest.input?.body) {
-            finalMessage = toolRequest.input.body;
-        }
-
+    if (toolRequests.length > 0) {
+      const firstRequestBody = toolRequests[0].input?.body;
+      if (typeof firstRequestBody === 'string') {
+        finalMessage = firstRequestBody;
+      }
+    }
+    
+    for (const toolRequest of toolRequests) {
         let output;
         let success = false;
+        let channelName = '';
 
         switch (toolRequest.name) {
             case 'sendEmail':
                 output = await sendEmailTool(toolRequest.input);
-                if (output.success) successfulChannels.push('email');
+                success = output.success;
+                channelName = 'email';
                 break;
             case 'sendPushNotification':
                 output = await sendPushNotificationTool(toolRequest.input);
-                if (output.success) successfulChannels.push('push');
+                success = output.success;
+                channelName = 'push';
                 break;
             case 'sendWhatsApp':
                 output = await sendWhatsAppTool(toolRequest.input);
-                if (output.success) successfulChannels.push('whatsapp');
+                success = output.success;
+                channelName = 'whatsapp';
                 break;
             default:
-                throw new Error(`Unsupported tool: ${toolRequest.name}`);
+                console.warn(`Unsupported tool: ${toolRequest.name}`);
+                continue;
         }
 
-        allToolOutputs.push({
-            tool: `tool/${toolRequest.name}`,
-            output,
-        });
+        if (success) {
+            successfulChannels.push(channelName);
+        }
     }
 
     return {
