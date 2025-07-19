@@ -4,6 +4,8 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Calendar, ArrowRight } from 'lucide-react';
+import { getGalleryImages } from '@/lib/firestore';
+import type { GalleryImage } from '@/lib/types';
 
 const upcomingEvents = [
     {
@@ -23,26 +25,10 @@ const upcomingEvents = [
     }
 ];
 
-const galleryImages = [
-    {
-        src: "https://placehold.co/400x300.png",
-        alt: "Children painting together",
-        "data-ai-hint": "children painting",
-    },
-    {
-        src: "https://placehold.co/400x300.png",
-        alt: "Kids playing on a playground",
-        "data-ai-hint": "kids playground",
-    },
-    {
-        src: "https://placehold.co/400x300.png",
-        alt: "A child reading a book in a cozy corner",
-        "data-ai-hint": "child reading",
-    }
-];
+export default async function Home() {
+  const allGalleryImages: GalleryImage[] = await getGalleryImages();
+  const galleryImages = allGalleryImages.slice(0, 3);
 
-
-export default function Home() {
   return (
     <>
       {/* Hero Section */}
@@ -133,14 +119,13 @@ export default function Home() {
             <h2 className="font-headline text-4xl font-bold text-primary text-center">From Our Gallery</h2>
             <p className="mt-2 text-muted-foreground max-w-2xl mx-auto text-center">A glimpse into the daily life and special moments at Easyspark.</p>
             <div className="mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-              {galleryImages.map((image, index) => (
-                <div key={index} className="overflow-hidden rounded-lg shadow-md">
+              {galleryImages.map((image) => (
+                <div key={image.id} className="overflow-hidden rounded-lg shadow-md">
                   <Image
-                    src={image.src}
-                    alt={image.alt}
+                    src={image.url}
+                    alt={image.description || 'Gallery photo'}
                     width={400}
                     height={300}
-                    data-ai-hint={image['data-ai-hint']}
                     className="w-full h-full object-cover aspect-video transition-transform duration-300 hover:scale-105"
                   />
                 </div>
