@@ -5,14 +5,14 @@ const nextConfig = {
       {
         protocol: 'https',
         hostname: 'placehold.co',
-        port: '',
-        pathname: '/**',
       },
       {
         protocol: 'https',
         hostname: 'i.pravatar.cc',
-        port: '',
-        pathname: '/**',
+      },
+       {
+        protocol: 'https',
+        hostname: 'firebasestorage.googleapis.com',
       }
     ],
   },

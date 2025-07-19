@@ -1,3 +1,4 @@
+
 import type { Teacher, Child, Parent } from './types';
 
 export const teachers: Teacher[] = [

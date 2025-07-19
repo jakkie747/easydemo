@@ -1,3 +1,4 @@
+
 import { TeachersClient } from "./client";
 import { getTeachers } from "@/lib/firestore";
 import type { Teacher } from "@/lib/types";

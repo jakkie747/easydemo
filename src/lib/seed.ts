@@ -1,34 +1,39 @@
 
 'use server';
 
-import { collection, getDocs, addDoc, setDoc, doc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
 import { db } from './firebase';
 import { teachers as mockTeachers, children as mockChildren, parents as mockParents } from './mock-data';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from './firebase';
 
 async function seedCollection(collectionName: string, data: any[], idKey?: string) {
     const collectionRef = collection(db, collectionName);
-    const snapshot = await getDocs(collectionRef);
-    
-    if (!snapshot.empty) {
-        console.log(`Collection ${collectionName} already contains data. Seeding aborted.`);
-        return { name: collectionName, status: 'skipped', count: 0 };
-    }
-
     let count = 0;
     for (const item of data) {
+        let docRef;
         if (idKey && item[idKey]) {
-            const docRef = doc(db, collectionName, item[idKey]);
-            await setDoc(docRef, item);
+            docRef = doc(db, collectionName, item[idKey]);
         } else {
             const { id, ...itemData } = item;
-            await addDoc(collectionRef, itemData);
+            docRef = doc(collectionRef, id); // Create a new doc reference if no idKey
         }
-        count++;
+        
+        const docSnap = await getDoc(docRef);
+        if (!docSnap.exists()) {
+             if (idKey && item[idKey]) {
+                await setDoc(docRef, item);
+             } else {
+                const { id, ...itemData } = item;
+                await addDoc(collectionRef, itemData);
+             }
+            count++;
+        }
     }
-    console.log(`Seeded ${count} documents into ${collectionName}`);
-    return { name: collectionName, status: 'seeded', count };
+    if (count > 0) {
+        console.log(`Seeded ${count} new documents into ${collectionName}`);
+    }
+    return { name: collectionName, status: count > 0 ? 'seeded' : 'skipped', count };
 }
 
 async function seedParentsAndAuth() {
@@ -38,47 +43,27 @@ async function seedParentsAndAuth() {
 
     for (const parentData of mockParents) {
         try {
-            let userId: string;
+            const userCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
+            const userId = userCredential.user.uid;
             
-            // Check if user already exists in Auth
-            try {
-                // Try to sign in to see if user exists. This is a workaround since there's no direct "checkUserExists" on client SDK.
-                const userCredential = await signInWithEmailAndPassword(auth, parentData.email, 'password123');
-                userId = userCredential.user.uid;
-                console.log(`User with email ${parentData.email} already exists. Using existing UID.`);
-            } catch (error: any) {
-                // If sign-in fails because of wrong password or user not found, try to create the user.
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    const newUserCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
-                    userId = newUserCredential.user.uid;
-                } else {
-                    // Re-throw other errors
-                    throw error;
-                }
-            }
-            
-            // Check if Firestore document exists
             const docRef = doc(db, collectionName, userId);
-            const docSnap = await getDoc(docRef);
-
-            if (!docSnap.exists()) {
-                const parentDoc = {
-                    id: userId,
-                    ...parentData
-                };
-                await setDoc(docRef, parentDoc);
-                count++;
-            } else {
-                 console.log(`Parent document for ${parentData.email} already exists. Skipping Firestore write.`);
-            }
-
+            const parentDoc = {
+                id: userId,
+                ...parentData
+            };
+            await setDoc(docRef, parentDoc);
+            count++;
         } catch (error: any) {
-            console.error(`Error seeding parent ${parentData.email}:`, error);
+             if (error.code !== 'auth/email-already-in-use') {
+                console.error(`Error seeding parent ${parentData.email}:`, error);
+            }
         }
     }
 
-    console.log(`Seeded ${count} new documents into ${collectionName} and created/verified auth users.`);
-    return { name: collectionName, status: 'seeded', count };
+    if (count > 0) {
+      console.log(`Seeded ${count} new documents into ${collectionName} and created auth users.`);
+    }
+    return { name: collectionName, status: count > 0 ? 'seeded' : 'skipped', count };
 }
 
 
@@ -95,7 +80,7 @@ export async function seedDatabase() {
     if (seededCount > 0) {
         return { success: true, count: seededCount, message: `Successfully seeded ${seededCount} new documents.` };
     } else {
-        return { success: false, message: 'Database already contains data. Seeding aborted for all collections.' };
+        return { success: true, count: 0, message: 'Database already contains data or no new data was seeded.' };
     }
 
   } catch (error) {
