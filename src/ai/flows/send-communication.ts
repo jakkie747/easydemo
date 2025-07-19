@@ -9,7 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit/zod';
+import {z} from 'zod';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -112,7 +112,7 @@ const sendCommunicationFlow = ai.defineFlow(
   },
   async (input) => {
     
-    const llmResponse = await prompt.generate({input});
+    const llmResponse = await prompt(input);
     const toolRequests = llmResponse.toolRequests();
 
     let finalMessage = input.message;
@@ -148,5 +148,5 @@ const sendCommunicationFlow = ai.defineFlow(
 
 
 export async function sendCommunication(input: SendCommunicationInput): Promise<SendCommunicationOutput> {
-  return sendCommunicationFlow.invoke(input);
+  return sendCommunicationFlow(input);
 }

@@ -7,11 +7,11 @@
  *
  * - generateActivityIdeas - A function that generates story starters and activity ideas.
  * - GenerateActivityIdeasInput - The input type for the generateActivityIdeas function.
- * - GenerateActivityIdeasOutput - The return type for the generateActivityIdeas function.
+ * - GenerateActivityIdeasOutput - The return type for the generateActivityideas function.
  */
 
 import {ai} from '@/ai/genkit';
-import {z} from 'genkit/zod';
+import {z} from 'zod';
 
 const GenerateActivityIdeasInputSchema = z.object({
   topic: z.string().describe('The topic or theme for the story starters and activity ideas.'),
@@ -32,7 +32,7 @@ const GenerateActivityIdeasOutputSchema = z.object({
 export type GenerateActivityIdeasOutput = z.infer<typeof GenerateActivityIdeasOutputSchema>;
 
 export async function generateActivityIdeas(input: GenerateActivityIdeasInput): Promise<GenerateActivityIdeasOutput> {
-  return generateActivityIdeasFlow.invoke(input);
+  return generateActivityIdeasFlow(input);
 }
 
 const prompt = ai.definePrompt({
@@ -57,7 +57,7 @@ const generateActivityIdeasFlow = ai.defineFlow(
     outputSchema: GenerateActivityIdeasOutputSchema,
   },
   async input => {
-    const {output} = await prompt.generate({input});
+    const {output} = await prompt(input);
     return output!;
   }
 );
