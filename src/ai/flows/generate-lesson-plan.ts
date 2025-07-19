@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 
 const GenerateLessonPlanInputSchema = z.object({
@@ -37,6 +38,7 @@ export async function generateLessonPlan(input: GenerateLessonPlanInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'generateLessonPlanPrompt',
+  model: googleAI('gemini-pro'),
   inputSchema: GenerateLessonPlanInputSchema,
   outputSchema: GenerateLessonPlanOutputSchema,
   prompt: `You are an expert curriculum designer for early childhood education. Your task is to create a detailed, engaging, and age-appropriate lesson plan.

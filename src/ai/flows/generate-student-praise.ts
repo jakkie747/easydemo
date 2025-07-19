@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 
 const GenerateStudentPraiseInputSchema = z.object({
@@ -29,6 +30,7 @@ export async function generateStudentPraise(input: GenerateStudentPraiseInput): 
 
 const prompt = ai.definePrompt({
   name: 'generateStudentPraisePrompt',
+  model: googleAI('gemini-pro'),
   inputSchema: GenerateStudentPraiseInputSchema,
   outputSchema: GenerateStudentPraiseOutputSchema,
   prompt: `You are a preschool teacher who is an expert in positive reinforcement. Your task is to write a short, unique, and encouraging note of praise for a student. Avoid generic phrases like "Good job" or "Awesome".

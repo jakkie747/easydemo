@@ -9,6 +9,7 @@
  */
 
 import {ai} from '@/ai/genkit';
+import {googleAI} from '@genkit-ai/googleai';
 import {z} from 'zod';
 import { runTool } from 'genkit/experimental';
 
@@ -92,6 +93,7 @@ const sendWhatsAppTool = ai.defineTool(
 
 const communicationPrompt = ai.definePrompt({
   name: 'communicationPrompt',
+  model: googleAI('gemini-pro'),
   inputSchema: SendCommunicationInputSchema,
   system: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
 Your primary tasks are to:
