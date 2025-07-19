@@ -28,11 +28,11 @@ export default function Home() {
           <div>
             <Image 
               src="/hero-image.png"
-              data-ai-hint="children playing daycare"
               alt="Children playing happily at a daycare" 
               width={600} 
               height={400}
               className="rounded-lg shadow-xl"
+              priority
             />
           </div>
         </div>

@@ -55,7 +55,7 @@ function AdminSidebar() {
             <div className="flex h-full max-h-screen flex-col gap-2">
                 <div className="flex h-16 items-center border-b px-4 lg:px-6">
                      <Link href="/" className="flex items-center gap-2">
-                        <Logo />
+                        <Logo className="h-12 w-12" />
                     </Link>
                 </div>
                 <div className="flex-1">

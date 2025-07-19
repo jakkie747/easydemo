@@ -28,7 +28,7 @@ export function Header() {
       <div className="container flex h-full items-center">
         <div className="mr-auto flex items-center">
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-14 w-14" />
+            <Logo className="h-12 w-12" />
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
