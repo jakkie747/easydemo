@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating personalized student praise.
@@ -29,8 +30,8 @@ export async function generateStudentPraise(input: GenerateStudentPraiseInput): 
 
 const prompt = ai.definePrompt({
   name: 'generateStudentPraisePrompt',
-  input: {schema: GenerateStudentPraiseInputSchema},
-  output: {schema: GenerateStudentPraiseOutputSchema},
+  inputSchema: GenerateStudentPraiseInputSchema,
+  outputSchema: GenerateStudentPraiseOutputSchema,
   prompt: `You are a preschool teacher who is an expert in positive reinforcement. Your task is to write a short, unique, and encouraging note of praise for a student. Avoid generic phrases like "Good job" or "Awesome".
 
   Student's Name: {{{studentName}}}
@@ -50,12 +51,10 @@ const generateStudentPraiseFlow = ai.defineFlow(
   async input => {
     const {output} = await ai.generate({
       model: googleAI('gemini-pro'),
-      prompt: {
-        template: prompt.prompt,
-        input: input,
-      },
+      prompt: prompt.prompt!,
+      input,
       output: {
-        schema: prompt.output.schema,
+        schema: prompt.outputSchema,
       },
     });
     return output!;

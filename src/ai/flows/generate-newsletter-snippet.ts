@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating parent newsletter snippets.
@@ -30,8 +31,8 @@ export async function generateNewsletterSnippet(input: GenerateNewsletterSnippet
 
 const prompt = ai.definePrompt({
   name: 'generateNewsletterSnippetPrompt',
-  input: {schema: GenerateNewsletterSnippetInputSchema},
-  output: {schema: GenerateNewsletterSnippetOutputSchema},
+  inputSchema: GenerateNewsletterSnippetInputSchema,
+  outputSchema: GenerateNewsletterSnippetOutputSchema,
   prompt: `You are an expert at writing communications for a preschool/daycare. Your task is to write a newsletter snippet for parents based on the provided information.
 
   Tone: {{{tone}}}
@@ -57,12 +58,10 @@ const generateNewsletterSnippetFlow = ai.defineFlow(
   async input => {
     const {output} = await ai.generate({
       model: googleAI('gemini-pro'),
-      prompt: {
-        template: prompt.prompt,
-        input: input,
-      },
+      prompt: prompt.prompt!,
+      input,
       output: {
-        schema: prompt.output.schema,
+        schema: prompt.outputSchema,
       },
     });
     return output!;

@@ -1,3 +1,4 @@
+
 // src/ai/flows/generate-activity-ideas.ts
 'use server';
 
@@ -37,8 +38,8 @@ export async function generateActivityIdeas(input: GenerateActivityIdeasInput): 
 
 const prompt = ai.definePrompt({
   name: 'generateActivityIdeasPrompt',
-  input: {schema: GenerateActivityIdeasInputSchema},
-  output: {schema: GenerateActivityIdeasOutputSchema},
+  inputSchema: GenerateActivityIdeasInputSchema,
+  outputSchema: GenerateActivityIdeasOutputSchema,
   prompt: `You are a creative assistant for teachers, helping them generate story starters and activity ideas for their class.
 
   Generate {{numIdeas}} story starters and {{numIdeas}} activity ideas for the following topic and grade level.
@@ -59,12 +60,10 @@ const generateActivityIdeasFlow = ai.defineFlow(
   async input => {
     const {output} = await ai.generate({
       model: googleAI('gemini-pro'),
-      prompt: {
-        template: prompt.prompt,
-        input: input,
-      },
+      prompt: prompt.prompt!,
+      input,
       output: {
-        schema: prompt.output.schema,
+        schema: prompt.outputSchema,
       },
     });
     return output!;

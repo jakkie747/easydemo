@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview AI assistant for generating lesson plans.
@@ -37,8 +38,8 @@ export async function generateLessonPlan(input: GenerateLessonPlanInput): Promis
 
 const prompt = ai.definePrompt({
   name: 'generateLessonPlanPrompt',
-  input: {schema: GenerateLessonPlanInputSchema},
-  output: {schema: GenerateLessonPlanOutputSchema},
+  inputSchema: GenerateLessonPlanInputSchema,
+  outputSchema: GenerateLessonPlanOutputSchema,
   prompt: `You are an expert curriculum designer for early childhood education. Your task is to create a detailed, engaging, and age-appropriate lesson plan.
 
   Topic: {{{topic}}}
@@ -58,12 +59,10 @@ const generateLessonPlanFlow = ai.defineFlow(
   async input => {
     const {output} = await ai.generate({
       model: googleAI('gemini-pro'),
-      prompt: {
-        template: prompt.prompt,
-        input: input,
-      },
+      prompt: prompt.prompt!,
+      input,
       output: {
-        schema: prompt.output.schema,
+        schema: prompt.outputSchema,
       },
     });
     return output!;

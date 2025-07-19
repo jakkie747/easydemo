@@ -1,3 +1,4 @@
+
 'use server';
 /**
  * @fileOverview An AI agent for sending communications to parents.
@@ -10,6 +11,7 @@
 import {ai} from '@/ai/genkit';
 import {z} from 'zod';
 import {googleAI} from '@genkit-ai/googleai';
+import { runTool } from 'genkit/experimental';
 
 const SendCommunicationInputSchema = z.object({
   message: z.string().describe('The core message or notes from the admin. The AI should expand this into a friendly, clear, and professional announcement.'),
@@ -91,7 +93,7 @@ const sendWhatsAppTool = ai.defineTool(
 
 const prompt = ai.definePrompt({
   name: 'communicationPrompt',
-  input: {schema: SendCommunicationInputSchema},
+  inputSchema: SendCommunicationInputSchema,
   system: `You are an expert school administrator, skilled in crafting clear, friendly, and professional communications for parents.
 Your primary tasks are to:
 1.  Take the user's message/notes and expand it into a well-formatted and professional announcement.
@@ -114,33 +116,30 @@ const sendCommunicationFlow = ai.defineFlow(
     
     const llmResponse = await ai.generate({
         model: googleAI('gemini-pro'),
-        prompt: {
-            template: prompt.prompt!,
-            input: input,
-        },
+        prompt: prompt.prompt!,
+        input,
         system: prompt.system,
         tools: prompt.tools,
     });
-    const toolRequests = llmResponse.toolRequests();
-
+    
     let finalMessage = input.message;
     let successfulChannels: string[] = [];
 
-    for (const toolRequest of toolRequests) {
+    for (const toolRequest of llmResponse.toolRequests) {
         // Assume the 'body' argument contains the AI-drafted message
-        if (toolRequest.tool.input.body) {
-            finalMessage = toolRequest.tool.input.body;
+        if (toolRequest.input.body) {
+            finalMessage = toolRequest.input.body;
         }
 
-        const { output } = await ai.runTool(toolRequest);
+        const { output } = await runTool(toolRequest);
         
         // If the tool call was successful, add the channel to our list
         if (output?.success) {
-            if (toolRequest.tool.name === 'sendEmail') {
+            if (toolRequest.name === 'sendEmail') {
                 successfulChannels.push('email');
-            } else if (toolRequest.tool.name === 'sendPushNotification') {
+            } else if (toolRequest.name === 'sendPushNotification') {
                 successfulChannels.push('push');
-            } else if (toolRequest.tool.name === 'sendWhatsApp') {
+            } else if (toolRequest.name === 'sendWhatsApp') {
                 successfulChannels.push('whatsapp');
             }
         }
