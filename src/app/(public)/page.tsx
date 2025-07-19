@@ -38,9 +38,9 @@ export default async function Home() {
           <Image
             src="/hero.png"
             alt="Children playing happily at a daycare"
-            width={1200}
+            width={800}
             height={600}
-            className="rounded-lg shadow-xl mx-auto mt-10 w-full max-w-4xl h-auto"
+            className="rounded-full aspect-video object-cover mx-auto mt-10 shadow-lg w-full max-w-lg h-auto"
             priority
           />
         </div>
@@ -86,9 +86,9 @@ export default async function Home() {
                               <Image
                                   src={event.imageUrl}
                                   alt={event.title}
-                                  layout="fill"
-                                  objectFit="cover"
-                                  className="rounded-t-lg"
+                                  fill
+                                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                                  className="object-cover rounded-t-lg"
                               />
                           </div>
                         )}
