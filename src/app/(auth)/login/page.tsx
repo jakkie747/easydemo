@@ -125,7 +125,7 @@ export default function LoginPage() {
           title: "Teacher Login Successful!",
           description: "Redirecting to the teacher dashboard.",
         });
-        router.push("/admin/dashboard");
+        router.push("/teacher/dashboard");
         return; 
       } 
       

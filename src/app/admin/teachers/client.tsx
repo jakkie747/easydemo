@@ -71,13 +71,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { MoreHorizontal, PlusCircle, Database, Loader2 } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
 import type { Teacher } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
 import { addTeacher, updateTeacher } from "@/lib/firestore";
 import { deleteTeacher } from "@/lib/firebase-server";
-import { seedDatabase } from "@/lib/seed";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -221,26 +220,6 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
   const { toast } = useToast();
   const router = useRouter();
   const [isDeleting, setIsDeleting] = React.useState(false);
-  const [isSeeding, setIsSeeding] = React.useState(false);
-
-  const handleSeed = async () => {
-    setIsSeeding(true);
-    const result = await seedDatabase();
-    if (result.success) {
-      toast({
-        title: "Database Seeded!",
-        description: `${result.count} documents were added. The page will now refresh.`,
-      });
-      router.refresh();
-    } else {
-       toast({
-        variant: "destructive",
-        title: "Seeding Failed",
-        description: result.message,
-      });
-    }
-    setIsSeeding(false);
-  };
 
   const handleDelete = async (teacherId: string) => {
     setIsDeleting(true);
@@ -264,10 +243,6 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
             <p className="text-muted-foreground">View, add, edit, or remove teachers from your center.</p>
         </div>
         <div className="flex gap-2">
-           <Button variant="outline" onClick={handleSeed} disabled={isSeeding}>
-              {isSeeding ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Database className="mr-2 h-4 w-4" />}
-              Seed Database
-            </Button>
             <TeacherFormDialog mode="add" onComplete={() => router.refresh()} />
         </div>
       </div>
@@ -353,7 +328,7 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
               ) : (
                  <TableRow>
                     <TableCell colSpan={5} className="h-24 text-center">
-                      No teachers found. Try seeding the database to get started.
+                      No teachers found. You can add one or seed the database from the settings page.
                     </TableCell>
                   </TableRow>
               )}

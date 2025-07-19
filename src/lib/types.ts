@@ -24,9 +24,9 @@ export type Child = {
     classroom: string;
     age: number;
     parent: string;
-    dob?: string;
-    allergies?: string;
-    emergencyContact?: {
+    dob: string;
+    allergies: string;
+    emergencyContact: {
         name: string;
         relation: string;
         phone: string;
@@ -38,9 +38,9 @@ export type Parent = {
     name: string;
     avatar: string;
     email: string;
-    phone?: string;
+    phone: string;
     children: string[];
-    childDetails?: Child[];
+    childDetails: Child[];
 };
 
 export type GalleryImage = {

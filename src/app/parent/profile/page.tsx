@@ -49,7 +49,7 @@ const emergencyContactSchema = z.object({
     phone: z.string().min(1, "Phone number is required."),
 });
 const accountSchema = z.object({
-    currentPassword: z.string().min(6, "Current password is required."),
+    currentPassword: z.string().min(1, "Current password is required."),
     newPassword: z.string().min(6, "New password must be at least 6 characters."),
 }).refine(data => data.currentPassword !== data.newPassword, {
     message: "New password must be different from the current one.",
@@ -82,14 +82,14 @@ export default function ProfilePage() {
                 const mainChild = parent.childDetails[0];
                 setChildData(mainChild);
                 // Initialize forms
-                childForm.reset({ name: mainChild.name, dob: mainChild.dob, allergies: mainChild.allergies });
-                parentForm.reset({ name: parent.name, phone: parent.phone });
+                childForm.reset({ name: mainChild.name, dob: mainChild.dob, allergies: mainChild.allergies || "" });
+                parentForm.reset({ name: parent.name, phone: parent.phone || "" });
                 if (mainChild.emergencyContact) {
                     emergencyForm.reset(mainChild.emergencyContact);
                 }
             } else if (parent) {
                 // Initialize parent form even if no child is linked yet
-                parentForm.reset({ name: parent.name, phone: parent.phone });
+                parentForm.reset({ name: parent.name, phone: parent.phone || "" });
             }
         } catch(e) {
             console.error(e);
@@ -105,7 +105,7 @@ export default function ProfilePage() {
   const onChildSubmit = async (values: z.infer<typeof childInfoSchema>) => {
     if (!childData) return;
     try {
-        await updateChild(childData.id, { ...childData, name: values.name, dob: values.dob, allergies: values.allergies });
+        await updateChild(childData.id, { ...childData, ...values, allergies: values.allergies || "" });
         toast({ title: "Child Info Updated", description: "Your child's information has been saved." });
     } catch (error) {
         toast({ variant: 'destructive', title: "Update Failed", description: "Could not save changes." });
@@ -115,7 +115,7 @@ export default function ProfilePage() {
   const onParentSubmit = async (values: z.infer<typeof parentInfoSchema>) => {
     if (!parentData) return;
      try {
-        await updateParent(parentData.id, { ...parentData, name: values.name, phone: values.phone });
+        await updateParent(parentData.id, { ...values });
         toast({ title: "Your Info Updated", description: "Your information has been saved." });
     } catch (error) {
         toast({ variant: 'destructive', title: "Update Failed", description: "Could not save changes." });
@@ -168,7 +168,7 @@ export default function ProfilePage() {
         <div className="mb-6">
           <Button variant="outline" size="sm" asChild>
               <Link href="/parent/dashboard">
-                  <ArrowLeft />
+                  <ArrowLeft className="mr-2 h-4 w-4" />
                   Back to Dashboard
               </Link>
           </Button>
@@ -204,7 +204,7 @@ export default function ProfilePage() {
                             <FormItem><FormLabel>Allergies & Medical Notes</FormLabel><FormControl><Textarea placeholder="e.g., Peanuts, lactose intolerant" {...field} /></FormControl><FormMessage /></FormItem>
                         )} />
                     </>}
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-4">
                       <Button type="submit" disabled={childForm.formState.isSubmitting || !childData}>
                         {childForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
@@ -238,7 +238,7 @@ export default function ProfilePage() {
                   <FormField control={parentForm.control} name="phone" render={({ field }) => (
                         <FormItem><FormLabel>Phone Number</FormLabel><FormControl><Input type="tel" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-4">
                       <Button type="submit" disabled={parentForm.formState.isSubmitting}>
                         {parentForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
@@ -275,7 +275,7 @@ export default function ProfilePage() {
                         )} />
                   </div>
                   </>}
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-4">
                       <Button type="submit" disabled={emergencyForm.formState.isSubmitting || !childData}>
                         {emergencyForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save Changes
@@ -304,7 +304,7 @@ export default function ProfilePage() {
                      <FormField control={accountForm.control} name="newPassword" render={({ field }) => (
                         <FormItem><FormLabel>New Password</FormLabel><FormControl><Input type="password" {...field} /></FormControl><FormMessage /></FormItem>
                     )} />
-                  <div className="flex justify-end">
+                  <div className="flex justify-end pt-4">
                       <Button type="submit" disabled={accountForm.formState.isSubmitting}>
                         {accountForm.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Update Password

@@ -1,22 +1,23 @@
 
 'use server';
 
-import { collection, getDocs, addDoc, setDoc, doc, getDoc } from 'firebase/firestore';
+import { collection, getDocs, addDoc, setDoc, doc, query, where } from 'firebase/firestore';
 import { db } from './firebase';
 import { teachers as mockTeachers, children as mockChildren, parents as mockParents } from './mock-data';
 import { getAuth, createUserWithEmailAndPassword } from 'firebase/auth';
 import { app } from './firebase';
 
-async function seedCollection(collectionName: string, data: any[], idKey?: string) {
+async function seedCollection(collectionName: string, data: any[]) {
     const collectionRef = collection(db, collectionName);
     let count = 0;
     for (const item of data) {
-        const docId = idKey ? item[idKey] : item.id;
-        const docRef = doc(collectionRef, docId);
-        
-        const docSnap = await getDoc(docRef);
-        if (!docSnap.exists()) {
-            await setDoc(docRef, item);
+        // Simple check to see if a document with this name/email already exists
+        const field = item.email ? 'email' : 'name';
+        const q = query(collectionRef, where(field, "==", item[field]));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) {
+            await addDoc(collectionRef, item);
             count++;
         }
     }
@@ -33,19 +34,17 @@ async function seedParentsAndAuth() {
 
     for (const parentData of mockParents) {
         try {
-            // Check if user already exists
+            // Check if user already exists in Firestore
             const q = query(collection(db, collectionName), where("email", "==", parentData.email));
             const querySnapshot = await getDocs(q);
+
             if (querySnapshot.empty) {
+                // User doesn't exist in Firestore, so create in Auth and Firestore
                 const userCredential = await createUserWithEmailAndPassword(auth, parentData.email, 'password123'); // Using a default password
                 const userId = userCredential.user.uid;
                 
-                const docRef = doc(db, collectionName, userId);
-                const parentDoc = {
-                    id: userId,
-                    ...parentData
-                };
-                await setDoc(docRef, parentDoc);
+                const parentDoc = { ...parentData };
+                await setDoc(doc(db, collectionName, userId), parentDoc);
                 count++;
             }
         } catch (error: any) {
@@ -65,8 +64,8 @@ async function seedParentsAndAuth() {
 export async function seedDatabase() {
   try {
     const results = await Promise.all([
-        seedCollection('teachers', mockTeachers, 'id'),
-        seedCollection('children', mockChildren, 'id'),
+        seedCollection('teachers', mockTeachers),
+        seedCollection('children', mockChildren),
         seedParentsAndAuth(),
     ]);
     
