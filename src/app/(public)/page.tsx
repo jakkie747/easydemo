@@ -1,34 +1,87 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Home() {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-background">
-      <div className="text-center p-8 border-4 border-dashed border-primary/20 rounded-lg max-w-2xl mx-auto">
-        <h1 className="font-headline text-6xl font-bold text-primary">
-          Welcome to Easyspark!
-        </h1>
-        <p className="mt-4 text-xl text-foreground/80">
-          Your all-in-one solution for managing your daycare or preschool. Explore the features below.
-        </p>
-        <div className="mt-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
-          <div className="p-6 border rounded-lg bg-card">
-            <h2 className="font-headline text-2xl text-accent">For Parents</h2>
-            <p className="text-muted-foreground mt-2 mb-4">Stay connected with your child's day-to-day activities, view reports, and communicate with teachers.</p>
-            <Button asChild className="w-full">
+    <>
+      {/* Hero Section */}
+      <section className="bg-primary/5 py-20 md:py-32">
+        <div className="container mx-auto px-4 grid md:grid-cols-2 gap-12 items-center">
+          <div>
+            <h1 className="font-headline text-5xl md:text-7xl font-bold text-primary">
+              Simplify Your Childcare Management
+            </h1>
+            <p className="mt-4 text-lg text-foreground/80">
+              Easyspark is the all-in-one platform to manage your preschool or daycare. Handle registrations, parent communication, and daily reports with ease.
+            </p>
+            <div className="mt-8 flex gap-4">
+              <Button size="lg" asChild>
+                <Link href="/register/preschool">Enroll Now</Link>
+              </Button>
+              <Button size="lg" variant="outline" asChild>
                 <Link href="/login">Parent Login</Link>
-            </Button>
+              </Button>
+            </div>
           </div>
-          <div className="p-6 border rounded-lg bg-card">
-            <h2 className="font-headline text-2xl text-accent">For Admins</h2>
-            <p className="text-muted-foreground mt-2 mb-4">Manage children, parents, staff, communications, and leverage AI tools to streamline your workflow.</p>
-             <Button asChild className="w-full">
-                <Link href="/login">Admin Login</Link>
-            </Button>
+          <div>
+            <Image 
+              src="https://placehold.co/600x400.png"
+              data-ai-hint="children playing daycare"
+              alt="Children playing happily at a daycare" 
+              width={600} 
+              height={400}
+              className="rounded-lg shadow-xl"
+            />
           </div>
         </div>
-      </div>
-    </div>
+      </section>
+
+      {/* Features Section */}
+      <section id="programs" className="py-20">
+        <div className="container mx-auto px-4 text-center">
+          <h2 className="font-headline text-4xl font-bold text-primary">Our Programs</h2>
+          <p className="mt-2 text-muted-foreground max-w-2xl mx-auto">We offer programs designed to nurture and educate children at different stages of their early development.</p>
+          <div className="mt-12 grid grid-cols-1 md:grid-cols-2 gap-8 text-left">
+            <div className="p-8 border rounded-lg bg-card shadow-md">
+              <h3 className="font-headline text-2xl text-accent">Preschool Program</h3>
+              <p className="text-muted-foreground mt-2 mb-4">A play-based curriculum focusing on social skills, creativity, and school readiness for children ages 2-5.</p>
+              <Button asChild>
+                  <Link href="/register/preschool">Learn More & Register</Link>
+              </Button>
+            </div>
+            <div className="p-8 border rounded-lg bg-card shadow-md">
+              <h3 className="font-headline text-2xl text-accent">Afterschool Program</h3>
+              <p className="text-muted-foreground mt-2 mb-4">Homework help, STEM activities, and fun projects for school-aged children from Kindergarten to 5th grade.</p>
+               <Button asChild>
+                  <Link href="/register/afterschool">Learn More & Register</Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section id="testimonials" className="bg-primary/5 py-20">
+        <div className="container mx-auto px-4">
+           <h2 className="font-headline text-4xl font-bold text-primary text-center">What Parents Are Saying</h2>
+           <div className="mt-12 grid grid-cols-1 md:grid-cols-3 gap-8">
+              <div className="bg-card p-6 rounded-lg shadow-md">
+                <blockquote className="italic text-muted-foreground">"Easyspark has been a lifesaver! The daily reports keep me connected to my daughter's day, and the staff is amazing."</blockquote>
+                <p className="mt-4 font-semibold text-primary">- Sarah L.</p>
+              </div>
+               <div className="bg-card p-6 rounded-lg shadow-md">
+                <blockquote className="italic text-muted-foreground">"The registration process was so smooth, and we love the photo gallery. It feels like we're part of our son's day even when we're at work."</blockquote>
+                <p className="mt-4 font-semibold text-primary">- Mike J.</p>
+              </div>
+               <div className="bg-card p-6 rounded-lg shadow-md">
+                <blockquote className="italic text-muted-foreground">"The AI tools for the teachers are brilliant. The creative ideas and lesson plans are top-notch. Highly recommend!"</blockquote>
+                <p className="mt-4 font-semibold text-primary">- Emily C.</p>
+              </div>
+           </div>
+        </div>
+      </section>
+    </>
   );
 }
