@@ -60,8 +60,8 @@ If you are facing issues with the integrated deployment button, you can deploy t
 7.  **Deploy the App:**
     Now you are ready to deploy. Run the following command from your project's root directory:
     ```bash
-    firebase apphosting:backends:deploy easyspark-backend --region=us-central1
+    firebase apphosting:backends:deploy easyspark-backend
     ```
-    The `backendId` (`easyspark-backend`) and `region` (`us-central1`) are taken from your `apphosting.yaml` file. The CLI will build your Next.js application and deploy it to App Hosting.
+    The `backendId` (`easyspark-backend`) is taken from your `apphosting.yaml` file. The CLI will build your Next.js application and deploy it to App Hosting.
 
 After the command finishes, it will provide you with the URL where your live application is hosted.
