@@ -5,6 +5,8 @@ import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider } from '@/hooks/use-auth.tsx';
+import { Header } from '@/components/header';
+import { Footer } from '@/components/footer';
 
 const fontPoppins = Poppins({
   subsets: ['latin'],
@@ -41,7 +43,13 @@ export default function RootLayout({
         )}
       >
         <AuthProvider>
-          {children}
+            <div className="flex flex-col min-h-screen">
+              <Header />
+              <main className="flex-1">
+                {children}
+              </main>
+              <Footer />
+            </div>
           <Toaster />
         </AuthProvider>
       </body>
