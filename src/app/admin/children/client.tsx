@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+import Papa from "papaparse";
 
 import {
   Table,
@@ -53,12 +54,12 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
-import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
+import { MoreHorizontal, PlusCircle, Loader2, Upload } from "lucide-react";
 
 import type { Child } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addChild, updateChild } from "@/lib/firestore";
+import { addChild, updateChild, addChildrenBatch } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -302,6 +303,131 @@ function AddChildDialog({ onChildAdded }: { onChildAdded: () => void }) {
   );
 }
 
+function BulkUploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [file, setFile] = React.useState<File | null>(null);
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+        if (selectedFile.type === "text/csv" || selectedFile.name.endsWith('.tsv')) {
+            setFile(selectedFile);
+        } else {
+            toast({ variant: "destructive", title: "Invalid File Type", description: "Please upload a CSV or TSV file." });
+            e.target.value = ''; // Reset file input
+            setFile(null);
+        }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!file) {
+      toast({ variant: "destructive", title: "No file selected." });
+      return;
+    }
+    setIsLoading(true);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const requiredFields = ['name', 'classroom', 'age', 'parent'];
+        const headers = results.meta.fields || [];
+        const missingHeaders = requiredFields.filter(field => !headers.includes(field));
+
+        if (missingHeaders.length > 0) {
+          toast({
+            variant: "destructive",
+            title: "Missing Required Columns",
+            description: `Your file is missing the following columns: ${missingHeaders.join(', ')}`,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const childrenData: Omit<Child, 'id'>[] = results.data.map((row: any) => ({
+            name: row.name,
+            classroom: row.classroom,
+            age: parseInt(row.age, 10) || 0,
+            parent: row.parent,
+            avatar: row.avatar || `https://placehold.co/150x150.png`,
+            dob: row.dob || '',
+            allergies: row.allergies || '',
+            emergencyContact: {
+                name: row.emergencyName || '',
+                relation: row.emergencyRelation || '',
+                phone: row.emergencyPhone || '',
+            }
+        }));
+
+        try {
+            await addChildrenBatch(childrenData);
+            toast({
+                title: "Upload Successful!",
+                description: `${childrenData.length} children have been added.`
+            });
+            setFile(null);
+            setIsOpen(false);
+            onUploadComplete();
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Upload Failed",
+                description: "Could not add the children to the database. Please check the file and try again."
+            });
+        } finally {
+            setIsLoading(false);
+        }
+      },
+      error: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Parsing Error",
+          description: `There was an error parsing the file: ${error.message}`,
+        });
+        setIsLoading(false);
+      },
+    });
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Upload /> Bulk Upload
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Bulk Upload Children</DialogTitle>
+          <DialogDescription>
+            Upload a CSV or TSV file with children's details. The file must contain headers: name, classroom, age, parent.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+            <div className="space-y-2">
+                <Label htmlFor="bulk-file">CSV / TSV File</Label>
+                <Input id="bulk-file" type="file" accept=".csv, .tsv" onChange={handleFileChange} />
+                <p className="text-xs text-muted-foreground">
+                    Optional headers: avatar, dob, allergies, emergencyName, emergencyRelation, emergencyPhone.
+                </p>
+            </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleSubmit} disabled={isLoading || !file}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Upload File
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
 
 export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }) {
   const router = useRouter();
@@ -315,7 +441,10 @@ export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }
             View, add, edit, or remove children from your center.
           </p>
         </div>
-        <AddChildDialog onChildAdded={() => router.refresh()} />
+        <div className="flex gap-2">
+            <BulkUploadDialog onUploadComplete={() => router.refresh()} />
+            <AddChildDialog onChildAdded={() => router.refresh()} />
+        </div>
       </div>
       <Card>
         <CardHeader>

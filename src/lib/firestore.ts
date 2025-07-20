@@ -1,5 +1,5 @@
 
-import { collection, getDocs, addDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where, DocumentReference } from "firebase/firestore";
+import { collection, getDocs, addDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where, DocumentReference, writeBatch } from "firebase/firestore";
 import { db } from "./firebase";
 import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
 
@@ -83,6 +83,23 @@ export async function addChild(child: Omit<Child, 'id'>): Promise<DocumentRefere
         return await addDoc(collection(db, 'children'), child);
     } catch (error) {
         console.error("Error adding child:", error);
+        throw error;
+    }
+}
+
+export async function addChildrenBatch(children: Omit<Child, 'id'>[]): Promise<void> {
+    const batch = writeBatch(db);
+    const childrenCollection = collection(db, 'children');
+
+    children.forEach(child => {
+        const docRef = doc(childrenCollection);
+        batch.set(docRef, child);
+    });
+
+    try {
+        await batch.commit();
+    } catch (error) {
+        console.error("Error writing children batch:", error);
         throw error;
     }
 }
