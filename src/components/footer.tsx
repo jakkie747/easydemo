@@ -23,7 +23,6 @@ export function Footer() {
           <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
             <Link href="/#about" className="text-sm hover:text-primary transition-colors">About</Link>
             <Link href="/#programs" className="text-sm hover:text-primary transition-colors">Programs</Link>
-            <Link href="/#testimonials" className="text-sm hover:text-primary transition-colors">Testimonials</Link>
             <Link href="/login" className="text-sm hover:text-primary transition-colors">Parent Login</Link>
           </nav>
           <div className="flex items-center gap-4">
