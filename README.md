@@ -21,8 +21,8 @@ To allow GitHub to deploy on your behalf, you need to securely provide it with t
 
 **Step 1: Get Your Firebase Project ID**
 
-*   Go to your [Firebase Project Settings](https://console.firebase.google.com/project/easyspark-demo/settings/general).
-*   Your **Project ID** is listed there (it's `easyspark-demo`).
+*   Go to your [Firebase Project Settings](https://console.firebase.google.com/project/easyspark-demo-a42db/settings/general).
+*   Your **Project ID** is listed there (it's `easyspark-demo-a42db`).
 
 **Step 2: Get Your Service Account Key**
 
@@ -42,10 +42,10 @@ Secrets are encrypted environment variables that you can store in your GitHub re
 
     1.  **`FIREBASE_PROJECT_ID`**
         *   **Name:** `FIREBASE_PROJECT_ID`
-        *   **Value:** Paste your Firebase Project ID (e.g., `easyspark-demo`).
+        *   **Value:** Paste your Firebase Project ID (`easyspark-demo-a42db`).
 
-    2.  **`FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO`**
-        *   **Name:** `FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO`
+    2.  **`FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`**
+        *   **Name:** `FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`
         *   **Value:** Paste the entire content of the JSON service account key you copied earlier.
 
 ### Your New Workflow
