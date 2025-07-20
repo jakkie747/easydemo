@@ -6,62 +6,53 @@ To get started, take a look at `src/app/page.tsx`.
 
 ---
 
-## Deployment Guide
+## Deployment Guide (Automated via GitHub Actions)
 
-If you are facing issues with the integrated deployment button, you can deploy the application manually using the Firebase CLI. This gives you more control and provides more detailed feedback.
+Your project is now set up for automated deployments using GitHub Actions. This is the most reliable way to publish your app, as it bypasses issues with local command-line tools.
 
-### Prerequisites
+### How It Works
 
-1.  **Node.js:** Ensure you have Node.js (version 18 or later) installed on your local machine.
-2.  **Firebase Project:** Your Firebase project (`easyspark-demo`) should already be created.
-3.  **Billing Enabled:** Your Firebase project must be on the "Blaze (pay-as-you-go)" plan.
+1.  **Push to `main` branch**: Every time you push or merge code into your `main` branch on GitHub, the action will automatically build and deploy your application to your live production URL.
+2.  **Create a Pull Request**: If you create a pull request, a temporary preview version of the app will be deployed automatically. A comment will be added to the pull request with a link to the preview URL.
 
-### Step-by-Step Instructions
+### One-Time Setup: Connecting GitHub to Firebase
 
-1.  **Download Your Code:**
-    Download the complete source code of this application to your local machine.
+To allow GitHub to deploy on your behalf, you need to securely provide it with the necessary permissions. You only have to do this once.
 
-2.  **Install Firebase CLI:**
-    If you don't have it installed already, open your terminal and run the following command to install it globally:
-    ```bash
-    npm install -g firebase-tools
-    ```
+**Step 1: Get Your Firebase Project ID**
 
-3.  **Log in to Firebase:**
-    In your terminal, log in to your Google account:
-    ```bash
-    firebase login
-    ```
-    This will open a browser window for you to authenticate.
+*   Go to your [Firebase Project Settings](https://console.firebase.google.com/project/easyspark-demo/settings/general).
+*   Your **Project ID** is listed there (it's `easyspark-demo`).
 
-4.  **Configure Your Local Project:**
-    Navigate into your project's root directory in the terminal. You need to link your local code to your Firebase project. Since the configuration file (`apphosting.yaml`) already exists, you can set the project with this command:
-    ```bash
-    firebase use easyspark-demo
-    ```
+**Step 2: Get Your Service Account Key**
 
-5.  **Install Project Dependencies:**
-    Run this command to install all the necessary packages for the application:
-    ```bash
-    npm install
-    ```
+This is a secure key that lets GitHub Actions access your Firebase project.
+*   In your Firebase Project Settings, go to the **Service Accounts** tab.
+*   Click **"Generate new private key"**. A JSON file will be downloaded.
+*   Open the JSON file in a text editor and copy its entire contents.
 
-6.  **Set Up Environment Variables:**
-    Your application requires a service account key for server-side Firebase Admin operations.
-    - Go to your Firebase project settings -> Service accounts.
-    - Click "Generate new private key" and download the JSON file.
-    - **Do not** add this file to your source code. Instead, create a file named `.env.local` in the root of your project.
-    - Copy the contents of the downloaded JSON file and add it to `.env.local` like this:
-      ```
-      FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
-      ```
-    - **Important:** Make sure this variable is also set up in your hosting environment's secret manager for the deployed application.
+**Step 3: Set Up Secrets in Your GitHub Repository**
 
-7.  **Deploy the App:**
-    Now you are ready to deploy. Run the following command from your project's root directory:
-    ```bash
-    firebase apphosting:backends:deploy easyspark-backend
-    ```
-    The `backendId` (`easyspark-backend`) is taken from your `apphosting.yaml` file. The CLI will build your Next.js application and deploy it to App Hosting.
+Secrets are encrypted environment variables that you can store in your GitHub repository.
 
-After the command finishes, it will provide you with the URL where your live application is hosted.
+*   Go to your project's repository on GitHub.
+*   Click on the **Settings** tab.
+*   In the left sidebar, under "Security", click on **Secrets and variables** -> **Actions**.
+*   Click the **New repository secret** button to add the following secrets:
+
+    1.  **`FIREBASE_PROJECT_ID`**
+        *   **Name:** `FIREBASE_PROJECT_ID`
+        *   **Value:** Paste your Firebase Project ID (e.g., `easyspark-demo`).
+
+    2.  **`FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO`**
+        *   **Name:** `FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO`
+        *   **Value:** Paste the entire content of the JSON service account key you copied earlier.
+
+### Your New Workflow
+
+That's it! With the secrets in place, your deployment is fully automated.
+
+1.  Make changes to your code locally.
+2.  Push your changes to GitHub using the git commands (`git add .`, `git commit`, `git push`).
+3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen in real-time.
+4.  Once the "deploy" action is complete, your site will be live at the production URL provided in the logs.
