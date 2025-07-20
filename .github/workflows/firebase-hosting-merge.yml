@@ -18,3 +18,4 @@ jobs:
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}
           channelId: live
           projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          args: --debug
