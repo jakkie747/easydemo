@@ -1,81 +1,58 @@
-# Firebase Studio
+# Manual Deployment Guide for Local Machine
 
-This is a NextJS starter in Firebase Studio.
+Follow these instructions to set up a new computer and deploy the application manually using the command line. This bypasses any issues with the integrated Studio terminal or GitHub Actions.
 
-To get started, take a look at `src/app/page.tsx`.
+### Step 1: Install Prerequisites
 
----
-
-## Deployment Guide
-
-If you are facing issues with the integrated deployment button, you can deploy the application manually using the Firebase CLI. This gives you more control and provides more detailed feedback.
-
-### Prerequisites
-
-1.  **Node.js:** Ensure you have Node.js (version 18 or later) installed on your local machine. You can download it from [nodejs.org](https://nodejs.org/).
-2.  **Firebase Project:** Your Firebase project (`easyspark-demo`) should already be created.
-3.  **Billing Enabled:** Your Firebase project must be on the "Blaze (pay-as-you-go)" plan.
-
-### Step-by-Step Instructions
-
-1.  **Download Your Code:**
-    Download the complete source code of this application to your local machine (e.g., from GitHub, download as a ZIP).
-
-2.  **Open Your Terminal:**
-    Open your terminal (Command Prompt or PowerShell on Windows, Terminal on Mac) and navigate into the project's root directory using the `cd` command.
-
-3.  **Install Firebase CLI:**
-    If you don't have it installed already, open your terminal and run the following command to install it globally. This is the recommended approach.
+1.  **Install Node.js**: If you don't have it, download and install the "LTS" (Long Term Support) version of Node.js from the official website: [nodejs.org](https://nodejs.org/). This also installs `npm` (Node Package Manager).
+2.  **Install Firebase CLI**: Open your new computer's terminal (Command Prompt on Windows, or Terminal on Mac) and run this command to install the Firebase tools globally.
     ```bash
     npm install -g firebase-tools
     ```
 
-4.  **Log in to Firebase:**
-    In your terminal, log in to your Google account:
+### Step 2: Download Code and Configure Keys
+
+1.  **Download Your Code**: In Firebase Studio, download the entire project as a ZIP file and extract it to a folder on your new laptop (e.g., `C:\Users\YourName\Desktop\easyspark-project`).
+2.  **Create the Keys File**: Inside your project folder, create a new file named exactly `.env.local`.
+3.  **Get Your Firebase Keys**:
+    *   Go to your [Firebase Project Settings](https://console.firebase.google.com/project/easyspark-demo-a42db/settings/general).
+    *   Scroll down to the "Your apps" card and find your web app.
+    *   Under "SDK setup and configuration", select **Config**. You'll see a `firebaseConfig` object.
+4.  **Get Your Service Account Key**:
+    *   Go to your [Google Cloud Console Service Accounts page](https://console.cloud.google.com/iam-admin/serviceaccounts?project=easyspark-demo-a42db).
+    *   Click on the service account named `firebase-adminsdk-fbsvc@...`.
+    *   Go to the **KEYS** tab, click **ADD KEY** -> **Create new key**. Choose **JSON** and a key file will download.
+5.  **Fill `.env.local`**: Copy the following template into your `.env.local` file and fill in the values:
+    *   Copy the values from the `firebaseConfig` object for the `NEXT_PUBLIC_` variables.
+    *   Open the downloaded JSON key file, copy its **entire contents**, and paste it inside the single quotes for `FIREBASE_SERVICE_ACCOUNT_KEY`.
+
+    ```
+    # Firebase Public Keys (from Firebase Console -> Project Settings -> Web App Config)
+    NEXT_PUBLIC_FIREBASE_API_KEY=...
+    NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=...
+    NEXT_PUBLIC_FIREBASE_PROJECT_ID=...
+    NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=...
+    NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=...
+    NEXT_PUBLIC_FIREBASE_APP_ID=...
+    NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID=...
+
+    # Firebase Admin Secret Key (from the downloaded JSON service account file)
+    FIREBASE_SERVICE_ACCOUNT_KEY='...'
+    ```
+
+### Step 3: Log In and Deploy
+
+1.  **Open Your Local Terminal**: Open Command Prompt (or your preferred terminal) and navigate into your project directory.
+    ```bash
+    cd C:\Users\YourName\Desktop\easyspark-project
+    ```
+2.  **Log in to Firebase**: Run this command. It will open a browser window for you to log in to the Google account associated with your Firebase project.
     ```bash
     firebase login
     ```
-    This will open a browser window for you to authenticate.
-
-5.  **Configure Your Local Project:**
-    Navigate into your project's root directory in the terminal. You need to link your local code to your Firebase project.
+3.  **Deploy the App**: Now, run the single deployment command. This will install all dependencies and then deploy your application.
     ```bash
-    firebase use easyspark-demo
+    npm run deploy
     ```
 
-6.  **Install Project Dependencies:**
-    Run this command to install all the necessary packages for the application:
-    ```bash
-    npm install
-    ```
-
-7.  **Set Up Environment Variables:**
-    Your application requires a service account key for server-side Firebase Admin operations.
-    - Go to your Firebase project settings -> Service accounts.
-    - Click "Generate new private key" and download the JSON file.
-    - **Do not** add this file to your source code. Instead, create a file named `.env.local` in the root of your project.
-    - Copy the contents of the downloaded JSON file and add it to `.env.local` like this:
-      ```
-      FIREBASE_SERVICE_ACCOUNT_KEY='{"type": "service_account", "project_id": "...", ...}'
-      ```
-    - **Important:** Make sure the entire JSON object is on a single line and wrapped in single quotes.
-
-8.  **Deploy the App:**
-    Now you are ready to deploy. Run the following command from your project's root directory:
-    ```bash
-    firebase apphosting:backends:deploy easyspark-backend
-    ```
-    The `backendId` (`easyspark-backend`) is taken from your `apphosting.yaml` file. The CLI will build your Next.js application and deploy it to App Hosting.
-
-    **Troubleshooting: Command Not Found**
-    If you get an error like `apphosting:backends:deploy is not a Firebase command`, it means your globally installed `firebase-tools` is out of date. Run `npm install -g firebase-tools` to update it, then try the deploy command again.
-
-    After the command finishes, it will provide you with the URL where your live application is hosted.
-
-### Updating Your Live App
-
-Once deployed, you can continue to make changes to your code. When you are ready to publish the updates, simply run the deploy command again:
-```bash
-firebase apphosting:backends:deploy easyspark-backend
-```
-This will build and deploy the new version of your app, replacing the old one.
+The terminal will show the build and deployment progress. Once it's finished, it will provide you with the live URL for your application. That's it!
