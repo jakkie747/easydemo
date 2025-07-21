@@ -24,9 +24,9 @@ export type Child = {
     classroom: string;
     age: number;
     parent: string;
-    dob: string;
-    allergies: string;
-    emergencyContact: {
+    dob?: string;
+    allergies?: string;
+    emergencyContact?: {
         name: string;
         relation: string;
         phone: string;

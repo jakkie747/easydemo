@@ -221,6 +221,9 @@ function AddChildDialog({ onChildAdded }: { onChildAdded: () => void }) {
       await addChild({
         ...values,
         avatar: avatarUrl,
+        dob: '', // Provide default empty string
+        allergies: '', // Provide default empty string
+        emergencyContact: { name: '', relation: '', phone: '' }, // Provide default object
       });
 
       toast({ title: "Child Added!", description: `${values.name} has been added.` });
