@@ -121,7 +121,9 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
         name: values.name,
         email: values.email,
         avatar: avatarUrl,
-        children: [] // Initially no children linked
+        children: [], // Initially no children linked
+        phone: "", // Provide default empty string
+        childDetails: [], // Provide default empty array
       });
 
       toast({ title: "Parent Added!", description: `${values.name}'s account has been created.` });

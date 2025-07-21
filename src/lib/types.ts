@@ -38,7 +38,7 @@ export type Parent = {
     name: string;
     avatar: string;
     email: string;
-    phone: string;
+    phone?: string;
     children: string[];
     childDetails: Child[];
 };
