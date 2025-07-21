@@ -4,7 +4,7 @@ import { Poppins, Lilita_One } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
 import { Toaster } from "@/components/ui/toaster";
-import { AuthProvider } from '@/hooks/use-auth.tsx';
+import { AuthProvider } from '@/hooks/use-auth';
 import { Header } from '@/components/header';
 import { Footer } from '@/components/footer';
 
