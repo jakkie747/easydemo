@@ -1,14 +1,12 @@
-# Firebase Studio
+# Firebase Studio Project: Easyspark Demo
 
-This is a NextJS starter in Firebase Studio.
-
-To get started, take a look at `src/app/page.tsx`.
+This is a Next.js project created in Firebase Studio.
 
 ---
 
-## Deployment Guide (Automated via GitHub Actions)
+## Automated Deployment via GitHub Actions (Primary Method)
 
-Your project is now set up for automated deployments using GitHub Actions. This is the most reliable way to publish your app, as it bypasses issues with local command-line tools.
+The most reliable way to deploy this application is through the automated workflow set up with GitHub Actions. This bypasses issues with local command-line tools and ensures a consistent build environment.
 
 ### How It Works
 
@@ -50,9 +48,9 @@ Secrets are encrypted environment variables that you can store in your GitHub re
 
 ### Your New Workflow
 
-That's it! With the secrets in place, your deployment is fully automated.
+Once the secrets are in place, your deployment is fully automated:
 
-1.  Make changes to your code locally.
-2.  Push your changes to GitHub using the git commands (`git add .`, `git commit`, `git push`).
-3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen in real-time.
-4.  Once the "deploy" action is complete, your site will be live at the production URL provided in the logs.
+1.  Make changes to your code.
+2.  Push your changes to GitHub (`git add .`, `git commit`, `git push`).
+3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen.
+4.  Once the "deploy" action is complete, your site will be live.
