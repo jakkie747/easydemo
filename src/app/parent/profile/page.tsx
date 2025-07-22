@@ -232,7 +232,7 @@ export default function ProfilePage() {
                     )} />
                   <div className="space-y-2">
                     <Label htmlFor="email">Email</Label>
-                    <Input id="email" type="email" defaultValue={parentData?.email} disabled />
+                    <p id="email" className="text-sm text-muted-foreground pt-2">{parentData?.email}</p>
                     <p className="text-xs text-muted-foreground">Email cannot be changed.</p>
                   </div>
                   <FormField control={parentForm.control} name="phone" render={({ field }) => (
@@ -322,5 +322,3 @@ export default function ProfilePage() {
     </div>
   )
 }
-
-    
