@@ -6,19 +6,11 @@ on:
   push:
     branches:
       - main
-  workflow_dispatch: # This allows manual triggering
-    inputs:
-      branch:
-        description: 'The branch to deploy from'
-        required: true
-        default: 'main'
 jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event.inputs.branch || 'main' }} # Use the manually selected branch
       - run: npm ci && npm run build
       - uses: FirebaseExtended/action-hosting-deploy@v0
         with:
