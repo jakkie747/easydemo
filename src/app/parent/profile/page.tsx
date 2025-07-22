@@ -7,7 +7,7 @@ import { z } from "zod";
 import { getAuth, reauthenticateWithCredential, EmailAuthProvider, updatePassword } from "firebase/auth";
 import { app } from "@/lib/firebase";
 import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/use-auth.tsx";
+import { useAuth } from "@/hooks/use-auth-provider";
 import { useEffect, useState } from "react";
 import type { Parent, Child } from "@/lib/types";
 import { getParent, updateParent, updateChild } from "@/lib/firestore";
@@ -322,3 +322,5 @@ export default function ProfilePage() {
     </div>
   )
 }
+
+    
