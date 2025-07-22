@@ -30,6 +30,11 @@ export async function deleteFileByUrl(filePath: string) {
     console.error("Firebase Admin SDK not initialized. Cannot delete file.");
     throw new Error("Storage service is not available.");
   }
+  
+  if (!filePath) {
+    console.warn("deleteFileByUrl called with an empty or undefined filePath.");
+    return { success: true, message: "No file path provided." };
+  }
 
   try {
     // The SDK automatically handles the gs://bucket-name/ part.
