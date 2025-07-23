@@ -28,5 +28,6 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}
           projectId: easyspark-demo-a42db
+          args: deploy --only hosting --force
         env:
           FIREBASE_CLI_EXPERIMENTS: webframeworks
