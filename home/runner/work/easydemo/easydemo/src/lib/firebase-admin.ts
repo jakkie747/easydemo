@@ -9,14 +9,10 @@ if (!admin.apps.length) {
       throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
     }
 
-    // The key might be a JSON string or a Base64 encoded string.
-    // This logic handles both cases.
     let serviceAccount;
     if (serviceAccountKey.trim().startsWith('{')) {
-      // The key is a direct JSON string.
       serviceAccount = JSON.parse(serviceAccountKey);
     } else {
-      // The key is Base64 encoded.
       const decodedKey = Buffer.from(serviceAccountKey, 'base64').toString('utf-8');
       serviceAccount = JSON.parse(decodedKey);
     }
@@ -28,7 +24,6 @@ if (!admin.apps.length) {
     console.log('Firebase Admin SDK initialized successfully.');
   } catch (error) {
     console.error('Error initializing Firebase Admin SDK:', error);
-    // We don't want to throw here during build, but we log the error.
   }
 }
 
