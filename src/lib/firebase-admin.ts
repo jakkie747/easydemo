@@ -8,13 +8,17 @@ if (!admin.apps.length) {
 
   if (serviceAccountKey) {
     try {
-      const serviceAccount = JSON.parse(serviceAccountKey);
+      // When running in a GitHub Action, the key is a string. When running locally with `firebase emulators`, it might be a path.
+      // This handles both cases.
+      const serviceAccount = JSON.parse(
+        Buffer.from(serviceAccountKey, 'base64').toString('utf-8')
+      );
       admin.initializeApp({
         credential: admin.credential.cert(serviceAccount),
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       });
     } catch (error) {
-      console.error("Error parsing FIREBASE_SERVICE_ACCOUNT_KEY:", error);
+      console.error("Error initializing Firebase Admin SDK:", error);
     }
   } else {
     console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set. Firebase Admin SDK not initialized.");
@@ -63,8 +67,7 @@ export async function deleteUserByUid(uid: string) {
     await auth.deleteUser(uid);
     console.log(`Successfully deleted user with UID: ${uid}`);
     return { success: true };
-  } catch (error: any) {
-     if (error.code === 'auth/user-not-found') {
+  } catch (error: any)     if (error.code === 'auth/user-not-found') {
       console.warn(`User with UID ${uid} not found in Firebase Auth, but proceeding as if deleted.`);
       return { success: true, message: "User not found, but considered deleted." };
     }
