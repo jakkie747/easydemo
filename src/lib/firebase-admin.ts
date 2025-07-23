@@ -9,8 +9,7 @@ if (!admin.apps.length) {
   if (serviceAccountKey) {
     try {
       // When running in a GitHub Action, the key is a Base64 encoded string.
-      // When running locally with `firebase emulators`, it might be a JSON string or path.
-      // This handles both cases.
+      // This decodes it and parses the resulting JSON.
       const serviceAccount = JSON.parse(
         Buffer.from(serviceAccountKey, 'base64').toString('utf-8')
       );
