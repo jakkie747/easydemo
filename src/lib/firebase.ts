@@ -14,10 +14,21 @@ const firebaseConfig: FirebaseOptions = {
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID
 };
 
-// Initialize Firebase for SSR
-const app = !getApps().length ? initializeApp(firebaseConfig) : getApp();
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+// Initialize Firebase
+// We wrap this in a function to avoid initialization on the server during build.
+function initializeFirebase() {
+    // process.env.CI is set to true in GitHub Actions.
+    // We don't want to initialize the client-side SDK during the build process.
+    if (process.env.CI) {
+        return null;
+    }
+    return !getApps().length ? initializeApp(firebaseConfig) : getApp();
+}
+
+const app = initializeFirebase();
+const auth = app ? getAuth(app) : ({} as any);
+const db = app ? getFirestore(app) : ({} as any);
+const storage = app ? getStorage(app) : ({} as any);
+
 
 export { app, auth, db, storage };
