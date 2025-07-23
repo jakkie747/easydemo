@@ -10,6 +10,7 @@ jobs:
   build_and_deploy:
     runs-on: ubuntu-latest
     env:
+      # These are for the 'npm run build' step
       NEXT_PUBLIC_FIREBASE_API_KEY: ${{ secrets.NEXT_PUBLIC_FIREBASE_API_KEY }}
       NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN: ${{ secrets.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN }}
       NEXT_PUBLIC_FIREBASE_PROJECT_ID: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
@@ -26,4 +27,4 @@ jobs:
           repoToken: ${{ secrets.GITHUB_TOKEN }}
           firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}
           channelId: live
-          projectId: ${{ secrets.FIREBASE_PROJECT_ID }}
+          projectId: ${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}
