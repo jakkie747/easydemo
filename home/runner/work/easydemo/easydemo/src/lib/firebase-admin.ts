@@ -8,8 +8,8 @@ if (!admin.apps.length) {
 
   if (serviceAccountKey) {
     try {
-      // When running in a GitHub Action, the key is a string. When running locally with `firebase emulators`, it might be a path.
-      // This handles both cases.
+      // When running in a GitHub Action, the key is a Base64 encoded string.
+      // This decodes it and parses the resulting JSON.
       const serviceAccount = JSON.parse(
         Buffer.from(serviceAccountKey, 'base64').toString('utf-8')
       );
@@ -17,8 +17,9 @@ if (!admin.apps.length) {
         credential: admin.credential.cert(serviceAccount),
         storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
       });
+      console.log("Firebase Admin SDK initialized successfully.");
     } catch (error) {
-      console.error("Error initializing Firebase Admin SDK:", error);
+      console.error("Error initializing Firebase Admin SDK from service account key:", error);
     }
   } else {
     console.warn("FIREBASE_SERVICE_ACCOUNT_KEY is not set. Firebase Admin SDK not initialized.");
