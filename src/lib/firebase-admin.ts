@@ -67,7 +67,8 @@ export async function deleteUserByUid(uid: string) {
     await auth.deleteUser(uid);
     console.log(`Successfully deleted user with UID: ${uid}`);
     return { success: true };
-  } catch (error: any)     if (error.code === 'auth/user-not-found') {
+  } catch (error: any) {
+    if (error.code === 'auth/user-not-found') {
       console.warn(`User with UID ${uid} not found in Firebase Auth, but proceeding as if deleted.`);
       return { success: true, message: "User not found, but considered deleted." };
     }
