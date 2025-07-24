@@ -8,7 +8,7 @@ This is a Next.js project created in Firebase Studio.
 
 This project is set up for continuous deployment to Firebase Hosting using GitHub Actions.
 
-### How It Works
+### How It Work
 
 1.  **Push to `main` branch**: Every time you push or merge code into your `main` branch on GitHub, the action will automatically build and deploy your application to your live production URL.
 2.  **Create a Pull Request**: If you create a pull request, a temporary preview version of the app will be deployed automatically. A comment will be added to the pull request with a link to the preview URL.
