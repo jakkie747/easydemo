@@ -40,11 +40,11 @@ export const teachers: Omit<Teacher, 'id'>[] = [
 ];
 
 export const children: Omit<Child, 'id'>[] = [
-  { name: 'Leo Bloom', avatar: 'https://i.pravatar.cc/150?u=leo', classroom: 'Bumblebees', age: 4, parent: 'Anna Bloom', dob: '2020-05-15', allergies: 'Peanuts', emergencyContact: { name: 'John Bloom', relation: 'Father', phone: '555-555-5556' } },
-  { name: 'Olivia Martin', avatar: 'https://i.pravatar.cc/150?u=olivia', classroom: 'Sunflowers', age: 3, parent: 'Sarah Martin', dob: '2021-02-20', allergies: 'None', emergencyContact: { name: 'Robert Martin', relation: 'Father', phone: '555-555-5557' } },
-  { name: 'Liam Neeson', avatar: 'https://i.pravatar.cc/150?u=liam', classroom: 'Star Gazers', age: 6, parent: 'Michael Neeson', dob: '2018-08-10', allergies: 'None', emergencyContact: { name: 'Helen Neeson', relation: 'Mother', phone: '555-555-5558' } },
-  { name: 'Emma Watson', avatar: 'https://i.pravatar.cc/150?u=emma', classroom: 'Bumblebees', age: 4, parent: 'Jessica Watson', dob: '2020-04-15', allergies: 'Gluten', emergencyContact: { name: 'David Watson', relation: 'Father', phone: '555-555-5559' } },
-  { name: 'Noah Brown', avatar: 'https://i.pravatar.cc/150?u=noah', classroom: 'Little Sprouts', age: 3, parent: 'Chris Brown', dob: '2021-09-01', allergies: 'None', emergencyContact: { name: 'Laura Brown', relation: 'Mother', phone: '555-555-5560' } },
+  { name: 'Leo Bloom', avatar: 'https://i.pravatar.cc/150?u=leo', classroom: 'Bumblebees', age: 4, parent: 'Anna Bloom', parentId: 'anna.bloom@example.com', gender: 'Male', dob: '2020-05-15', allergies: 'Peanuts', emergencyContact: { name: 'John Bloom', relation: 'Father', phone: '555-555-5556' } },
+  { name: 'Olivia Martin', avatar: 'https://i.pravatar.cc/150?u=olivia', classroom: 'Sunflowers', age: 3, parent: 'Sarah Martin', parentId: 'sarah.martin@example.com', gender: 'Female', dob: '2021-02-20', allergies: 'None', emergencyContact: { name: 'Robert Martin', relation: 'Father', phone: '555-555-5557' } },
+  { name: 'Liam Neeson', avatar: 'https://i.pravatar.cc/150?u=liam', classroom: 'Star Gazers', age: 6, parent: 'Michael Neeson', parentId: 'michael.neeson@example.com', gender: 'Male', dob: '2018-08-10', allergies: 'None', emergencyContact: { name: 'Helen Neeson', relation: 'Mother', phone: '555-555-5558' } },
+  { name: 'Emma Watson', avatar: 'https://i.pravatar.cc/150?u=emma', classroom: 'Bumblebees', age: 4, parent: 'Jessica Watson', parentId: 'jessica.watson@example.com', gender: 'Female', dob: '2020-04-15', allergies: 'Gluten', emergencyContact: { name: 'David Watson', relation: 'Father', phone: '555-555-5559' } },
+  { name: 'Noah Brown', avatar: 'https://i.pravatar.cc/150?u=noah', classroom: 'Little Sprouts', age: 3, parent: 'Chris Brown', parentId: 'chris.brown@example.com', gender: 'Male', dob: '2021-09-01', allergies: 'None', emergencyContact: { name: 'Laura Brown', relation: 'Mother', phone: '555-555-5560' } },
 ];
 
 export const parents: Omit<Parent,'id' | 'childDetails'>[] = [
