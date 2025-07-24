@@ -52,4 +52,4 @@ Once the secrets are in place, your deployment is fully automated!
 1.  Make changes to your code in the editor.
 2.  Commit and Push your changes to GitHub.
 3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen
-4.  Once the action is complete, your site will be live!
+4.  Once the action is complete, your site will be live
