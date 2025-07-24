@@ -1,3 +1,4 @@
+
 'use client';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
@@ -13,6 +14,7 @@ import {
   HomeIcon,
   Settings,
   LifeBuoy,
+  Sparkles,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -31,6 +33,7 @@ import {
 } from '@/components/ui/sheet';
 import { Logo } from '@/components/icons';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/hooks/use-auth-provider';
 
 
 const navItems = [
@@ -41,6 +44,7 @@ const navItems = [
   { href: '/admin/events', icon: Bell, label: 'Events' },
   { href: '/admin/gallery', icon: ImageIcon, label: 'Gallery' },
   { href: '/admin/documents', icon: FileText, label: 'Documents' },
+  { href: '/admin/ai-assistant', icon: Sparkles, label: 'AI Assistant' },
 ];
 
 function AdminSidebar() {
@@ -78,10 +82,10 @@ function AdminSidebar() {
 
 function AdminHeader() {
   const router = useRouter();
+  const { signOutUser } = useAuth();
   
-  const handleLogout = () => {
-    // In a real app, you would call signOut from Firebase Auth
-    console.log("Logging out...");
+  const handleLogout = async () => {
+    await signOutUser();
     router.push('/login');
   };
 
@@ -128,7 +132,7 @@ function AdminHeader() {
             <DropdownMenuTrigger asChild>
                 <Button variant="secondary" size="icon" className="rounded-full">
                     <Avatar>
-                        <AvatarImage src="https://i.pravatar.cc/40?u=admin" alt="Admin" />
+                        <AvatarImage src="https://placehold.co/40x40.png" data-ai-hint="person" alt="Admin" />
                         <AvatarFallback>A</AvatarFallback>
                     </Avatar>
                     <span className="sr-only">Toggle user menu</span>

@@ -149,11 +149,10 @@ export async function getParent(id: string): Promise<Parent | null> {
     }
 }
 
-export async function addParent(parent: Parent): Promise<void> {
+export async function addParent(parent: Omit<Parent, 'childDetails'>): Promise<void> {
     try {
         const parentRef = doc(db, 'parents', parent.id);
-        const { childDetails, ...parentData } = parent;
-        await setDoc(parentRef, parentData);
+        await setDoc(parentRef, parent);
     } catch (error) {
         console.error("Error adding parent:", error);
         throw error;

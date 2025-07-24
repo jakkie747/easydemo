@@ -1,4 +1,5 @@
 
+
 export type Teacher = {
   id: string;
   name: string;
@@ -24,8 +25,12 @@ export type Child = {
     classroom: string;
     age: number;
     parent: string;
+    parentId: string;
+    gender: string;
     dob?: string;
     allergies?: string;
+    previousExperience?: boolean;
+    additionalNotes?: string;
     emergencyContact?: {
         name: string;
         relation: string;
@@ -39,6 +44,7 @@ export type Parent = {
     avatar: string;
     email: string;
     phone?: string;
+    address?: string;
     children: string[];
     childDetails: Child[];
 };

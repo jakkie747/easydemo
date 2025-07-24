@@ -16,11 +16,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { Utensils, ToyBrick, Bed, BookHeart, FilePen, LogOut } from "lucide-react"
+import { Utensils, ToyBrick, Bed, BookHeart, FilePen, LogOut, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
-import { useToast } from "@/hooks/use-toast"
-import { getAuth, signOut } from "firebase/auth"
-import { app } from "@/lib/firebase"
+import { useAuth } from "@/hooks/use-auth-provider"
+import { useEffect, useState } from "react"
+import type { Parent, Child } from "@/lib/types"
+import { getParent } from "@/lib/firestore"
+import { Skeleton } from "@/components/ui/skeleton"
 
 
 const dailyReport = {
@@ -36,31 +38,104 @@ const dailyReport = {
   naps: [
     { start: "1:00 PM", end: "2:15 PM", duration: "1h 15m" },
   ],
-  notes: "Leo was very cheerful today and shared his toys with friends during playtime. Great job, Leo!",
+  notes: "Was very cheerful today and shared toys with friends during playtime. Great job!",
 };
+
+function ParentDashboardSkeleton() {
+  return (
+    <div className="container mx-auto px-4 md:px-8 py-8">
+      <div className="grid gap-8 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <Card className="sticky top-24 shadow-md">
+            <CardHeader className="items-center text-center">
+              <Skeleton className="w-24 h-24 rounded-full mb-4" />
+              <Skeleton className="h-8 w-40" />
+              <Skeleton className="h-4 w-32" />
+            </CardHeader>
+            <CardContent className="text-center space-y-2">
+              <Skeleton className="h-10 w-full" />
+              <Skeleton className="h-10 w-full" />
+            </CardContent>
+          </Card>
+        </div>
+        <div className="md:col-span-2">
+           <Card className="shadow-md">
+              <CardHeader>
+                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-4 w-1/2" />
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+              </CardContent>
+            </Card>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 export default function ParentDashboard() {
   const router = useRouter();
-  const { toast } = useToast();
-  const auth = getAuth(app);
+  const { user, loading: authLoading, signOutUser } = useAuth();
+  const [parentData, setParentData] = useState<Parent | null>(null);
+  const [childData, setChildData] = useState<Child | null>(null);
+  const [dataLoading, setDataLoading] = useState(true);
+
+  useEffect(() => {
+      if (user) {
+          const fetchData = async () => {
+              setDataLoading(true);
+              const parent = await getParent(user.uid);
+              if (parent) {
+                  setParentData(parent);
+                  if (parent.childDetails && parent.childDetails.length > 0) {
+                      setChildData(parent.childDetails[0]); // For now, just show the first child
+                  }
+              }
+              setDataLoading(false);
+          };
+          fetchData();
+      } else if (!authLoading) {
+          // If not loading and no user, redirect
+          router.push('/login');
+      }
+  }, [user, authLoading, router]);
+
 
   const handleLogout = async () => {
-    try {
-      await signOut(auth);
-      toast({
-        title: "Logged Out",
-        description: "You have been successfully logged out.",
-      });
-      router.push('/login');
-    } catch (error) {
-      console.error("Logout failed:", error);
-      toast({
-        variant: "destructive",
-        title: "Logout Failed",
-        description: "An error occurred while logging out.",
-      });
-    }
+    await signOutUser();
+    router.push('/login');
   };
+
+  if (authLoading || dataLoading) {
+    return <ParentDashboardSkeleton />;
+  }
+
+  if (!parentData) {
+      return <div>Error loading parent data. Please try again.</div>
+  }
+
+  if (!childData) {
+      return (
+           <div className="container mx-auto px-4 md:px-8 py-8">
+                <Card className="max-w-xl mx-auto">
+                    <CardHeader>
+                        <CardTitle>Welcome, {parentData.name}!</CardTitle>
+                        <CardDescription>It looks like there are no children linked to your account yet.</CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <p>Please contact the school administration to have your child's profile linked to your account. Once linked, you will see their daily reports here.</p>
+                         <Button className="w-full mt-4" variant="outline" onClick={handleLogout}>
+                            <LogOut /> Log Out
+                        </Button>
+                    </CardContent>
+                </Card>
+           </div>
+      )
+  }
 
 
   return (
@@ -71,11 +146,11 @@ export default function ParentDashboard() {
             <Card className="sticky top-24 shadow-md">
               <CardHeader className="items-center text-center">
                 <Avatar className="w-24 h-24 mb-4 border-2 border-primary">
-                  <AvatarImage src="https://i.pravatar.cc/150?u=leo" />
-                  <AvatarFallback>LB</AvatarFallback>
+                  <AvatarImage src={childData.avatar} alt={childData.name} />
+                  <AvatarFallback>{childData.name.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <CardTitle className="font-headline text-3xl">Leo Bloom</CardTitle>
-                <CardDescription>Preschool - Bumblebees</CardDescription>
+                <CardTitle className="font-headline text-3xl">{childData.name}</CardTitle>
+                <CardDescription>{childData.classroom}</CardDescription>
               </CardHeader>
               <CardContent className="text-center space-y-2">
                  <Button className="w-full" asChild>
@@ -93,7 +168,7 @@ export default function ParentDashboard() {
             <Card className="shadow-md">
               <CardHeader>
                 <CardTitle className="font-headline text-2xl">Today's Report - {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</CardTitle>
-                 <CardDescription>A summary of Leo's day at Easyspark.</CardDescription>
+                 <CardDescription>A summary of {childData.name.split(' ')[0]}'s day at Easyspark.</CardDescription>
               </CardHeader>
               <CardContent>
                 <Accordion type="multiple" defaultValue={["item-1", "item-2", "item-3", "item-4"]} className="w-full">
@@ -128,7 +203,7 @@ export default function ParentDashboard() {
                   <AccordionItem value="item-3">
                     <AccordionTrigger className="text-lg font-semibold"><Bed className="mr-2 text-accent" />Naps</AccordionTrigger>
                     <AccordionContent>
-                      <p className="pt-2">Leo napped from <strong>{dailyReport.naps[0].start}</strong> to <strong>{dailyReport.naps[0].end}</strong> ({dailyReport.naps[0].duration}).</p>
+                      <p className="pt-2">{childData.name.split(' ')[0]} napped from <strong>{dailyReport.naps[0].start}</strong> to <strong>{dailyReport.naps[0].end}</strong> ({dailyReport.naps[0].duration}).</p>
                     </AccordionContent>
                   </AccordionItem>
                    <AccordionItem value="item-4">
