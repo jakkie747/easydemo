@@ -43,7 +43,7 @@ Secrets are encrypted environment variables that you can store in your GitHub re
 
     2.  **All `NEXT_PUBLIC_` variables:** Add the rest of your Firebase app credentials from your Firebase project settings (or your `.env.local` file) as individual secrets. Make sure the names match exactly (e.g., `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, etc.)
     
-    3.  **`GEMINI_API_KEY`**: If you are using AI features, add your Gemini API key as a secret with this name.
+    3.  **`GEMINI_API_KEY`**: If you are using AI features, add your Gemini API key as a secret with this name
 
 ### Your New Workflow
 
