@@ -21,7 +21,9 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: npm ci && npm run build
-      - run: npx --silent firebase-tools@latest deploy --only hosting --project "${{ secrets.NEXT_PUBLIC_FIREBASE_PROJECT_ID }}" --json
-        env:
-          FIREBASE_SERVICE_ACCOUNT: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}
-          
+      - uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: ${{ secrets.GITHUB_TOKEN }}
+          firebaseServiceAccount: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}
+          channelId: live
+          projectId: easyspark-demo-a42db
