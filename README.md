@@ -6,7 +6,7 @@ This is a Next.js project created in Firebase Studio.
 
 ## Automated Deployment via GitHub Actions (Primary Method)
 
-The most reliable way to deploy this application is through the automated workflow set up with GitHub Actions. This bypasses issues with local command-line tools and ensures a consistent build environment.
+The most reliable way to deploy this application is through the automated workflow set up with GitHub Actions. This ensures a consistent build and deployment environment.
 
 ### How It Works
 
@@ -38,19 +38,18 @@ Secrets are encrypted environment variables that you can store in your GitHub re
 *   In the left sidebar, under "Security", click on **Secrets and variables** -> **Actions**.
 *   Click the **New repository secret** button to add the following secrets:
 
-    1.  **`FIREBASE_PROJECT_ID`**
-        *   **Name:** `FIREBASE_PROJECT_ID`
-        *   **Value:** Paste your Firebase Project ID (`easyspark-demo-a42db`).
-
-    2.  **`FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`**
+    1.  **`FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`**
         *   **Name:** `FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`
         *   **Value:** Paste the entire content of the JSON service account key you copied earlier.
+
+    2.  **All `NEXT_PUBLIC_` variables:** Add the rest of your Firebase app credentials from your Firebase project settings (or your `.env.local` file) as individual secrets. Make sure the names match exactly (e.g., `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, etc.).
+
 
 ### Your New Workflow
 
 Once the secrets are in place, your deployment is fully automated:
 
 1.  Make changes to your code.
-2.  Push your changes to GitHub (`git add .`, `git commit`, `git push`).
+2.  Commit and Push your changes to GitHub.
 3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen.
-4.  Once the "deploy" action is complete, your site will be live.
+4.  Once the action is complete, your site will be live.
