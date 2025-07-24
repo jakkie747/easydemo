@@ -4,9 +4,9 @@ This is a Next.js project created in Firebase Studio.
 
 ---
 
-## Automated Deployment via GitHub Actions (Primary Method)
+## Automated Deployment via GitHub Actions
 
-The most reliable way to deploy this application is through the automated workflow set up with GitHub Actions. This ensures a consistent build and deployment environment.
+This project is set up for continuous deployment to Firebase Hosting using GitHub Actions.
 
 ### How It Works
 
@@ -44,12 +44,11 @@ Secrets are encrypted environment variables that you can store in your GitHub re
 
     2.  **All `NEXT_PUBLIC_` variables:** Add the rest of your Firebase app credentials from your Firebase project settings (or your `.env.local` file) as individual secrets. Make sure the names match exactly (e.g., `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, etc.).
 
-
 ### Your New Workflow
 
 Once the secrets are in place, your deployment is fully automated:
 
-1.  Make changes to your code.
+1.  Make changes to your code in the editor.
 2.  Commit and Push your changes to GitHub.
 3.  Go to the "Actions" tab in your GitHub repository to watch the deployment happen.
 4.  Once the action is complete, your site will be live.
