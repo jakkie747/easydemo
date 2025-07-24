@@ -2,14 +2,25 @@
 'use server';
 import * as admin from 'firebase-admin';
 
-if (!admin.apps.length) {
+// This function ensures that the Admin SDK is initialized only once.
+function initializeFirebaseAdmin() {
+  if (admin.apps.length > 0) {
+    return;
+  }
+
   try {
     const serviceAccountKey = process.env.FIREBASE_SERVICE_ACCOUNT_KEY;
-    if (!serviceAccountKey) {
-      throw new Error('FIREBASE_SERVICE_ACCOUNT_KEY environment variable is not set.');
+    if (!serviceAccountKey || serviceAccountKey === "PASTE_YOUR_BASE64_ENCODED_SERVICE_ACCOUNT_KEY_HERE") {
+      // Don't throw an error during build if the key isn't set.
+      // The build process might not need admin access for all pages.
+      // Firestore rules will handle security on the client-side.
+      console.warn('FIREBASE_SERVICE_ACCOUNT_KEY is not set. Admin features will be unavailable.');
+      return;
     }
 
     let serviceAccount;
+    // The key might be a JSON string or a Base64 encoded string.
+    // This logic handles both cases.
     if (serviceAccountKey.trim().startsWith('{')) {
       serviceAccount = JSON.parse(serviceAccountKey);
     } else {
@@ -22,10 +33,14 @@ if (!admin.apps.length) {
       storageBucket: process.env.NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET,
     });
     console.log('Firebase Admin SDK initialized successfully.');
-  } catch (error) {
-    console.error('Error initializing Firebase Admin SDK:', error);
+  } catch (error: any) {
+    console.error('Error initializing Firebase Admin SDK:', error.message);
   }
 }
+
+// Call the initialization function.
+initializeFirebaseAdmin();
+
 
 const storage = admin.apps.length ? admin.storage() : null;
 const auth = admin.apps.length ? admin.auth() : null;
