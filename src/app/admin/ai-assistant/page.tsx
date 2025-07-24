@@ -12,7 +12,7 @@ import {
 } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles, Wand2, BookOpen } from 'lucide-react';
-import { getCreativeIdea } from '@/ai/flows/creative-assistant-flow';
+// import { getCreativeIdea } from '@/ai/flows/creative-assistant-flow';
 
 type IdeaType = 'story' | 'activity';
 
@@ -26,20 +26,27 @@ export default function AiAssistantPage() {
     setIsLoading(true);
     setIdeas([]);
     setCurrentIdeaType(type);
-    try {
-      const result = await getCreativeIdea({ type });
-      setIdeas(result.ideas);
-    } catch (error) {
-      console.error('AI generation failed:', error);
-      toast({
-        variant: 'destructive',
-        title: 'Generation Failed',
-        description:
-          'Could not generate ideas. Please check the console for errors.',
-      });
-    } finally {
-      setIsLoading(false);
-    }
+    toast({
+      variant: 'destructive',
+      title: 'Feature Unavailable',
+      description:
+        'The AI Assistant is temporarily disabled due to a configuration issue.',
+    });
+    setIsLoading(false);
+    // try {
+    //   const result = await getCreativeIdea({ type });
+    //   setIdeas(result.ideas);
+    // } catch (error) {
+    //   console.error('AI generation failed:', error);
+    //   toast({
+    //     variant: 'destructive',
+    //     title: 'Generation Failed',
+    //     description:
+    //       'Could not generate ideas. Please check the console for errors.',
+    //   });
+    // } finally {
+    //   setIsLoading(false);
+    // }
   };
 
   return (
@@ -58,13 +65,13 @@ export default function AiAssistantPage() {
           <CardTitle>Idea Generator</CardTitle>
           <CardDescription>
             Select a category to generate 5 unique, age-appropriate ideas using
-            generative AI.
+            generative AI. (This feature is temporarily disabled)
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col sm:flex-row gap-4">
           <Button
             onClick={() => handleGenerate('story')}
-            disabled={isLoading}
+            disabled={true}
             size="lg"
           >
             {isLoading && currentIdeaType === 'story' ? (
@@ -76,7 +83,7 @@ export default function AiAssistantPage() {
           </Button>
           <Button
             onClick={() => handleGenerate('activity')}
-            disabled={isLoading}
+            disabled={true}
             size="lg"
             variant="secondary"
           >
