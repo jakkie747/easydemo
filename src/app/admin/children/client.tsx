@@ -221,6 +221,8 @@ function AddChildDialog({ onChildAdded }: { onChildAdded: () => void }) {
       await addChild({
         ...values,
         avatar: avatarUrl,
+        parentId: '', // Required field, default to empty
+        gender: 'Not specified', // Required field, default
         dob: '',
         allergies: '',
         emergencyContact: { name: '', relation: '', phone: '' },
@@ -355,6 +357,8 @@ function BulkUploadDialog({ onUploadComplete }: { onUploadComplete: () => void }
             classroom: row.classroom,
             age: parseInt(row.age, 10) || 0,
             parent: row.parent,
+            parentId: row.parentId || '',
+            gender: row.gender || 'Not specified',
             avatar: row.avatar || `https://placehold.co/150x150.png`,
             dob: row.dob || '',
             allergies: row.allergies || '',
@@ -414,7 +418,7 @@ function BulkUploadDialog({ onUploadComplete }: { onUploadComplete: () => void }
                 <Label htmlFor="bulk-file">CSV / TSV File</Label>
                 <Input id="bulk-file" type="file" accept=".csv, .tsv" onChange={handleFileChange} />
                 <p className="text-xs text-muted-foreground">
-                    Optional headers: avatar, dob, allergies, emergencyName, emergencyRelation, emergencyPhone.
+                    Optional headers: avatar, dob, allergies, gender, parentId, emergencyName, emergencyRelation, emergencyPhone.
                 </p>
             </div>
         </div>
