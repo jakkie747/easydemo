@@ -1,15 +1,5 @@
 
 'use server';
 
-import { genkit } from 'genkit';
-import { googleAI } from '@genkit-ai/googleai';
-import { firebase } from '@genkit-ai/firebase';
-
-export const ai = genkit({
-  plugins: [
-    googleAI({
-      apiKey: process.env.GEMINI_API_KEY,
-    }),
-    firebase(),
-  ],
-});
+// This file is intentionally left empty to resolve build errors after removing genkit dependencies.
+// AI functionality can be re-added here later.
