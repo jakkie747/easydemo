@@ -42,7 +42,7 @@ Secrets are encrypted environment variables that you can store in your GitHub re
         *   **Name:** `FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB`
         *   **Value:** Paste the entire content of the JSON service account key you copied earlier.
 
-    2.  **All `NEXT_PUBLIC_` variables:** Add the rest of your Firebase app credentials from your Firebase project settings (or your `.env.local` file) as individual secrets. Make sure the names match exactly (e.g., `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, etc.).
+    2.  **All `NEXT_PUBLIC_` variables:** Add the rest of your Firebase app credentials from your Firebase project settings (or your `.env.local` file) as individual secrets. Make sure the names match exactly (e.g., `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, etc.)
 
 ### Your New Workflow
 
