@@ -1,10 +1,11 @@
+
 // Import the functions you need from the SDKs you need
-import { initializeApp, getApps, getApp, type FirebaseOptions } from "firebase/app";
+import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 
-const firebaseConfig: FirebaseOptions = {
+const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
   authDomain: process.env.NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN,
   projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID,
@@ -15,20 +16,10 @@ const firebaseConfig: FirebaseOptions = {
 };
 
 // Initialize Firebase
-// We wrap this in a function to avoid initialization on the server during build.
-function initializeFirebase() {
-    // process.env.CI is set to true in GitHub Actions.
-    // We don't want to initialize the client-side SDK during the build process.
-    if (process.env.CI) {
-        return null;
-    }
-    return !getApps().length ? initializeApp(firebaseConfig) : getApp();
-}
-
-const app = initializeFirebase();
-const auth = app ? getAuth(app) : ({} as any);
-const db = app ? getFirestore(app) : ({} as any);
-const storage = app ? getStorage(app) : ({} as any);
+const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
 
 
 export { app, auth, db, storage };

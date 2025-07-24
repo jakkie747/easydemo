@@ -6,8 +6,8 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import { app } from "@/lib/firebase";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "@/lib/firebase";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -106,7 +106,6 @@ export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const { toast } = useToast();
-  const auth = getAuth(app);
 
   const onSubmit = async (values: LoginFormValues, role: Role) => {
     setIsLoading(true);
@@ -203,3 +202,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

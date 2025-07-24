@@ -1,0 +1,89 @@
+[debug] [2025-07-24T06:48:10.481Z] ----------------------------------------------------------------------
+[debug] [2025-07-24T06:48:10.484Z] Command:       /nix/store/ws50yvm6vzlzf7jzz6n7xh4szddrack1-nodejs-20.19.1/bin/node /home/user/.global_modules/bin/firebase deploy --only hosting
+[debug] [2025-07-24T06:48:10.484Z] CLI Version:   14.11.0
+[debug] [2025-07-24T06:48:10.484Z] Platform:      linux
+[debug] [2025-07-24T06:48:10.485Z] Node Version:  v20.19.1
+[debug] [2025-07-24T06:48:10.485Z] Time:          Thu Jul 24 2025 06:48:10 GMT+0000 (Coordinated Universal Time)
+[debug] [2025-07-24T06:48:10.485Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-07-24T06:48:11.016Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:11.016Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:11.017Z] [iam] checking project easyspark-demo-a42db for permissions ["firebase.projects.get","firebasehosting.sites.update"]
+[debug] [2025-07-24T06:48:11.018Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:11.019Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:11.019Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:11.019Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:11.021Z] >>> [apiv2][query] POST https://cloudresourcemanager.googleapis.com/v1/projects/easyspark-demo-a42db:testIamPermissions [none]
+[debug] [2025-07-24T06:48:11.021Z] >>> [apiv2][(partial)header] POST https://cloudresourcemanager.googleapis.com/v1/projects/easyspark-demo-a42db:testIamPermissions x-goog-quota-user=projects/easyspark-demo-a42db
+[debug] [2025-07-24T06:48:11.021Z] >>> [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/easyspark-demo-a42db:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-07-24T06:48:11.754Z] <<< [apiv2][status] POST https://cloudresourcemanager.googleapis.com/v1/projects/easyspark-demo-a42db:testIamPermissions 200
+[debug] [2025-07-24T06:48:11.755Z] <<< [apiv2][body] POST https://cloudresourcemanager.googleapis.com/v1/projects/easyspark-demo-a42db:testIamPermissions {"permissions":["firebase.projects.get","firebasehosting.sites.update"]}
+[debug] [2025-07-24T06:48:11.757Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:11.758Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:11.758Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:11.758Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:11.761Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/easyspark-demo-a42db [none]
+[debug] [2025-07-24T06:48:12.005Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/easyspark-demo-a42db 200
+[debug] [2025-07-24T06:48:12.006Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/easyspark-demo-a42db {"projectId":"easyspark-demo-a42db","projectNumber":"843822001665","displayName":"EasySpark Demo","name":"projects/easyspark-demo-a42db","resources":{"hostingSite":"easyspark-demo-a42db"},"state":"ACTIVE","etag":"1_4b9e0e70-cc01-471c-b487-a263b76ecb3e"}
+[debug] [2025-07-24T06:48:15.825Z] defaultcredentials: no credential available.
+[debug] [2025-07-24T06:48:15.825Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:15.826Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:15.826Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:15.826Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:15.826Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites pageToken=&pageSize=10
+[debug] [2025-07-24T06:48:16.630Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites 200
+[debug] [2025-07-24T06:48:16.630Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites {"sites":[{"name":"projects/easyspark-demo-a42db/sites/easyspark-demo-a42db","defaultUrl":"https://easyspark-demo-a42db.web.app","appId":"1:843822001665:web:dcde2b002d6a1e97f21a00","type":"DEFAULT_SITE"}]}
+[debug] [2025-07-24T06:48:16.631Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:16.632Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:16.633Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:16.633Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:16.633Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:843822001665:web:dcde2b002d6a1e97f21a00/config [none]
+[debug] [2025-07-24T06:48:17.156Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:843822001665:web:dcde2b002d6a1e97f21a00/config 200
+[debug] [2025-07-24T06:48:17.156Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/-/webApps/1:843822001665:web:dcde2b002d6a1e97f21a00/config {"projectId":"easyspark-demo-a42db","appId":"1:843822001665:web:dcde2b002d6a1e97f21a00","storageBucket":"easyspark-demo-a42db.firebasestorage.app","apiKey":"AIzaSyCG1sCyHwG9anUFqpX8rgrvdK4aoMIIn9g","authDomain":"easyspark-demo-a42db.firebaseapp.com","messagingSenderId":"843822001665","measurementId":"G-DWF4CWHK94"}
+[info] 
+   Thank you for trying our early preview of Next.js support on Firebase Hosting.
+   During the preview, support is best-effort and breaking changes can be expected. Proceed with caution.
+
+   Documentation: https://firebase.google.com/docs/hosting/frameworks/nextjs
+   File a bug: https://github.com/firebase/firebase-tools/issues/new?template=bug_report.md
+   Submit a feature request: https://github.com/firebase/firebase-tools/issues/new?template=feature_request.md
+
+   We'd love to learn from you. Express your interest in helping us shape the future of Firebase Hosting: https://goo.gle/41enW5X
+
+[debug] [2025-07-24T06:48:29.657Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:29.670Z] No OAuth tokens found
+[debug] [2025-07-24T06:48:29.671Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-07-24T06:48:29.676Z] > authorizing via signed-in user (jacwil747@gmail.com)
+[debug] [2025-07-24T06:48:29.678Z] >>> [apiv2][query] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites/easyspark-demo-a42db [none]
+[debug] [2025-07-24T06:48:30.597Z] <<< [apiv2][status] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites/easyspark-demo-a42db 200
+[debug] [2025-07-24T06:48:30.598Z] <<< [apiv2][body] GET https://firebasehosting.googleapis.com/v1beta1/projects/easyspark-demo-a42db/sites/easyspark-demo-a42db {"name":"projects/easyspark-demo-a42db/sites/easyspark-demo-a42db","defaultUrl":"https://easyspark-demo-a42db.web.app","appId":"1:843822001665:web:dcde2b002d6a1e97f21a00","type":"DEFAULT_SITE"}
+[info]   ▲ Next.js 14.2.30
+
+[info]   - Environments: .env.local, .env.production, .env
+
+
+[info]    Creating an optimized production build ...
+
+[info]  ✓ Compiled successfully
+
+[info]    Linting and checking validity of types ...
+
+[info] Failed to compile.
+
+./src/app/(auth)/login/page.tsx:109:24
+Type error: Argument of type 'FirebaseApp | null' is not assignable to parameter of type 'FirebaseApp | undefined'.
+  Type 'null' is not assignable to type 'FirebaseApp | undefined'.
+
+  107 |   const router = useRouter();
+  108 |   const { toast } = useToast();
+> 109 |   const auth = getAuth(app);
+      |                        ^
+  110 |
+  111 |   const onSubmit = async (values: LoginFormValues, role: Role) => {
+  112 |     setIsLoading(true);
+
+[info] Next.js build worker exited with code: 1 and signal: null
+
+[debug] [2025-07-24T06:50:14.239Z] Error: ENOENT: no such file or directory, open '/home/user/studio/.next/export-marker.json'
+[error] 
+[error] Error: An unexpected error has occurred.
