@@ -114,7 +114,6 @@ export default function PreschoolRegistrationPage() {
           address: values.address,
           avatar: `https://placehold.co/150x150.png`,
           children: [childName],
-          childDetails: [],
       });
       
       await addChild({
