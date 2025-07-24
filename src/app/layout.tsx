@@ -1,5 +1,5 @@
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Poppins, Lilita_One } from 'next/font/google';
 import './globals.css';
 import { cn } from '@/lib/utils';
@@ -20,13 +20,39 @@ const fontLilitaOne = Lilita_One({
   variable: '--font-lilita-one',
 });
 
+const APP_NAME = "Easyspark Demo";
+const APP_DEFAULT_TITLE = "Easyspark | Childcare Management Made Easy";
+const APP_TITLE_TEMPLATE = "%s - Easyspark";
+const APP_DESCRIPTION = "The all-in-one solution for managing your daycare or preschool.";
+
+
 export const metadata: Metadata = {
-  title: 'Easyspark | Childcare Management Made Easy',
-  description: 'The all-in-one solution for managing your daycare or preschool.',
-  icons: {
+  applicationName: APP_NAME,
+  title: {
+    default: APP_DEFAULT_TITLE,
+    template: APP_TITLE_TEMPLATE,
+  },
+  description: APP_DESCRIPTION,
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "default",
+    title: APP_DEFAULT_TITLE,
+  },
+  formatDetection: {
+    telephone: false,
+  },
+   icons: {
     icon: '/logo.png',
+    shortcut: "/logo.png",
+    apple: "/logo.png",
   },
 };
+
+export const viewport: Viewport = {
+  themeColor: "#d4e7f2",
+};
+
 
 export default function RootLayout({
   children,

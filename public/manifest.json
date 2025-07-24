@@ -1,13 +1,13 @@
 
 {
-  "theme_color": "#D4E7F2",
-  "background_color": "#D4E7F2",
+  "theme_color": "#d4e7f2",
+  "background_color": "#ffffff",
   "display": "standalone",
   "scope": "/",
   "start_url": "/",
   "name": "Easyspark Demo",
   "short_name": "Easyspark",
-  "description": "The All-in-One Digital Hub for Modern Preschools",
+  "description": "The all-in-one solution for managing your daycare or preschool.",
   "icons": [
     {
       "src": "/icon-192x192.png",
