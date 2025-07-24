@@ -10,24 +10,24 @@ import { usePathname } from "next/navigation";
 export function Header() {
   const pathname = usePathname();
 
-  // Don't show header on parent dashboard/profile or admin pages
-  if (pathname.startsWith('/parent') || pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/parent') || pathname.startsWith('/admin') || pathname.startsWith('/login')) {
     return null;
   }
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/#about", label: "About" },
-    { href: "/#programs", label: "Programs" },
+    { href: "/events", label: "Events" },
+    { href: "/gallery", label: "Gallery" },
+    { href: "/documents", label: "Documents" },
     { href: "/login", label: "Login" },
   ];
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 h-16">
+    <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 h-20">
       <div className="container flex h-full items-center">
         <div className="mr-auto flex items-center">
           <Link href="/" className="flex items-center gap-2">
-            <Logo className="h-12 w-12" />
+            <Logo className="h-14 w-14" />
           </Link>
         </div>
         <nav className="hidden md:flex items-center gap-6 text-sm font-medium">
@@ -43,9 +43,9 @@ export function Header() {
         </nav>
         <div className="flex items-center gap-4 ml-auto">
           <Button asChild>
-            <Link href="/register/preschool">
+            <Link href="/register">
               <Sparkles className="mr-2 h-4 w-4"/>
-              Register your child
+              Register
             </Link>
           </Button>
           <Sheet>
@@ -67,7 +67,7 @@ export function Header() {
                   </Link>
                 ))}
                  <Button asChild className="mt-4">
-                    <Link href="/register/preschool">Register Now</Link>
+                    <Link href="/register">Register Now</Link>
                 </Button>
               </div>
             </SheetContent>

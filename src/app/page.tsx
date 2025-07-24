@@ -1,66 +1,107 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { Calendar } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { getGalleryImages, getEvents } from '@/lib/firestore';
+import { GalleryImage, Event } from '@/lib/types';
+import { ArrowRight, Calendar, Sparkles } from 'lucide-react';
 
-export default function Home() {
-  return (
-    <div>
-      <div className="w-full">
-        <Image
-          src="https://placehold.co/1200x400.png"
-          data-ai-hint="parent teacher meeting"
-          alt="Parents and teachers in a meeting"
-          width={1200}
-          height={400}
-          className="w-full h-auto object-cover"
-        />
+async function RecentGalleryItems() {
+  const images = (await getGalleryImages()).slice(0, 3);
+
+  if (!images || images.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        <p>The gallery is currently empty. Check back soon for photos of our activities!</p>
       </div>
-      <main className="container mx-auto px-4 py-8">
-        <section id="programs" className="mb-12">
-          <h2 className="text-3xl font-bold mb-2">Our Programs</h2>
-          <p className="mb-6 text-gray-700">
-            We offer programs designed to nurture and educate children at different stages of their early development.
-          </p>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-2xl font-semibold">Preschool Program</h3>
-              <p className="mt-1 text-gray-600">
-                A play-based curriculum focusing on social skills, creativity, and school readiness for children ages 2-5.
-              </p>
-              <Link href="/register/preschool" className="text-blue-600 hover:underline">
-                Learn More & Register
-              </Link>
-            </div>
-            <div>
-              <h3 className="text-2xl font-semibold">Afterschool Program</h3>
-              <p className="mt-1 text-gray-600">
-                Homework help, STEM activities, and fun projects for school-aged children from Kindergarten to 5th grade.
-              </p>
-              <Link href="/register/afterschool" className="text-blue-600 hover:underline">
-                Learn More & Register
-              </Link>
-            </div>
-          </div>
-        </section>
+    )
+  }
 
-        <section id="events">
-          <h2 className="text-3xl font-bold mb-2">Upcoming Events</h2>
-          <p className="mb-6 text-gray-700">
-            Stay up to date with our latest activities and gatherings.
-          </p>
-          <div className="space-y-4">
-            <div>
-              <h4 className="text-xl font-semibold">Kids Golf Day</h4>
-              <div className="flex items-center text-gray-600 mt-1">
-                <Calendar className="h-4 w-4 mr-2" />
-                <span>Saturday, November 15</span>
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {images.map((image) => (
+        <Card key={image.id} className="overflow-hidden group">
+          <div className="relative aspect-[4/3]">
+            <Image
+              src={image.url}
+              alt={image.description || 'School activity'}
+              layout="fill"
+              objectFit="cover"
+              className="group-hover:scale-105 transition-transform duration-300"
+              data-ai-hint="child activity"
+            />
+          </div>
+          {image.description && (
+             <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground truncate">{image.description}</p>
+            </CardContent>
+          )}
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+export default async function HomePage() {
+  return (
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="bg-secondary/50 py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="text-center md:text-left">
+              <h1 className="font-headline text-5xl md:text-6xl font-bold text-primary">
+                Welcome to Easyspark
+              </h1>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Nurturing bright futures with a blend of care, education, and fun. Your child's journey starts here.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Button asChild size="lg">
+                  <Link href="/register">
+                    <Sparkles className="mr-2" />
+                    Register Your Child
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                   <Link href="/events">
+                    View Upcoming Events
+                    <ArrowRight className="ml-2" />
+                  </Link>
+                </Button>
               </div>
-              <p className="mt-1 text-gray-600">Golfing day for the kids</p>
+            </div>
+            <div>
+              <Image
+                src="https://placehold.co/600x400.png"
+                data-ai-hint="children playing learning"
+                alt="Children playing and learning in a bright, friendly environment"
+                width={600}
+                height={400}
+                className="rounded-lg shadow-xl w-full h-auto"
+                priority
+              />
             </div>
           </div>
-        </section>
-      </main>
+        </div>
+      </section>
+
+      {/* Gallery Preview Section */}
+      <section className="py-16">
+          <div className="container mx-auto px-4">
+               <div className="text-center mb-10">
+                    <h2 className="font-headline text-4xl font-bold text-primary">From Our Gallery</h2>
+                    <p className="mt-2 text-muted-foreground">A glimpse into our daily adventures and special moments.</p>
+                </div>
+              <RecentGalleryItems />
+               <div className="text-center mt-10">
+                  <Button asChild variant="link">
+                      <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2" /></Link>
+                  </Button>
+              </div>
+          </div>
+      </section>
     </div>
   );
 }

@@ -8,8 +8,7 @@ import { usePathname } from "next/navigation";
 export function Footer() {
   const pathname = usePathname();
 
-  // Don't show footer on parent dashboard/profile or admin pages
-  if (pathname.startsWith('/parent') || pathname.startsWith('/admin')) {
+  if (pathname.startsWith('/parent') || pathname.startsWith('/admin') || pathname.startsWith('/login')) {
     return null;
   }
 
@@ -21,8 +20,9 @@ export function Footer() {
             <Logo className="w-14 h-14" />
           </Link>
           <nav className="flex flex-wrap justify-center gap-4 md:gap-6">
-            <Link href="/#about" className="text-sm hover:text-primary transition-colors">About</Link>
-            <Link href="/#programs" className="text-sm hover:text-primary transition-colors">Programs</Link>
+            <Link href="/" className="text-sm hover:text-primary transition-colors">Home</Link>
+            <Link href="/events" className="text-sm hover:text-primary transition-colors">Events</Link>
+            <Link href="/gallery" className="text-sm hover:text-primary transition-colors">Gallery</Link>
             <Link href="/login" className="text-sm hover:text-primary transition-colors">Parent Login</Link>
           </nav>
           <div className="flex items-center gap-4">
