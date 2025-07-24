@@ -1,6 +1,6 @@
 # Firebase Studio Project: Easyspark Demo
 
-This is a Next.js project created in Firebase Studio.
+This is a Next.js project created in Firebase Studio. It is now correctly configured for deployment.
 
 ---
 
