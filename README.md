@@ -1,6 +1,6 @@
 # Firebase Studio Project: Easyspark Demo
 
-This is a Next.js project created in Firebase Studio. It is now correctly configured for deployment.
+This is a Next.js project created in Firebase Studio. It is now correctly configured for deployment and linked to the correct GitHub repository.
 
 ---
 
@@ -33,7 +33,7 @@ This is a secure key that lets GitHub Actions access your Firebase project.
 
 Secrets are encrypted environment variables that you can store in your GitHub repository.
 
-*   Go to your project's repository on GitHub.
+*   Go to your project's repository on GitHub (`jakkie747/easydemo`).
 *   Click on the **Settings** tab.
 *   In the left sidebar, under "Security", click on **Secrets and variables** -> **Actions**.
 *   Click the **New repository secret** button to add the following secrets:
