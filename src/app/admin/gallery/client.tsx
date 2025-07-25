@@ -39,8 +39,9 @@ import { PlusCircle, Trash2, Loader2, ImagePlus } from "lucide-react";
 import type { GalleryImage } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addGalleryImage } from "@/lib/firestore";
+import { addGalleryImage, getGalleryImages } from "@/lib/firestore";
 import { deleteGalleryImage } from "@/lib/firebase-server";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const formSchema = z.object({
   description: z.string().optional(),
@@ -133,10 +134,35 @@ function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
   );
 }
 
+function GallerySkeleton() {
+    return (
+         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+                <Skeleton key={index} className="h-48 w-full rounded-lg" />
+            ))}
+        </div>
+    )
+}
+
+
 export function GalleryClient({ initialImages }: { initialImages: GalleryImage[] }) {
   const router = useRouter();
   const { toast } = useToast();
+  const [images, setImages] = React.useState<GalleryImage[]>(initialImages);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const fetchImages = React.useCallback(async () => {
+    setIsLoading(true);
+    const fetchedImages = await getGalleryImages();
+    setImages(fetchedImages);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchImages();
+  }, [fetchImages]);
+
 
   const handleDelete = async (image: GalleryImage) => {
     setIsDeleting(true);
@@ -146,7 +172,7 @@ export function GalleryClient({ initialImages }: { initialImages: GalleryImage[]
         title: "Photo Deleted",
         description: "The image has been removed from the gallery.",
       });
-      router.refresh();
+      fetchImages(); // Refetch
     } catch (error) {
       console.error(error);
       toast({
@@ -166,11 +192,11 @@ export function GalleryClient({ initialImages }: { initialImages: GalleryImage[]
           <h1 className="font-headline text-3xl font-bold">Gallery Management</h1>
           <p className="text-muted-foreground">Manage and upload photos to the gallery.</p>
         </div>
-        <UploadDialog onUploadComplete={() => router.refresh()} />
+        <UploadDialog onUploadComplete={fetchImages} />
       </div>
-      {initialImages.length > 0 ? (
+      {isLoading ? <GallerySkeleton /> : images.length > 0 ? (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {initialImages.map((image) => (
+          {images.map((image) => (
             <Card key={image.id} className="group relative overflow-hidden">
               <Image
                 src={image.url}

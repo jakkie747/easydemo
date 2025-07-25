@@ -55,11 +55,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { MoreHorizontal, PlusCircle, Loader2, Upload } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { Child } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addChild, updateChild, addChildrenBatch } from "@/lib/firestore";
+import { addChild, updateChild, addChildrenBatch, getChildren } from "@/lib/firestore";
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -436,8 +437,40 @@ function BulkUploadDialog({ onUploadComplete }: { onUploadComplete: () => void }
   );
 }
 
+function ChildrenSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
 export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }) {
   const router = useRouter();
+  const [children, setChildren] = React.useState<Child[]>(initialChildren);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const fetchChildren = React.useCallback(async () => {
+    setIsLoading(true);
+    const fetchedChildren = await getChildren();
+    setChildren(fetchedChildren);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchChildren();
+  }, [fetchChildren]);
+
 
   return (
     <div className="flex flex-col gap-4">
@@ -449,85 +482,87 @@ export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }
           </p>
         </div>
         <div className="flex gap-2">
-            <BulkUploadDialog onUploadComplete={() => router.refresh()} />
-            <AddChildDialog onChildAdded={() => router.refresh()} />
+            <BulkUploadDialog onUploadComplete={fetchChildren} />
+            <AddChildDialog onChildAdded={fetchChildren} />
         </div>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Children</CardTitle>
-          <CardDescription>
-            A list of all the children enrolled in your center.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Classroom</TableHead>
-                <TableHead>Age</TableHead>
-                <TableHead>Parent</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {initialChildren.length > 0 ? (
-                initialChildren.map((child) => (
-                  <TableRow key={child.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={child.avatar} alt={child.name} />
-                          <AvatarFallback>{child.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="font-medium">{child.name}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge variant="outline">{child.classroom}</Badge>
-                    </TableCell>
-                    <TableCell>{child.age}</TableCell>
-                    <TableCell>{child.parent}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => router.push(`/admin/children/${child.id}/report`)}>
-                            View Daily Report
-                          </DropdownMenuItem>
-                          <EditChildDialog child={child} onChildUpdated={() => router.refresh()} />
-                          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                            Remove Child
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    No children found. Try seeding the database or adding a child.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isLoading ? <ChildrenSkeleton /> : (
+            <Card>
+                <CardHeader>
+                <CardTitle>All Children</CardTitle>
+                <CardDescription>
+                    A list of all the children enrolled in your center.
+                </CardDescription>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Classroom</TableHead>
+                        <TableHead>Age</TableHead>
+                        <TableHead>Parent</TableHead>
+                        <TableHead>
+                        <span className="sr-only">Actions</span>
+                        </TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {children.length > 0 ? (
+                        children.map((child) => (
+                        <TableRow key={child.id}>
+                            <TableCell>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                <AvatarImage src={child.avatar} alt={child.name} />
+                                <AvatarFallback>{child.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="font-medium">{child.name}</div>
+                            </div>
+                            </TableCell>
+                            <TableCell>
+                            <Badge variant="outline">{child.classroom}</Badge>
+                            </TableCell>
+                            <TableCell>{child.age}</TableCell>
+                            <TableCell>{child.parent}</TableCell>
+                            <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <MoreHorizontal />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/children/${child.id}/report`)}>
+                                    View Daily Report
+                                </DropdownMenuItem>
+                                <EditChildDialog child={child} onChildUpdated={fetchChildren} />
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                    Remove Child
+                                </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            No children found. Try seeding the database or adding a child.
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+        )}
     </div>
   );
 }
