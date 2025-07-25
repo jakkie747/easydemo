@@ -1,5 +1,5 @@
 
-"use client";
+'use client';
 
 import * as React from "react";
 import { useRouter } from "next/navigation";
@@ -236,7 +236,6 @@ function TeachersSkeleton() {
 
 export default function TeachersPage() {
   const { toast } = useToast();
-  const router = useRouter();
   const [teachers, setTeachers] = React.useState<Teacher[]>([]);
   const [isLoading, setIsLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState(false);
@@ -373,5 +372,3 @@ export default function TeachersPage() {
     </div>
   );
 }
-
-    
