@@ -3,12 +3,9 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -19,85 +16,67 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
+import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 type Role = "parent" | "teacher" | "admin";
 
-const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (values: LoginFormValues, role: Role) => void; isLoading: boolean; }) => {
+const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (role: Role, email?: string, password?: string) => void; isLoading: boolean; }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState(role === 'admin' ? "admin@easyspark.com" : role === 'teacher' ? "teacher@easyspark.com" : "");
+    const [password, setPassword] = useState(role === 'admin' || role === 'teacher' ? "password123" : "");
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: role === 'admin' ? "admin@easyspark.com" : role === 'teacher' ? "teacher@easyspark.com" : "",
-            password: role === 'admin' || role === 'teacher' ? "password123" : "",
-        },
-    });
+     const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onLogin(role, email, password);
+    };
 
      return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(values => onLogin(values, role))} className="space-y-4">
-            <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <div className="relative">
-                        <FormControl>
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                          {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                          <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
-                        </Button>
-                    </div>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <Label htmlFor={`email-${role}`}>Email</Label>
+                <Input
+                    id={`email-${role}`}
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    disabled={isLoading}
+                />
+            </div>
+             <div className="space-y-2">
+                <Label htmlFor={`password-${role}`}>Password</Label>
+                 <div className="relative">
+                    <Input
+                        id={`password-${role}`}
+                        type={showPassword ? "text" : "password"}
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                        required
+                        disabled={isLoading}
+                    />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                        disabled={isLoading}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
+            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
             </Button>
-            </form>
-        </Form>
+        </form>
     );
 };
 
@@ -107,10 +86,21 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const onSubmit = async (values: LoginFormValues, role: Role) => {
+  const onSubmit = async (role: Role, email?: string, password?: string) => {
     setIsLoading(true);
+
+    if (!email || !password) {
+        toast({
+            variant: "destructive",
+            title: "Login Failed",
+            description: "Email and password are required.",
+        });
+        setIsLoading(false);
+        return;
+    }
+
     try {
-      if (role === 'admin' && values.email === "admin@easyspark.com" && values.password === "password123") {
+      if (role === 'admin' && email === "admin@easyspark.com" && password === "password123") {
          toast({
           title: "Admin Login Successful!",
           description: "Redirecting to the admin dashboard.",
@@ -119,7 +109,7 @@ export default function LoginPage() {
         return;
       }
       
-      if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
+      if (role === 'teacher' && email === "teacher@easyspark.com" && password === "password123") {
         toast({
           title: "Teacher Login Successful!",
           description: "Redirecting to the teacher dashboard.",
@@ -129,7 +119,7 @@ export default function LoginPage() {
       }
       
       if (role === 'parent') {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        await signInWithEmailAndPassword(auth, email, password);
         toast({
           title: "Login Successful!",
           description: "Welcome back! Redirecting to your dashboard.",
