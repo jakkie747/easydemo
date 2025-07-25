@@ -16,8 +16,8 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
@@ -160,18 +160,18 @@ export default function PreschoolRegistrationPage() {
                   <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">1. Child's Information</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><FormLabel>First Name</FormLabel><Input placeholder="Leo" value={childFirstName} onChange={e => setChildFirstName(e.target.value)} disabled={isLoading} />{renderError("childFirstName")}</div>
-                        <div className="space-y-2"><FormLabel>Last Name</FormLabel><Input placeholder="Bloom" value={childLastName} onChange={e => setChildLastName(e.target.value)} disabled={isLoading} />{renderError("childLastName")}</div>
+                        <div className="space-y-2"><Label>First Name</Label><Input placeholder="Leo" value={childFirstName} onChange={e => setChildFirstName(e.target.value)} disabled={isLoading} />{renderError("childFirstName")}</div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input placeholder="Bloom" value={childLastName} onChange={e => setChildLastName(e.target.value)} disabled={isLoading} />{renderError("childLastName")}</div>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                       <div className="space-y-2"><FormLabel>Date of Birth</FormLabel><Input type="date" value={childDob} onChange={e => setChildDob(e.target.value)} disabled={isLoading} />{renderError("childDob")}</div>
-                       <div className="space-y-2"><FormLabel>Gender</FormLabel><Input placeholder="e.g. Male, Female, Non-binary" value={childGender} onChange={e => setChildGender(e.target.value)} disabled={isLoading} />{renderError("childGender")}</div>
+                       <div className="space-y-2"><Label>Date of Birth</Label><Input type="date" value={childDob} onChange={e => setChildDob(e.target.value)} disabled={isLoading} />{renderError("childDob")}</div>
+                       <div className="space-y-2"><Label>Gender</Label><Input placeholder="e.g. Male, Female, Non-binary" value={childGender} onChange={e => setChildGender(e.target.value)} disabled={isLoading} />{renderError("childGender")}</div>
                     </div>
-                    <div className="space-y-2"><FormLabel>Allergies & Medical Notes (optional)</FormLabel><Textarea placeholder="List any allergies or important medical information." value={allergies} onChange={e => setAllergies(e.target.value)} disabled={isLoading} /></div>
-                    <div className="space-y-3"><FormLabel>Previous preschool experience?</FormLabel><RadioGroup onValueChange={setPreviousExperience} defaultValue={previousExperience} className="flex items-center space-x-4"><FormItem className="flex items-center space-x-2 space-y-0"><RadioGroupItem value="yes" /><FormLabel className="font-normal">Yes</FormLabel></FormItem><FormItem className="flex items-center space-x-2 space-y-0"><RadioGroupItem value="no" /><FormLabel className="font-normal">No</FormLabel></FormItem></RadioGroup></div>
-                    <div className="space-y-2"><FormLabel>Additional Notes (optional)</FormLabel><Textarea placeholder="Anything else we should know?" value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} disabled={isLoading} /></div>
+                    <div className="space-y-2"><Label>Allergies & Medical Notes (optional)</Label><Textarea placeholder="List any allergies or important medical information." value={allergies} onChange={e => setAllergies(e.target.value)} disabled={isLoading} /></div>
+                    <div className="space-y-3"><Label>Previous preschool experience?</Label><RadioGroup onValueChange={setPreviousExperience} defaultValue={previousExperience} className="flex items-center space-x-4"><div className="flex items-center space-x-2 space-y-0"><RadioGroupItem value="yes" /><Label className="font-normal">Yes</Label></div><div className="flex items-center space-x-2 space-y-0"><RadioGroupItem value="no" /><Label className="font-normal">No</Label></div></RadioGroup></div>
+                    <div className="space-y-2"><Label>Additional Notes (optional)</Label><Textarea placeholder="Anything else we should know?" value={additionalNotes} onChange={e => setAdditionalNotes(e.target.value)} disabled={isLoading} /></div>
                      <div className="space-y-2">
-                        <FormLabel>Child's Photo (optional)</FormLabel>
+                        <Label>Child's Photo (optional)</Label>
                         <Input type="file" accept="image/*" disabled/>
                         <p className="text-xs text-muted-foreground">Photo upload will be available in the parent dashboard after registration.</p>
                      </div>
@@ -182,24 +182,24 @@ export default function PreschoolRegistrationPage() {
                   <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">2. Parent/Guardian Information</h3>
                   <div className="space-y-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="space-y-2"><FormLabel>First Name</FormLabel><Input placeholder="Anna" value={parentFirstName} onChange={e => setParentFirstName(e.target.value)} disabled={isLoading} />{renderError("parentFirstName")}</div>
-                        <div className="space-y-2"><FormLabel>Last Name</FormLabel><Input placeholder="Bloom" value={parentLastName} onChange={e => setParentLastName(e.target.value)} disabled={isLoading} />{renderError("parentLastName")}</div>
+                        <div className="space-y-2"><Label>First Name</Label><Input placeholder="Anna" value={parentFirstName} onChange={e => setParentFirstName(e.target.value)} disabled={isLoading} />{renderError("parentFirstName")}</div>
+                        <div className="space-y-2"><Label>Last Name</Label><Input placeholder="Bloom" value={parentLastName} onChange={e => setParentLastName(e.target.value)} disabled={isLoading} />{renderError("parentLastName")}</div>
                     </div>
-                    <div className="space-y-2"><FormLabel>Email Address</FormLabel><Input type="email" placeholder="anna.bloom@example.com" value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading} />{renderError("email")}</div>
-                    <div className="space-y-2"><FormLabel>Phone Number</FormLabel><Input type="tel" placeholder="123-456-7890" value={phone} onChange={e => setPhone(e.target.value)} disabled={isLoading} />{renderError("phone")}</div>
-                    <div className="space-y-2"><FormLabel>Physical Address</FormLabel><Input placeholder="123 Sunny Lane, Anytown, USA" value={address} onChange={e => setAddress(e.target.value)} disabled={isLoading} />{renderError("address")}</div>
+                    <div className="space-y-2"><Label>Email Address</Label><Input type="email" placeholder="anna.bloom@example.com" value={email} onChange={e => setEmail(e.target.value)} disabled={isLoading} />{renderError("email")}</div>
+                    <div className="space-y-2"><Label>Phone Number</Label><Input type="tel" placeholder="123-456-7890" value={phone} onChange={e => setPhone(e.target.value)} disabled={isLoading} />{renderError("phone")}</div>
+                    <div className="space-y-2"><Label>Physical Address</Label><Input placeholder="123 Sunny Lane, Anytown, USA" value={address} onChange={e => setAddress(e.target.value)} disabled={isLoading} />{renderError("address")}</div>
                      
-                    <div className="space-y-2"><FormLabel>Password</FormLabel><div className="relative"><Input type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading} /><Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button></div>{renderError("password")}</div>
-                    <div className="space-y-2"><FormLabel>Confirm Password</FormLabel><div className="relative"><Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={isLoading} /><Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button></div>{renderError("confirmPassword")}</div>
+                    <div className="space-y-2"><Label>Password</Label><div className="relative"><Input type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={e => setPassword(e.target.value)} disabled={isLoading} /><Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowPassword(!showPassword)}>{showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button></div>{renderError("password")}</div>
+                    <div className="space-y-2"><Label>Confirm Password</Label><div className="relative"><Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} disabled={isLoading} /><Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>{showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}</Button></div>{renderError("confirmPassword")}</div>
                   </div>
                 </section>
                 
                  <section>
                   <h3 className="text-xl font-semibold border-b mb-4 pb-2 font-headline text-primary/90">3. Emergency Contact</h3>
                    <div className="space-y-4">
-                    <div className="space-y-2"><FormLabel>Full Name</FormLabel><Input placeholder="John Bloom" value={emergencyName} onChange={e => setEmergencyName(e.target.value)} disabled={isLoading} />{renderError("emergencyName")}</div>
-                    <div className="space-y-2"><FormLabel>Relationship to Child</FormLabel><Input placeholder="Father" value={emergencyRelation} onChange={e => setEmergencyRelation(e.target.value)} disabled={isLoading} />{renderError("emergencyRelation")}</div>
-                    <div className="space-y-2"><FormLabel>Phone Number</FormLabel><Input type="tel" placeholder="123-456-7891" value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} disabled={isLoading} />{renderError("emergencyPhone")}</div>
+                    <div className="space-y-2"><Label>Full Name</Label><Input placeholder="John Bloom" value={emergencyName} onChange={e => setEmergencyName(e.target.value)} disabled={isLoading} />{renderError("emergencyName")}</div>
+                    <div className="space-y-2"><Label>Relationship to Child</Label><Input placeholder="Father" value={emergencyRelation} onChange={e => setEmergencyRelation(e.target.value)} disabled={isLoading} />{renderError("emergencyRelation")}</div>
+                    <div className="space-y-2"><Label>Phone Number</Label><Input type="tel" placeholder="123-456-7891" value={emergencyPhone} onChange={e => setEmergencyPhone(e.target.value)} disabled={isLoading} />{renderError("emergencyPhone")}</div>
                   </div>
                 </section>
 
@@ -221,4 +221,3 @@ export default function PreschoolRegistrationPage() {
     </div>
   );
 }
-
