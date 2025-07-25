@@ -275,9 +275,8 @@ export default function EventsPage() {
                     <Image
                         src={event.imageUrl}
                         alt={event.title}
-                        layout="fill"
-                        objectFit="cover"
-                        className="rounded-t-lg"
+                        fill
+                        className="rounded-t-lg object-cover"
                     />
                  </div>
               )}
@@ -339,3 +338,5 @@ export default function EventsPage() {
     </div>
   );
 }
+
+    
