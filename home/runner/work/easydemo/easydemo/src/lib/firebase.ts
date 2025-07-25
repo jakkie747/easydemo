@@ -1,3 +1,4 @@
+
 // Import the functions you need from the SDKs you need
 import { initializeApp, getApps, getApp, type FirebaseApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
@@ -16,15 +17,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 let app: FirebaseApp;
-if (getApps().length === 0) {
-    app = initializeApp(firebaseConfig);
+if (typeof window !== 'undefined') {
+    if (getApps().length === 0) {
+        app = initializeApp(firebaseConfig);
+    } else {
+        app = getApp();
+    }
 } else {
-    app = getApp();
+    // During server-side rendering, we can't initialize the client-side SDK.
+    // We'll return a mock/dummy object.
+    app = {} as FirebaseApp;
 }
 
-const auth = getAuth(app);
-const db = getFirestore(app);
-const storage = getStorage(app);
+
+const auth = typeof window !== 'undefined' ? getAuth(app) : ({} as any);
+const db = typeof window !== 'undefined' ? getFirestore(app) : ({} as any);
+const storage = typeof window !== 'undefined' ? getStorage(app) : ({} as any);
 
 
 export { app, auth, db, storage };
