@@ -1,5 +1,5 @@
 import { ParentsClient } from "./client";
 
 export default function ParentsPage() {
-  return <ParentsClient parents={[]} />;
+  return <ParentsClient initialParents={[]} />;
 }
