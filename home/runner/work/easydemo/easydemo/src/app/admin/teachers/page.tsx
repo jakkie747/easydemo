@@ -1,375 +1,137 @@
+"use client";
 
-'use client';
+import * as React from 'react';
+import Link from 'next/link';
+import Image from 'next/image';
+import { Button } from '@/components/ui/button';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { getGalleryImages } from '@/lib/firestore';
+import type { GalleryImage } from '@/lib/types';
+import { Skeleton } from '@/components/ui/skeleton';
 
-import * as React from "react";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+function HomeGalleryPreview() {
+  const [images, setImages] = React.useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-  DialogFooter,
-  DialogClose,
-} from "@/components/ui/dialog";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Progress } from "@/components/ui/progress";
-import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-import type { Teacher } from "@/lib/types";
-import { useUpload } from "@/hooks/use-upload";
-import { useToast } from "@/hooks/use-toast";
-import { addTeacher, updateTeacher, getTeachers } from "@/lib/firestore";
-import { deleteTeacher } from "@/lib/firebase-server";
-
-const formSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email(),
-  classroom: z.string().min(1, { message: "Classroom is required." }),
-  status: z.enum(['Active', 'On Leave']),
-  avatar: z.any().optional(),
-});
-
-function TeacherFormDialog({
-  teacher,
-  onComplete,
-  mode,
-}: {
-  teacher?: Teacher;
-  onComplete: () => void;
-  mode: "add" | "edit";
-}) {
-  const [file, setFile] = React.useState<File | null>(null);
-  const [isOpen, setIsOpen] = React.useState(false);
-  const { upload, progress, isLoading: isUploading } = useUpload();
-  const { toast } = useToast();
-
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues:
-      mode === "edit" && teacher
-        ? {
-            name: teacher.name,
-            email: teacher.email,
-            classroom: teacher.classroom,
-            status: teacher.status,
-          }
-        : {
-            name: "",
-            email: "",
-            classroom: "",
-            status: "Active",
-          },
-  });
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFile(e.target.files?.[0] ?? null);
-  };
-
-  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
-    let avatarUrl = teacher?.avatar;
-
-    try {
-      if (file) {
-        const storagePath = `avatars/teachers/${Date.now()}_${file.name}`;
-        const uploadedURL = await upload(file, storagePath);
-        if (uploadedURL) {
-          avatarUrl = uploadedURL;
-        } else {
-          toast({ variant: "destructive", title: "Avatar Upload Failed" });
-          return;
+  React.useEffect(() => {
+    const fetchImages = async () => {
+        setIsLoading(true);
+        try {
+            const fetchedImages = (await getGalleryImages()).slice(0, 3);
+            setImages(fetchedImages);
+        } catch (error) {
+            console.error("Failed to fetch gallery items:", error);
+        } finally {
+            setIsLoading(false);
         }
-      }
-
-      const teacherData = { ...values, avatar: avatarUrl || `https://i.pravatar.cc/150?u=${values.email}`};
-
-      if (mode === "edit" && teacher) {
-        await updateTeacher(teacher.id, teacherData);
-        toast({ title: "Teacher Updated!", description: `${values.name}'s profile has been updated.` });
-      } else {
-        await addTeacher(teacherData);
-        toast({ title: "Teacher Added!", description: `${values.name} has been added.` });
-      }
-      form.reset();
-      setFile(null);
-      setIsOpen(false);
-      onComplete();
-    } catch (error) {
-      toast({ variant: "destructive", title: "Action Failed", description: "Could not save the teacher's profile." });
     }
-  };
+    fetchImages();
+  }, []);
 
-  const triggerButton =
-    mode === "add" ? (
-      <Button><PlusCircle /> Add Teacher</Button>
-    ) : (
-      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Profile</DropdownMenuItem>
-    );
 
-  const isSubmitting = form.formState.isSubmitting || isUploading;
+  if (isLoading) {
+      return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+          </div>
+      )
+  }
+
+  if (images.length === 0) {
+    return (
+      <div className="text-center text-muted-foreground py-8">
+        <p>The gallery is currently empty. Check back soon for photos of our activities!</p>
+      </div>
+    )
+  }
 
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{mode === "edit" ? `Edit ${teacher?.name}'s Profile` : "Add a New Teacher"}</DialogTitle>
-          <DialogDescription>
-            {mode === 'edit' ? "Update the details for this teacher." : "Fill in the details for the new teacher."}
-          </DialogDescription>
-        </DialogHeader>
-        <Form {...form}>
-          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
-            <FormField control={form.control} name="name" render={({ field }) => (
-                <FormItem><FormLabel>Full Name</FormLabel><FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="email" render={({ field }) => (
-                <FormItem><FormLabel>Email</FormLabel><FormControl><Input type="email" placeholder="e.g., jane.doe@example.com" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="classroom" render={({ field }) => (
-                <FormItem><FormLabel>Classroom</FormLabel><FormControl><Input placeholder="e.g., Bumblebees" {...field} /></FormControl><FormMessage /></FormItem>
-            )} />
-            <FormField control={form.control} name="status" render={({ field }) => (
-                <FormItem><FormLabel>Status</FormLabel>
-                <Select onValueChange={field.onChange} defaultValue={field.value}>
-                    <FormControl><SelectTrigger><SelectValue /></SelectTrigger></FormControl>
-                    <SelectContent>
-                        <SelectItem value="Active">Active</SelectItem>
-                        <SelectItem value="On Leave">On Leave</SelectItem>
-                    </SelectContent>
-                </Select>
-                <FormMessage /></FormItem>
-            )} />
-            <div className="space-y-2">
-              <Label htmlFor="file">Avatar</Label>
-              <Input id="file" type="file" accept="image/*" onChange={handleFileChange} />
-            </div>
-            {isUploading && <Progress value={progress} />}
-            <DialogFooter>
-              <DialogClose asChild><Button variant="outline">Cancel</Button></DialogClose>
-              <Button type="submit" disabled={isSubmitting}>
-                {isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                Save
-              </Button>
-            </DialogFooter>
-          </form>
-        </Form>
-      </DialogContent>
-    </Dialog>
+    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {images.map((image) => (
+        <Card key={image.id} className="overflow-hidden group">
+          <div className="relative aspect-[4/3]">
+            <Image
+              src={image.url}
+              alt={image.description || 'School activity'}
+              fill
+              className="group-hover:scale-105 transition-transform duration-300 object-cover"
+              data-ai-hint="child activity"
+            />
+          </div>
+          {image.description && (
+             <CardContent className="p-4">
+                <p className="text-sm text-muted-foreground truncate">{image.description}</p>
+            </CardContent>
+          )}
+        </Card>
+      ))}
+    </div>
   );
 }
 
-function TeachersSkeleton() {
-    return (
-        <Card>
-            <CardHeader>
-                <Skeleton className="h-8 w-48" />
-                <Skeleton className="h-4 w-64" />
-            </CardHeader>
-            <CardContent>
-                <div className="space-y-4">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                </div>
-            </CardContent>
-        </Card>
-    )
-}
 
-export default function TeachersPage() {
-  const { toast } = useToast();
-  const router = useRouter();
-  const [teachers, setTeachers] = React.useState<Teacher[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
-  const [isDeleting, setIsDeleting] = React.useState(false);
-
-  const fetchTeachers = React.useCallback(async () => {
-    setIsLoading(true);
-    const fetchedTeachers = await getTeachers();
-    setTeachers(fetchedTeachers);
-    setIsLoading(false);
-  }, []);
-
-  React.useEffect(() => {
-    fetchTeachers();
-  }, [fetchTeachers]);
-
-
-  const handleDelete = async (teacherId: string) => {
-    setIsDeleting(true);
-    try {
-        await deleteTeacher(teacherId);
-        toast({ title: "Teacher Deleted", description: "The teacher has been removed." });
-        fetchTeachers();
-    } catch (error) {
-        toast({ variant: "destructive", title: "Deletion Failed" });
-    } finally {
-        setIsDeleting(false);
-    }
-  };
-
-
+export default function HomePage() {
   return (
-    <div className="flex flex-col gap-4">
-       <div className="flex items-center justify-between">
-        <div>
-            <h1 className="font-headline text-3xl font-bold">Teacher Management</h1>
-            <p className="text-muted-foreground">View, add, edit, or remove teachers from your center.</p>
+    <div className="flex flex-col">
+      {/* Hero Section */}
+      <section className="bg-secondary/50 py-16 md:py-24">
+        <div className="container mx-auto px-4">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="text-center md:text-left">
+              <h1 className="font-headline text-5xl md:text-6xl font-bold text-primary">
+                Welcome to Easyspark
+              </h1>
+              <p className="mt-4 text-lg text-muted-foreground">
+                Nurturing bright futures with a blend of care, education, and fun. Your child's journey starts here.
+              </p>
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+                <Button asChild size="lg">
+                  <Link href="/register">
+                    <Sparkles className="mr-2" />
+                    Register Your Child
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                   <Link href="/events">
+                    View Upcoming Events
+                    <ArrowRight className="ml-2" />
+                  </Link>
+                </Button>
+              </div>
+            </div>
+            <div>
+              <Image
+                src="https://placehold.co/600x400.png"
+                data-ai-hint="children playing learning"
+                alt="Children playing and learning in a bright, friendly environment"
+                width={600}
+                height={400}
+                className="rounded-lg shadow-xl w-full h-auto"
+                priority
+              />
+            </div>
+          </div>
         </div>
-        <div className="flex gap-2">
-            <TeacherFormDialog mode="add" onComplete={fetchTeachers} />
-        </div>
-      </div>
-      {isLoading ? <TeachersSkeleton /> : (
-        <Card>
-            <CardHeader>
-            <CardTitle>All Teachers</CardTitle>
-            <CardDescription>
-                A list of all the teachers in your center.
-            </CardDescription>
-            </CardHeader>
-            <CardContent>
-            <Table>
-                <TableHeader>
-                <TableRow>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Classroom</TableHead>
-                    <TableHead>Contact</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>
-                    <span className="sr-only">Actions</span>
-                    </TableHead>
-                </TableRow>
-                </TableHeader>
-                <TableBody>
-                {teachers.length > 0 ? (
-                    teachers.map((teacher) => (
-                    <TableRow key={teacher.id}>
-                        <TableCell>
-                        <div className="flex items-center gap-3">
-                            <Avatar>
-                            <AvatarImage src={teacher.avatar} alt={teacher.name} />
-                            <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
-                            </Avatar>
-                            <div className="font-medium">{teacher.name}</div>
-                        </div>
-                        </TableCell>
-                        <TableCell>{teacher.classroom}</TableCell>
-                        <TableCell>{teacher.email}</TableCell>
-                        <TableCell>
-                        <Badge variant={teacher.status === "Active" ? "default" : "secondary"}>
-                            {teacher.status}
-                        </Badge>
-                        </TableCell>
-                        <TableCell>
-                        <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                            <Button
-                                aria-haspopup="true"
-                                size="icon"
-                                variant="ghost"
-                            >
-                                <MoreHorizontal />
-                                <span className="sr-only">Toggle menu</span>
-                            </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                            <TeacherFormDialog mode="edit" teacher={teacher} onComplete={fetchTeachers} />
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
-                                        Delete
-                                    </DropdownMenuItem>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                        <AlertDialogDescription>This will permanently delete {teacher.name}'s profile.</AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={() => handleDelete(teacher.id)} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                        </TableCell>
-                    </TableRow>
-                    ))
-                ) : (
-                    <TableRow>
-                        <TableCell colSpan={5} className="h-24 text-center">
-                        No teachers found. You can add one or seed the database from the settings page.
-                        </TableCell>
-                    </TableRow>
-                )}
-                </TableBody>
-            </Table>
-            </CardContent>
-        </Card>
-      )}
+      </section>
+
+      {/* Gallery Preview Section */}
+      <section className="py-16">
+          <div className="container mx-auto px-4">
+               <div className="text-center mb-10">
+                    <h2 className="font-headline text-4xl font-bold text-primary">From Our Gallery</h2>
+                    <p className="mt-2 text-muted-foreground">A glimpse into our daily adventures and special moments.</p>
+                </div>
+              <HomeGalleryPreview />
+               <div className="text-center mt-10">
+                  <Button asChild variant="link">
+                      <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2" /></Link>
+                  </Button>
+              </div>
+          </div>
+      </section>
     </div>
   );
 }

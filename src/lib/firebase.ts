@@ -16,7 +16,16 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-const app: FirebaseApp = !getApps().length ? initializeApp(firebaseConfig) : getApp();
+// This approach ensures that Firebase is initialized only once and that it's
+// safe to use in both client and server components, although client-side
+// features will only be available on the client.
+let app: FirebaseApp;
+if (getApps().length === 0) {
+    app = initializeApp(firebaseConfig);
+} else {
+    app = getApp();
+}
+
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
