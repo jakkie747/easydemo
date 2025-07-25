@@ -226,7 +226,7 @@ function EventsSkeleton() {
     )
 }
 
-export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
+export function EventsClient({ events: initialEvents }: { events: Event[] }) {
     const router = useRouter();
     const { toast } = useToast();
     const [events, setEvents] = React.useState<Event[]>(initialEvents);

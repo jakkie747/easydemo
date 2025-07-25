@@ -225,7 +225,7 @@ function ParentsSkeleton() {
     )
 }
 
-export function ParentsClient({ initialParents }: { initialParents: Parent[] }) {
+export function ParentsClient({ parents: initialParents }: { parents: Parent[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
