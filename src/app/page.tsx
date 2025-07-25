@@ -18,9 +18,14 @@ function RecentGalleryItems() {
   React.useEffect(() => {
     const fetchImages = async () => {
         setIsLoading(true);
-        const fetchedImages = (await getGalleryImages()).slice(0, 3);
-        setImages(fetchedImages);
-        setIsLoading(false);
+        try {
+            const fetchedImages = (await getGalleryImages()).slice(0, 3);
+            setImages(fetchedImages);
+        } catch (error) {
+            console.error("Failed to fetch gallery items:", error);
+        } finally {
+            setIsLoading(false);
+        }
     }
     fetchImages();
   }, []);
@@ -29,9 +34,9 @@ function RecentGalleryItems() {
   if (isLoading) {
       return (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <Skeleton className="aspect-[4/3] w-full" />
-              <Skeleton className="aspect-[4/3] w-full" />
-              <Skeleton className="aspect-[4/3] w-full" />
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
+              <Skeleton className="aspect-[4/3] w-full rounded-lg" />
           </div>
       )
   }
