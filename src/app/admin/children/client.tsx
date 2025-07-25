@@ -458,7 +458,7 @@ function ChildrenSkeleton() {
 export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }) {
   const router = useRouter();
   const [children, setChildren] = React.useState<Child[]>(initialChildren);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
 
   const fetchChildren = React.useCallback(async () => {
     setIsLoading(true);
@@ -468,8 +468,8 @@ export function ChildrenClient({ initialChildren }: { initialChildren: Child[] }
   }, []);
 
   React.useEffect(() => {
-    fetchChildren();
-  }, [fetchChildren]);
+    setIsLoading(false);
+  }, []);
 
 
   return (

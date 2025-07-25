@@ -161,9 +161,9 @@ function DocumentsSkeleton() {
     )
 }
 
-export function DocumentsClient() {
-  const [documents, setDocuments] = React.useState<Document[]>([]);
-  const [isLoading, setIsLoading] = React.useState(true);
+export function DocumentsClient({ initialDocuments }: { initialDocuments: Document[] }) {
+  const [documents, setDocuments] = React.useState<Document[]>(initialDocuments);
+  const [isLoading, setIsLoading] = React.useState(false);
   const router = useRouter();
 
   const fetchDocuments = React.useCallback(async () => {
@@ -174,8 +174,8 @@ export function DocumentsClient() {
   }, []);
 
   React.useEffect(() => {
-    fetchDocuments();
-  }, [fetchDocuments]);
+    setIsLoading(false);
+  }, []);
 
 
   const handleDownload = (url: string) => {

@@ -149,7 +149,7 @@ export function GalleryClient({ initialImages }: { initialImages: GalleryImage[]
   const router = useRouter();
   const { toast } = useToast();
   const [images, setImages] = React.useState<GalleryImage[]>(initialImages);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const fetchImages = React.useCallback(async () => {
@@ -160,8 +160,8 @@ export function GalleryClient({ initialImages }: { initialImages: GalleryImage[]
   }, []);
 
   React.useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
+    setIsLoading(false);
+  }, []);
 
 
   const handleDelete = async (image: GalleryImage) => {

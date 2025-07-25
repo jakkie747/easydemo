@@ -234,11 +234,11 @@ function TeachersSkeleton() {
     )
 }
 
-export function TeachersClient({ teachers: initialTeachers }: { teachers: Teacher[] }) {
+export function TeachersClient({ initialTeachers }: { initialTeachers: Teacher[] }) {
   const { toast } = useToast();
   const router = useRouter();
   const [teachers, setTeachers] = React.useState<Teacher[]>(initialTeachers);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isDeleting, setIsDeleting] = React.useState(false);
 
   const fetchTeachers = React.useCallback(async () => {
@@ -249,8 +249,9 @@ export function TeachersClient({ teachers: initialTeachers }: { teachers: Teache
   }, []);
 
   React.useEffect(() => {
-    fetchTeachers();
-  }, [fetchTeachers]);
+    // We get initial teachers from the server component, so no need to fetch on mount
+    setIsLoading(false);
+  }, []);
 
 
   const handleDelete = async (teacherId: string) => {

@@ -225,12 +225,12 @@ function ParentsSkeleton() {
     )
 }
 
-export function ParentsClient({ parents: initialParents }: { parents: Parent[] }) {
+export function ParentsClient({ initialParents }: { initialParents: Parent[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
   const [parents, setParents] = React.useState<Parent[]>(initialParents);
-  const [isLoading, setIsLoading] = React.useState(true);
+  const [isLoading, setIsLoading] = React.useState(false);
   const [isProcessing, setIsProcessing] = React.useState<string | false>(false);
 
   const fetchParents = React.useCallback(async () => {
@@ -241,8 +241,8 @@ export function ParentsClient({ parents: initialParents }: { parents: Parent[] }
   }, []);
 
   React.useEffect(() => {
-    fetchParents();
-  }, [fetchParents]);
+    setIsLoading(false);
+  }, []);
 
   const handleResetPassword = async (email: string) => {
     setIsProcessing(email);
