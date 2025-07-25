@@ -72,7 +72,7 @@ import type { Parent } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
 import { addParent, getParents } from "@/lib/firestore";
-import { deleteParent } from "@/lib/firebase-server";
+
 
 const formSchema = z.object({
   name: z.string().min(2, { message: "Name must be at least 2 characters." }),
@@ -241,8 +241,11 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
   }, []);
 
   React.useEffect(() => {
+      if(initialParents) {
+          setParents(initialParents)
+      }
     setIsLoading(false);
-  }, []);
+  }, [initialParents]);
 
   const handleResetPassword = async (email: string) => {
     setIsProcessing(email);
@@ -267,12 +270,13 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
   const handleDeleteParent = async (parent: Parent) => {
     setIsProcessing(parent.id);
     try {
-        await deleteParent(parent.id);
+        // This will now need a server action
+        console.log("Delete functionality needs to be implemented via a server action.");
         toast({
-            title: "Parent Account Deleted",
-            description: `${parent.name}'s account and data have been removed.`,
+            variant: "destructive",
+            title: "Deletion Failed",
+            description: "This feature requires a server action which is not yet implemented.",
         });
-        fetchParents(); // Refresh data
     } catch (error) {
          console.error("Error deleting parent:", error);
         toast({

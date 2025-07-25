@@ -88,13 +88,19 @@ export default function ChildReportPage({ params }: { params: { id: string } }) 
   useEffect(() => {
     const fetchChild = async () => {
       setLoading(true);
-      const childData = await getChild(params.id);
-      if (childData) {
-        setChild(childData);
-      } else {
+      try {
+        const childData = await getChild(params.id);
+        if (childData) {
+          setChild(childData);
+        } else {
+          notFound();
+        }
+      } catch (error) {
+        console.error("Failed to fetch child", error);
         notFound();
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     };
     fetchChild();
   }, [params.id]);
