@@ -2,7 +2,7 @@
 
 This is a Next.js project created in Firebase Studio. It is now correctly configured for deployment.
 
---
+----
 
 ## Automated Deployment via GitHub Actions
 
