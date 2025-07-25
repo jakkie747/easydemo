@@ -83,9 +83,7 @@ const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (values:
                                 className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
                                 onClick={() => setShowPassword(!showPassword)}
                             >
-                                <span>
                                 {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                </span>
                                 <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
                             </Button>
                         </div>
@@ -118,18 +116,18 @@ export default function LoginPage() {
           description: "Redirecting to the admin dashboard.",
         });
         router.push("/admin/dashboard");
-        return; 
-      } 
-      
+        return;
+      }
+
       if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
         toast({
           title: "Teacher Login Successful!",
           description: "Redirecting to the teacher dashboard.",
         });
         router.push("/teacher/dashboard");
-        return; 
-      } 
-      
+        return;
+      }
+
       if (role === 'parent') {
         await signInWithEmailAndPassword(auth, values.email, values.password);
         toast({
