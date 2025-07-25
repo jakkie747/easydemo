@@ -1,13 +1,52 @@
 
+"use client";
+
+import * as React from "react";
 import { getEvents } from "@/lib/firestore";
 import type { Event } from "@/lib/types";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import Image from "next/image";
 import { Calendar, Users } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function EventsPage() {
-  const events = await getEvents();
+function EventsSkeleton() {
+    return (
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} className="flex flex-col overflow-hidden shadow-lg">
+                    <Skeleton className="h-56 w-full" />
+                    <CardHeader>
+                        <Skeleton className="h-5 w-1/4 mb-2" />
+                        <Skeleton className="h-7 w-3/4" />
+                        <div className="flex gap-4 pt-2">
+                            <Skeleton className="h-5 w-1/3" />
+                            <Skeleton className="h-5 w-1/3" />
+                        </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                    </CardContent>
+                </Card>
+            ))}
+        </div>
+    )
+}
+
+export default function EventsPage() {
+  const [events, setEvents] = React.useState<Event[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchEvents = async () => {
+      setIsLoading(true);
+      const fetchedEvents = await getEvents();
+      setEvents(fetchedEvents);
+      setIsLoading(false);
+    };
+    fetchEvents();
+  }, []);
 
   return (
     <div className="py-12 md:py-16 bg-muted/20">
@@ -18,8 +57,9 @@ export default async function EventsPage() {
             Join us for our upcoming community events. We look forward to seeing you there!
           </p>
         </div>
-
-        {events.length > 0 ? (
+        {isLoading ? (
+            <EventsSkeleton />
+        ) : events.length > 0 ? (
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
             {events.map((event) => (
               <Card key={event.id} className="flex flex-col overflow-hidden shadow-lg hover:shadow-xl transition-shadow duration-300">

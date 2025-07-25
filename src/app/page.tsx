@@ -1,16 +1,42 @@
 
+"use client";
+
+import * as React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getGalleryImages, getEvents } from '@/lib/firestore';
-import { GalleryImage, Event } from '@/lib/types';
-import { ArrowRight, Calendar, Sparkles } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { getGalleryImages } from '@/lib/firestore';
+import type { GalleryImage } from '@/lib/types';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { Skeleton } from '@/components/ui/skeleton';
 
-async function RecentGalleryItems() {
-  const images = (await getGalleryImages()).slice(0, 3);
+function RecentGalleryItems() {
+  const [images, setImages] = React.useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
 
-  if (!images || images.length === 0) {
+  React.useEffect(() => {
+    const fetchImages = async () => {
+        setIsLoading(true);
+        const fetchedImages = (await getGalleryImages()).slice(0, 3);
+        setImages(fetchedImages);
+        setIsLoading(false);
+    }
+    fetchImages();
+  }, []);
+
+
+  if (isLoading) {
+      return (
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <Skeleton className="aspect-[4/3] w-full" />
+              <Skeleton className="aspect-[4/3] w-full" />
+              <Skeleton className="aspect-[4/3] w-full" />
+          </div>
+      )
+  }
+
+  if (images.length === 0) {
     return (
       <div className="text-center text-muted-foreground py-8">
         <p>The gallery is currently empty. Check back soon for photos of our activities!</p>
@@ -43,7 +69,7 @@ async function RecentGalleryItems() {
   );
 }
 
-export default async function HomePage() {
+export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -52,7 +78,7 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
               <h1 className="font-headline text-5xl md:text-6xl font-bold text-primary">
-                Welcome to Easyspark - Verifying Changes
+                Welcome to Easyspark
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
                 Nurturing bright futures with a blend of care, education, and fun. Your child's journey starts here.

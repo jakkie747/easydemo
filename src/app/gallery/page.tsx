@@ -1,10 +1,36 @@
 
-import { getGalleryImages } from "@/lib/firestore";
-import { Card, CardContent } from "@/components/ui/card";
-import Image from "next/image";
+"use client";
 
-export default async function GalleryPage() {
-  const images = await getGalleryImages();
+import * as React from "react";
+import { getGalleryImages } from "@/lib/firestore";
+import { Card } from "@/components/ui/card";
+import Image from "next/image";
+import { Skeleton } from "@/components/ui/skeleton";
+import type { GalleryImage } from "@/lib/types";
+
+function GallerySkeleton() {
+    return (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+            {Array.from({ length: 8 }).map((_, index) => (
+                <Skeleton key={index} className="h-64 w-full rounded-lg" />
+            ))}
+        </div>
+    );
+}
+
+export default function GalleryPage() {
+  const [images, setImages] = React.useState<GalleryImage[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchImages = async () => {
+      setIsLoading(true);
+      const fetchedImages = await getGalleryImages();
+      setImages(fetchedImages);
+      setIsLoading(false);
+    };
+    fetchImages();
+  }, []);
 
   return (
     <div className="py-12 md:py-16">
@@ -16,7 +42,9 @@ export default async function GalleryPage() {
           </p>
         </div>
 
-        {images.length > 0 ? (
+        {isLoading ? (
+            <GallerySkeleton />
+        ) : images.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             {images.map((image) => (
               <Card key={image.id} className="group relative overflow-hidden rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">

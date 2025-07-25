@@ -1,13 +1,40 @@
 
+"use client";
+
+import * as React from "react";
 import { getDocuments } from "@/lib/firestore";
 import type { Document } from "@/lib/types";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Download, FileText } from "lucide-react";
 import Link from "next/link";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function DocumentsPage() {
-  const documents = await getDocuments();
+function DocumentsSkeleton() {
+    return (
+        <div className="border rounded-lg p-4">
+            <div className="space-y-4">
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+                <Skeleton className="h-12 w-full" />
+            </div>
+        </div>
+    )
+}
+
+export default function DocumentsPage() {
+  const [documents, setDocuments] = React.useState<Document[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const fetchDocuments = async () => {
+        setIsLoading(true);
+        const docs = await getDocuments();
+        setDocuments(docs);
+        setIsLoading(false);
+    };
+    fetchDocuments();
+  }, []);
 
   return (
     <div className="py-12 md:py-16">
@@ -20,7 +47,7 @@ export default async function DocumentsPage() {
         </div>
 
         <div className="max-w-4xl mx-auto">
-            {documents.length > 0 ? (
+            {isLoading ? <DocumentsSkeleton/> : documents.length > 0 ? (
                  <div className="border rounded-lg">
                     <Table>
                         <TableHeader>
