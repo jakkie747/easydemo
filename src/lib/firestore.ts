@@ -57,6 +57,16 @@ export async function addChild(child: Omit<Child, 'id'>): Promise<DocumentRefere
     }
 }
 
+export async function addChildrenBatch(children: Omit<Child, 'id'>[]): Promise<void> {
+    const batch = writeBatch(db);
+    children.forEach(childData => {
+        const docRef = doc(collection(db, 'children'));
+        batch.set(docRef, childData);
+    });
+    await batch.commit();
+}
+
+
 export async function updateChild(id: string, child: Partial<Omit<Child, 'id'>>): Promise<void> {
     try {
         const docRef = doc(db, 'children', id);
@@ -133,6 +143,25 @@ export async function getTeachers(): Promise<Teacher[]> {
     }
 }
 
+export async function addTeacher(teacher: Omit<Teacher, 'id'>): Promise<DocumentReference> {
+    try {
+        return await addDoc(collection(db, 'teachers'), teacher);
+    } catch (error) {
+        console.error("Error adding teacher:", error);
+        throw error;
+    }
+}
+
+export async function updateTeacher(id: string, teacher: Partial<Omit<Teacher, 'id'>>): Promise<void> {
+    try {
+        const docRef = doc(db, 'teachers', id);
+        await updateDoc(docRef, teacher);
+    } catch (error) {
+        console.error("Error updating teacher:", error);
+        throw error;
+    }
+}
+
 // Documents
 export async function getDocuments(): Promise<Document[]> {
     try {
@@ -141,6 +170,15 @@ export async function getDocuments(): Promise<Document[]> {
     } catch (error) {
         console.error("Error fetching documents:", error);
         return [];
+    }
+}
+
+export async function addDocument(document: Omit<Document, 'id'>): Promise<DocumentReference> {
+    try {
+        return await addDoc(collection(db, 'documents'), document);
+    } catch (error) {
+        console.error("Error adding document:", error);
+        throw error;
     }
 }
 
@@ -155,6 +193,26 @@ export async function getEvents(): Promise<Event[]> {
     }
 }
 
+export async function addEvent(event: Omit<Event, 'id'>): Promise<DocumentReference> {
+    try {
+        return await addDoc(collection(db, 'events'), event);
+    } catch (error) {
+        console.error("Error adding event:", error);
+        throw error;
+    }
+}
+
+export async function updateEvent(id: string, event: Partial<Omit<Event, 'id'>>): Promise<void> {
+    try {
+        const docRef = doc(db, 'events', id);
+        await updateDoc(docRef, event);
+    } catch (error) {
+        console.error("Error updating event:", error);
+        throw error;
+    }
+}
+
+
 // Gallery
 export async function getGalleryImages(): Promise<GalleryImage[]> {
     try {
@@ -163,5 +221,14 @@ export async function getGalleryImages(): Promise<GalleryImage[]> {
     } catch (error) {
         console.error("Error fetching gallery images:", error);
         return [];
+    }
+}
+
+export async function addGalleryImage(image: Omit<GalleryImage, 'id'>): Promise<DocumentReference> {
+    try {
+        return await addDoc(collection(db, 'gallery'), image);
+    } catch (error) {
+        console.error("Error adding gallery image:", error);
+        throw error;
     }
 }
