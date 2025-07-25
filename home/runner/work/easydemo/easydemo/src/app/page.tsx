@@ -2,48 +2,10 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { getGalleryImages, getEvents } from '@/lib/firestore';
-import { GalleryImage, Event } from '@/lib/types';
-import { ArrowRight, Calendar, Sparkles } from 'lucide-react';
+import { ArrowRight, Sparkles } from 'lucide-react';
+import { HomeGalleryPreview } from '@/components/home-gallery-preview';
 
-async function RecentGalleryItems() {
-  const images = (await getGalleryImages()).slice(0, 3);
-
-  if (!images || images.length === 0) {
-    return (
-      <div className="text-center text-muted-foreground py-8">
-        <p>The gallery is currently empty. Check back soon for photos of our activities!</p>
-      </div>
-    )
-  }
-
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-      {images.map((image) => (
-        <Card key={image.id} className="overflow-hidden group">
-          <div className="relative aspect-[4/3]">
-            <Image
-              src={image.url}
-              alt={image.description || 'School activity'}
-              layout="fill"
-              objectFit="cover"
-              className="group-hover:scale-105 transition-transform duration-300"
-              data-ai-hint="child activity"
-            />
-          </div>
-          {image.description && (
-             <CardContent className="p-4">
-                <p className="text-sm text-muted-foreground truncate">{image.description}</p>
-            </CardContent>
-          )}
-        </Card>
-      ))}
-    </div>
-  );
-}
-
-export default async function HomePage() {
+export default function HomePage() {
   return (
     <div className="flex flex-col">
       {/* Hero Section */}
@@ -94,7 +56,7 @@ export default async function HomePage() {
                     <h2 className="font-headline text-4xl font-bold text-primary">From Our Gallery</h2>
                     <p className="mt-2 text-muted-foreground">A glimpse into our daily adventures and special moments.</p>
                 </div>
-              <RecentGalleryItems />
+              <HomeGalleryPreview />
                <div className="text-center mt-10">
                   <Button asChild variant="link">
                       <Link href="/gallery">View Full Gallery <ArrowRight className="ml-2" /></Link>
