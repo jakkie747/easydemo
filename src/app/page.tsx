@@ -52,7 +52,7 @@ export default async function HomePage() {
           <div className="grid md:grid-cols-2 gap-8 items-center">
             <div className="text-center md:text-left">
               <h1 className="font-headline text-5xl md:text-6xl font-bold text-primary">
-                Welcome to Easyspark
+                Welcome to Easyspark - Verifying Changes
               </h1>
               <p className="mt-4 text-lg text-muted-foreground">
                 Nurturing bright futures with a blend of care, education, and fun. Your child's journey starts here.
