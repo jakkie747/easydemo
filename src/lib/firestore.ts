@@ -1,7 +1,7 @@
 
 import { collection, getDocs, addDoc, doc, QueryDocumentSnapshot, DocumentData, getDoc, updateDoc, setDoc, query, where, DocumentReference, writeBatch } from "firebase/firestore";
 import { db } from "./firebase";
-import type { Teacher, Document, Child, Parent, GalleryImage, Event } from "./types";
+import type { Child, Parent } from "./types";
 
 const docToType = <T>(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): T => {
     const data = "data" in doc ? doc.data() : doc;
@@ -10,47 +10,6 @@ const docToType = <T>(doc: QueryDocumentSnapshot<DocumentData> | DocumentData): 
         id: doc.id,
         ...data
     } as T;
-}
-
-export async function getTeachers(): Promise<Teacher[]> {
-    try {
-        const teachersCol = collection(db, "teachers");
-        const teacherSnapshot = await getDocs(teachersCol);
-        return teacherSnapshot.docs.map(doc => docToType<Teacher>(doc));
-    } catch (error) {
-        console.error("Error fetching teachers:", error);
-        return [];
-    }
-}
-
-export async function addTeacher(teacher: Omit<Teacher, 'id'>): Promise<DocumentReference> {
-    try {
-        return await addDoc(collection(db, 'teachers'), teacher);
-    } catch (error) {
-        console.error("Error adding teacher:", error);
-        throw error;
-    }
-}
-
-export async function updateTeacher(id: string, teacher: Partial<Omit<Teacher, 'id'>>): Promise<void> {
-    try {
-        const docRef = doc(db, 'teachers', id);
-        await updateDoc(docRef, teacher);
-    } catch (error) {
-        console.error("Error updating teacher:", error);
-        throw error;
-    }
-}
-
-export async function getChild(id: string): Promise<Child | null> {
-    try {
-        const docRef = doc(db, 'children', id);
-        const docSnap = await getDoc(docRef);
-        return docSnap.exists() ? docToType<Child>(docSnap) : null;
-    } catch (error) {
-        console.error("Error fetching child:", error);
-        return null;
-    }
 }
 
 export async function getChildByName(name: string): Promise<Child | null> {
@@ -67,39 +26,11 @@ export async function getChildByName(name: string): Promise<Child | null> {
     }
 }
 
-export async function getChildren(): Promise<Child[]> {
-    try {
-        const childrenCol = collection(db, "children");
-        const childrenSnapshot = await getDocs(childrenCol);
-        return childrenSnapshot.docs.map(d => docToType<Child>(d));
-    } catch (error) {
-        console.error("Error fetching children:", error);
-        return [];
-    }
-}
-
 export async function addChild(child: Omit<Child, 'id'>): Promise<DocumentReference> {
     try {
         return await addDoc(collection(db, 'children'), child);
     } catch (error) {
         console.error("Error adding child:", error);
-        throw error;
-    }
-}
-
-export async function addChildrenBatch(children: Omit<Child, 'id'>[]): Promise<void> {
-    const batch = writeBatch(db);
-    const childrenCollection = collection(db, 'children');
-
-    children.forEach(child => {
-        const docRef = doc(childrenCollection);
-        batch.set(docRef, child);
-    });
-
-    try {
-        await batch.commit();
-    } catch (error) {
-        console.error("Error writing children batch:", error);
         throw error;
     }
 }
@@ -111,17 +42,6 @@ export async function updateChild(id: string, child: Partial<Omit<Child, 'id'>>)
     } catch (error) {
         console.error("Error updating child:", error);
         throw error;
-    }
-}
-
-export async function getParents(): Promise<Parent[]> {
-    try {
-        const parentsCol = collection(db, "parents");
-        const parentsSnapshot = await getDocs(parentsCol);
-        return parentsSnapshot.docs.map(d => docToType<Parent>(d));
-    } catch (error) {
-        console.error("Error fetching parents:", error);
-        return [];
     }
 }
 
@@ -165,77 +85,6 @@ export async function updateParent(id: string, parentData: Partial<Parent>): Pro
         await updateDoc(docRef, parentData);
     } catch (error) {
         console.error("Error updating parent:", error);
-        throw error;
-    }
-}
-
-export async function getDocuments(): Promise<Document[]> {
-    try {
-        const documentsCol = collection(db, "documents");
-        const documentSnapshot = await getDocs(documentsCol);
-        return documentSnapshot.docs.map(d => docToType<Document>(d));
-    } catch (error) {
-        console.error("Error fetching documents:", error);
-        return [];
-    }
-}
-
-export async function addDocument(docData: Omit<Document, 'id'>) {
-    try {
-        const documentsCollection = collection(db, 'documents');
-        await addDoc(documentsCollection, docData);
-    } catch (error) {
-        console.error("Error adding document:", error);
-        throw error;
-    }
-}
-
-export async function getGalleryImages(): Promise<GalleryImage[]> {
-    try {
-        const galleryCol = collection(db, "gallery");
-        const gallerySnapshot = await getDocs(galleryCol);
-        return gallerySnapshot.docs.map(d => docToType<GalleryImage>(d));
-    } catch (error) {
-        console.error("Error fetching gallery images:", error);
-        return [];
-    }
-}
-
-export async function addGalleryImage(image: Omit<GalleryImage, 'id'>): Promise<void> {
-    try {
-        await addDoc(collection(db, 'gallery'), image);
-    } catch (error) {
-        console.error("Error adding gallery image:", error);
-        throw error;
-    }
-}
-
-export async function getEvents(): Promise<Event[]> {
-    try {
-        const eventsCol = collection(db, "events");
-        const eventSnapshot = await getDocs(eventsCol);
-        return eventSnapshot.docs.map(d => docToType<Event>(d));
-    } catch (error) {
-        console.error("Error fetching events:", error);
-        return [];
-    }
-}
-
-export async function addEvent(event: Omit<Event, 'id'>): Promise<void> {
-    try {
-        await addDoc(collection(db, 'events'), event);
-    } catch (error) {
-        console.error("Error adding event:", error);
-        throw error;
-    }
-}
-
-export async function updateEvent(id: string, event: Partial<Omit<Event, 'id'>>): Promise<void> {
-    try {
-        const docRef = doc(db, 'events', id);
-        await updateDoc(docRef, event);
-    } catch (error) {
-        console.error("Error updating event:", error);
         throw error;
     }
 }

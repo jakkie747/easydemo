@@ -82,7 +82,6 @@ export default function LoginPage() {
             } else {
                 toast({ variant: "destructive", title: "Login Failed", description: "Invalid credentials for this role." });
             }
-        setIsLoading(false);
         return;
       }
       
@@ -96,7 +95,6 @@ export default function LoginPage() {
         } else {
             toast({ variant: "destructive", title: "Login Failed", description: "Invalid credentials for this role." });
         }
-        setIsLoading(false);
         return;
       }
       
