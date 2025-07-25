@@ -41,9 +41,10 @@ import { Progress } from "@/components/ui/progress";
 import { MoreHorizontal, PlusCircle, Download, FileText, Loader2 } from "lucide-react";
 import type { Document } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
-import { addDocument } from "@/lib/firestore";
+import { getDocuments, addDocument } from "@/lib/firestore";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
   const [file, setFile] = React.useState<File | null>(null);
@@ -58,7 +59,8 @@ function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
     const selectedFile = e.target.files?.[0];
     if (selectedFile) {
       setFile(selectedFile);
-      setFileName(selectedFile.name);
+      setFileName(selectedFile.name.split('.').slice(0, -1).join('.'));
+      setFileType(selectedFile.name.split('.').pop()?.toUpperCase() || "File");
     }
   };
 
@@ -129,7 +131,7 @@ function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
              <DialogClose asChild>
                 <Button variant="outline">Cancel</Button>
             </DialogClose>
-            <Button type="submit" disabled={isUploading}>
+            <Button type="submit" disabled={isUploading || !file}>
               {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Upload
             </Button>
@@ -141,8 +143,40 @@ function UploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
 }
 
 
-export function DocumentsClient({ documents }: { documents: Document[] }) {
+function DocumentsSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export function DocumentsClient() {
+  const [documents, setDocuments] = React.useState<Document[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const router = useRouter();
+
+  const fetchDocuments = React.useCallback(async () => {
+    setIsLoading(true);
+    const docs = await getDocuments();
+    setDocuments(docs);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchDocuments();
+  }, [fetchDocuments]);
+
 
   const handleDownload = (url: string) => {
     window.open(url, '_blank');
@@ -157,81 +191,83 @@ export function DocumentsClient({ documents }: { documents: Document[] }) {
             Upload and manage important documents.
           </p>
         </div>
-        <UploadDialog onUploadComplete={() => router.refresh()} />
+        <UploadDialog onUploadComplete={fetchDocuments} />
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Documents</CardTitle>
-          <CardDescription>
-            {documents.length > 0
-              ? "A list of all documents uploaded to the center."
-              : "No documents found. Upload one to get started."
-            }
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Type</TableHead>
-                <TableHead>Date Uploaded</TableHead>
-                <TableHead>Size</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {documents.length > 0 ? (
-                documents.map((doc) => (
-                  <TableRow key={doc.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                          <FileText className="text-muted-foreground" />
-                          <span className="font-medium">{doc.name}</span>
-                      </div>
-                    </TableCell>
-                    <TableCell>{doc.type}</TableCell>
-                    <TableCell>{doc.uploaded}</TableCell>
-                    <TableCell>{doc.size}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => handleDownload(doc.url)}>
-                            <Download className="mr-2 h-4 w-4" />
-                            Download
-                          </DropdownMenuItem>
-                          <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
-                            Delete
-                          </DropdownMenuItem>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                <TableRow>
-                  <TableCell colSpan={5} className="h-24 text-center">
-                    No documents found.
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+       {isLoading ? <DocumentsSkeleton /> : (
+            <Card>
+                <CardHeader>
+                <CardTitle>All Documents</CardTitle>
+                <CardDescription>
+                    {documents.length > 0
+                    ? "A list of all documents uploaded to the center."
+                    : "No documents found. Upload one to get started."
+                    }
+                </CardDescription>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Type</TableHead>
+                        <TableHead>Date Uploaded</TableHead>
+                        <TableHead>Size</TableHead>
+                        <TableHead>
+                        <span className="sr-only">Actions</span>
+                        </TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {documents.length > 0 ? (
+                        documents.map((doc) => (
+                        <TableRow key={doc.id}>
+                            <TableCell>
+                            <div className="flex items-center gap-3">
+                                <FileText className="text-muted-foreground" />
+                                <span className="font-medium">{doc.name}</span>
+                            </div>
+                            </TableCell>
+                            <TableCell>{doc.type}</TableCell>
+                            <TableCell>{doc.uploaded}</TableCell>
+                            <TableCell>{doc.size}</TableCell>
+                            <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <MoreHorizontal />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => handleDownload(doc.url)}>
+                                    <Download className="mr-2 h-4 w-4" />
+                                    Download
+                                </DropdownMenuItem>
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                    Delete
+                                </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            No documents found.
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+        )}
     </div>
   );
 }
