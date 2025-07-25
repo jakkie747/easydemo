@@ -72,10 +72,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Teacher } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addTeacher, updateTeacher } from "@/lib/firestore";
+import { addTeacher, updateTeacher, getTeachers } from "@/lib/firestore";
 import { deleteTeacher } from "@/lib/firebase-server";
 
 const formSchema = z.object({
@@ -215,18 +216,49 @@ function TeacherFormDialog({
   );
 }
 
+function TeachersSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
 
-export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
+export function TeachersClient({ teachers: initialTeachers }: { teachers: Teacher[] }) {
   const { toast } = useToast();
   const router = useRouter();
+  const [teachers, setTeachers] = React.useState<Teacher[]>(initialTeachers);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isDeleting, setIsDeleting] = React.useState(false);
+
+  const fetchTeachers = React.useCallback(async () => {
+    setIsLoading(true);
+    const fetchedTeachers = await getTeachers();
+    setTeachers(fetchedTeachers);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchTeachers();
+  }, [fetchTeachers]);
+
 
   const handleDelete = async (teacherId: string) => {
     setIsDeleting(true);
     try {
         await deleteTeacher(teacherId);
         toast({ title: "Teacher Deleted", description: "The teacher has been removed." });
-        router.refresh();
+        fetchTeachers();
     } catch (error) {
         toast({ variant: "destructive", title: "Deletion Failed" });
     } finally {
@@ -243,99 +275,101 @@ export function TeachersClient({ teachers }: { teachers: Teacher[] }) {
             <p className="text-muted-foreground">View, add, edit, or remove teachers from your center.</p>
         </div>
         <div className="flex gap-2">
-            <TeacherFormDialog mode="add" onComplete={() => router.refresh()} />
+            <TeacherFormDialog mode="add" onComplete={fetchTeachers} />
         </div>
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Teachers</CardTitle>
-          <CardDescription>
-            A list of all the teachers in your center.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Classroom</TableHead>
-                <TableHead>Contact</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {teachers.length > 0 ? (
-                teachers.map((teacher) => (
-                  <TableRow key={teacher.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={teacher.avatar} alt={teacher.name} />
-                          <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="font-medium">{teacher.name}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{teacher.classroom}</TableCell>
-                    <TableCell>{teacher.email}</TableCell>
-                    <TableCell>
-                      <Badge variant={teacher.status === "Active" ? "default" : "secondary"}>
-                        {teacher.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <TeacherFormDialog mode="edit" teacher={teacher} onComplete={() => router.refresh()} />
-                           <AlertDialog>
-                              <AlertDialogTrigger asChild>
-                                  <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
-                                      Delete
-                                  </DropdownMenuItem>
-                              </AlertDialogTrigger>
-                              <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                      <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                      <AlertDialogDescription>This will permanently delete {teacher.name}'s profile.</AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                      <AlertDialogAction onClick={() => handleDelete(teacher.id)} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
-                                          {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
-                                      </AlertDialogAction>
-                                  </AlertDialogFooter>
-                              </AlertDialogContent>
-                           </AlertDialog>
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                 <TableRow>
-                    <TableCell colSpan={5} className="h-24 text-center">
-                      No teachers found. You can add one or seed the database from the settings page.
-                    </TableCell>
-                  </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+      {isLoading ? <TeachersSkeleton /> : (
+        <Card>
+            <CardHeader>
+            <CardTitle>All Teachers</CardTitle>
+            <CardDescription>
+                A list of all the teachers in your center.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Classroom</TableHead>
+                    <TableHead>Contact</TableHead>
+                    <TableHead>Status</TableHead>
+                    <TableHead>
+                    <span className="sr-only">Actions</span>
+                    </TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody>
+                {teachers.length > 0 ? (
+                    teachers.map((teacher) => (
+                    <TableRow key={teacher.id}>
+                        <TableCell>
+                        <div className="flex items-center gap-3">
+                            <Avatar>
+                            <AvatarImage src={teacher.avatar} alt={teacher.name} />
+                            <AvatarFallback>{teacher.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="font-medium">{teacher.name}</div>
+                        </div>
+                        </TableCell>
+                        <TableCell>{teacher.classroom}</TableCell>
+                        <TableCell>{teacher.email}</TableCell>
+                        <TableCell>
+                        <Badge variant={teacher.status === "Active" ? "default" : "secondary"}>
+                            {teacher.status}
+                        </Badge>
+                        </TableCell>
+                        <TableCell>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <MoreHorizontal />
+                                <span className="sr-only">Toggle menu</span>
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <TeacherFormDialog mode="edit" teacher={teacher} onComplete={fetchTeachers} />
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
+                                        Delete
+                                    </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>This will permanently delete {teacher.name}'s profile.</AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDelete(teacher.id)} disabled={isDeleting} className="bg-destructive hover:bg-destructive/90">
+                                            {isDeleting ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                        No teachers found. You can add one or seed the database from the settings page.
+                        </TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

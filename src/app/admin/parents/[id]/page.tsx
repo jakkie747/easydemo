@@ -1,5 +1,8 @@
 
-import { getParent, getChildByName } from "@/lib/firestore";
+"use client";
+
+import { useEffect, useState } from "react";
+import { getParent } from "@/lib/firestore";
 import type { Parent, Child } from "@/lib/types";
 import { notFound } from "next/navigation";
 import Link from "next/link";
@@ -13,20 +16,67 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { ArrowLeft, Mail, Baby } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default async function ParentProfilePage({ params }: { params: { id: string } }) {
-  const parent: Parent | null = await getParent(params.id);
+function ParentProfileSkeleton() {
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="mb-2">
+        <Skeleton className="h-9 w-44" />
+      </div>
+      <div className="grid gap-8 md:grid-cols-3">
+        <div className="md:col-span-1">
+          <Card className="sticky top-24 shadow-md">
+            <CardHeader className="items-center text-center">
+              <Skeleton className="w-24 h-24 rounded-full mb-4" />
+              <Skeleton className="h-8 w-40" />
+              <Skeleton className="h-4 w-32" />
+            </CardHeader>
+          </Card>
+        </div>
+        <div className="md:col-span-2">
+          <Card className="shadow-md">
+            <CardHeader>
+              <Skeleton className="h-8 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <Skeleton className="h-16 w-full" />
+                <Skeleton className="h-16 w-full" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  if (!parent) {
-    notFound();
+export default function ParentProfilePage({ params }: { params: { id: string } }) {
+  const [parent, setParent] = useState<Parent | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchParent = async () => {
+      setLoading(true);
+      const parentData = await getParent(params.id);
+      if (parentData) {
+        setParent(parentData);
+      } else {
+        notFound();
+      }
+      setLoading(false);
+    };
+
+    fetchParent();
+  }, [params.id]);
+
+  if (loading || !parent) {
+    return <ParentProfileSkeleton />;
   }
 
-  // Fetch details for each child
-  const childrenDetails: (Child | null)[] = await Promise.all(
-    parent.children.map(childName => getChildByName(childName))
-  );
-
-  const validChildren = childrenDetails.filter(c => c !== null) as Child[];
+  const validChildren = parent.childDetails || [];
 
   return (
     <div className="flex flex-col gap-4">

@@ -51,10 +51,11 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { PlusCircle, Calendar, Users, Edit, Trash2, Loader2, PartyPopper } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 import type { Event } from "@/lib/types";
 import { useToast } from "@/hooks/use-toast";
 import { useUpload } from "@/hooks/use-upload";
-import { addEvent, updateEvent } from "@/lib/firestore";
+import { addEvent, updateEvent, getEvents } from "@/lib/firestore";
 import { deleteEvent } from "@/lib/firebase-server";
 import { Progress } from "@/components/ui/progress";
 
@@ -202,17 +203,53 @@ function EventFormDialog({ event, onComplete, mode }: { event?: Event, onComplet
   );
 }
 
+function EventsSkeleton() {
+    return (
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 3 }).map((_, index) => (
+                <Card key={index} className="flex flex-col">
+                    <Skeleton className="h-48 w-full rounded-t-lg" />
+                    <CardHeader>
+                        <Skeleton className="h-6 w-3/4 mb-2" />
+                        <Skeleton className="h-4 w-1/2" />
+                    </CardHeader>
+                    <CardContent>
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-full mt-2" />
+                    </CardContent>
+                    <CardFooter>
+                        <Skeleton className="h-6 w-1/3" />
+                    </CardFooter>
+                </Card>
+            ))}
+        </div>
+    )
+}
+
 export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
     const router = useRouter();
     const { toast } = useToast();
+    const [events, setEvents] = React.useState<Event[]>(initialEvents);
+    const [isLoading, setIsLoading] = React.useState(true);
     const [isDeleting, setIsDeleting] = React.useState(false);
+
+    const fetchEvents = React.useCallback(async () => {
+        setIsLoading(true);
+        const fetchedEvents = await getEvents();
+        setEvents(fetchedEvents);
+        setIsLoading(false);
+    }, []);
+
+    React.useEffect(() => {
+        fetchEvents();
+    }, [fetchEvents]);
 
     const handleDelete = async (eventId: string) => {
         setIsDeleting(true);
         try {
             await deleteEvent(eventId);
             toast({ title: "Event Deleted", description: "The event has been removed." });
-            router.refresh();
+            fetchEvents();
         } catch (error) {
             toast({ variant: "destructive", title: "Deletion Failed", description: "Could not delete the event." });
         } finally {
@@ -227,11 +264,11 @@ export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
           <h1 className="font-headline text-3xl font-bold">Event Management</h1>
           <p className="text-muted-foreground">Create and manage center-wide events.</p>
         </div>
-        <EventFormDialog mode="add" onComplete={() => router.refresh()} />
+        <EventFormDialog mode="add" onComplete={fetchEvents} />
       </div>
-      {initialEvents.length > 0 ? (
+      {isLoading ? <EventsSkeleton /> : events.length > 0 ? (
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {initialEvents.map((event) => (
+          {events.map((event) => (
             <Card key={event.id} className="flex flex-col">
               {event.imageUrl && (
                  <div className="relative w-full h-48">
@@ -251,7 +288,7 @@ export function EventsClient({ initialEvents }: { initialEvents: Event[] }) {
                     <CardTitle className="font-headline text-2xl">{event.title}</CardTitle>
                   </div>
                   <div className="flex gap-1">
-                    <EventFormDialog mode="edit" event={event} onComplete={() => router.refresh()} />
+                    <EventFormDialog mode="edit" event={event} onComplete={fetchEvents} />
                     <AlertDialog>
                       <AlertDialogTrigger asChild>
                         <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive">

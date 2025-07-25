@@ -66,11 +66,12 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { MoreHorizontal, PlusCircle, Loader2 } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 import type { Parent } from "@/lib/types";
 import { useUpload } from "@/hooks/use-upload";
 import { useToast } from "@/hooks/use-toast";
-import { addParent } from "@/lib/firestore";
+import { addParent, getParents } from "@/lib/firestore";
 import { deleteParent } from "@/lib/firebase-server";
 
 const formSchema = z.object({
@@ -206,13 +207,42 @@ function AddParentDialog({ onParentAdded }: { onParentAdded: () => void }) {
   );
 }
 
+function ParentsSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
 
 export function ParentsClient({ initialParents }: { initialParents: Parent[] }) {
   const router = useRouter();
   const { toast } = useToast();
   const auth = getAuth(app);
+  const [parents, setParents] = React.useState<Parent[]>(initialParents);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [isProcessing, setIsProcessing] = React.useState<string | false>(false);
 
+  const fetchParents = React.useCallback(async () => {
+    setIsLoading(true);
+    const fetchedParents = await getParents();
+    setParents(fetchedParents);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchParents();
+  }, [fetchParents]);
 
   const handleResetPassword = async (email: string) => {
     setIsProcessing(email);
@@ -242,7 +272,7 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
             title: "Parent Account Deleted",
             description: `${parent.name}'s account and data have been removed.`,
         });
-        router.refresh();
+        fetchParents(); // Refresh data
     } catch (error) {
          console.error("Error deleting parent:", error);
         toast({
@@ -265,120 +295,122 @@ export function ParentsClient({ initialParents }: { initialParents: Parent[] }) 
             View and manage parent accounts.
           </p>
         </div>
-        <AddParentDialog onParentAdded={() => router.refresh()} />
+        <AddParentDialog onParentAdded={fetchParents} />
       </div>
-      <Card>
-        <CardHeader>
-          <CardTitle>All Parents</CardTitle>
-          <CardDescription>
-            A list of all parents with children in your center.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Name</TableHead>
-                <TableHead>Email</TableHead>
-                <TableHead>Children</TableHead>
-                <TableHead>
-                  <span className="sr-only">Actions</span>
-                </TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {initialParents.length > 0 ? (
-                initialParents.map((parent) => (
-                  <TableRow key={parent.id}>
-                    <TableCell>
-                      <div className="flex items-center gap-3">
-                        <Avatar>
-                          <AvatarImage src={parent.avatar} alt={parent.name} />
-                          <AvatarFallback>{parent.name.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                        <div className="font-medium">{parent.name}</div>
-                      </div>
-                    </TableCell>
-                    <TableCell>{parent.email}</TableCell>
-                    <TableCell>{parent.children.join(', ')}</TableCell>
-                    <TableCell>
-                      <DropdownMenu>
-                        <DropdownMenuTrigger asChild>
-                          <Button
-                            aria-haspopup="true"
-                            size="icon"
-                            variant="ghost"
-                          >
-                            <MoreHorizontal />
-                            <span className="sr-only">Toggle menu</span>
-                          </Button>
-                        </DropdownMenuTrigger>
-                        <DropdownMenuContent align="end">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
-                          <DropdownMenuItem onClick={() => router.push(`/admin/parents/${parent.id}`)}>
-                            View Profile
-                          </DropdownMenuItem>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                                    Reset Password
-                                </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Reset Password?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This will send a password reset link to {parent.email}. Are you sure you want to proceed?
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleResetPassword(parent.email)} disabled={isProcessing === parent.email}>
-                                        {isProcessing === parent.email ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Email"}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
-                          
-                          <AlertDialog>
-                            <AlertDialogTrigger asChild>
-                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
-                                    Delete Account
-                                </DropdownMenuItem>
-                            </AlertDialogTrigger>
-                            <AlertDialogContent>
-                                <AlertDialogHeader>
-                                    <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                        This action cannot be undone. This will permanently delete the parent account for {parent.name} and all associated data.
-                                    </AlertDialogDescription>
-                                </AlertDialogHeader>
-                                <AlertDialogFooter>
-                                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                    <AlertDialogAction onClick={() => handleDeleteParent(parent)} disabled={isProcessing === parent.id} className="bg-destructive hover:bg-destructive/90">
-                                       {isProcessing === parent.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
-                                    </AlertDialogAction>
-                                </AlertDialogFooter>
-                            </AlertDialogContent>
-                          </AlertDialog>
+      {isLoading ? <ParentsSkeleton/> : (
+        <Card>
+            <CardHeader>
+            <CardTitle>All Parents</CardTitle>
+            <CardDescription>
+                A list of all parents with children in your center.
+            </CardDescription>
+            </CardHeader>
+            <CardContent>
+            <Table>
+                <TableHeader>
+                <TableRow>
+                    <TableHead>Name</TableHead>
+                    <TableHead>Email</TableHead>
+                    <TableHead>Children</TableHead>
+                    <TableHead>
+                    <span className="sr-only">Actions</span>
+                    </TableHead>
+                </TableRow>
+                </TableHeader>
+                <TableBody>
+                {parents.length > 0 ? (
+                    parents.map((parent) => (
+                    <TableRow key={parent.id}>
+                        <TableCell>
+                        <div className="flex items-center gap-3">
+                            <Avatar>
+                            <AvatarImage src={parent.avatar} alt={parent.name} />
+                            <AvatarFallback>{parent.name.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div className="font-medium">{parent.name}</div>
+                        </div>
+                        </TableCell>
+                        <TableCell>{parent.email}</TableCell>
+                        <TableCell>{parent.children.join(', ')}</TableCell>
+                        <TableCell>
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                            <Button
+                                aria-haspopup="true"
+                                size="icon"
+                                variant="ghost"
+                            >
+                                <MoreHorizontal />
+                                <span className="sr-only">Toggle menu</span>
+                            </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                            <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                            <DropdownMenuItem onClick={() => router.push(`/admin/parents/${parent.id}`)}>
+                                View Profile
+                            </DropdownMenuItem>
+                            
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                                        Reset Password
+                                    </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Reset Password?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This will send a password reset link to {parent.email}. Are you sure you want to proceed?
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleResetPassword(parent.email)} disabled={isProcessing === parent.email}>
+                                            {isProcessing === parent.email ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Send Email"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
+                            
+                            <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                    <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10" onSelect={(e) => e.preventDefault()}>
+                                        Delete Account
+                                    </DropdownMenuItem>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                            This action cannot be undone. This will permanently delete the parent account for {parent.name} and all associated data.
+                                        </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                        <AlertDialogAction onClick={() => handleDeleteParent(parent)} disabled={isProcessing === parent.id} className="bg-destructive hover:bg-destructive/90">
+                                        {isProcessing === parent.id ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Delete"}
+                                        </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                </AlertDialogContent>
+                            </AlertDialog>
 
-                        </DropdownMenuContent>
-                      </DropdownMenu>
-                    </TableCell>
-                  </TableRow>
-                ))
-              ) : (
-                 <TableRow>
-                    <TableCell colSpan={4} className="h-24 text-center">
-                      No parents found. Try seeding the database or adding one.
-                    </TableCell>
-                  </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </CardContent>
-      </Card>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                        </TableCell>
+                    </TableRow>
+                    ))
+                ) : (
+                    <TableRow>
+                        <TableCell colSpan={4} className="h-24 text-center">
+                        No parents found. Try seeding the database or adding one.
+                        </TableCell>
+                    </TableRow>
+                )}
+                </TableBody>
+            </Table>
+            </CardContent>
+        </Card>
+      )}
     </div>
   );
 }
