@@ -1,3 +1,5 @@
+
+"use client";
 import { ParentsClient } from "./client";
 
 export default function ParentsPage() {

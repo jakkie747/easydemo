@@ -1,0 +1,568 @@
+
+"use client";
+
+import * as React from "react";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
+import Papa from "papaparse";
+
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+  DialogClose,
+} from "@/components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Progress } from "@/components/ui/progress";
+import { MoreHorizontal, PlusCircle, Loader2, Upload } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
+
+import type { Child } from "@/lib/types";
+import { useUpload } from "@/hooks/use-upload";
+import { useToast } from "@/hooks/use-toast";
+import { addChild, updateChild, addChildrenBatch, getChildren } from "@/lib/firestore";
+
+const formSchema = z.object({
+  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
+  classroom: z.string().min(1, { message: "Classroom is required." }),
+  age: z.coerce.number().min(1, { message: "Age must be at least 1." }),
+  parent: z.string().min(2, { message: "Parent's name is required." }),
+  avatar: z.any().optional(),
+});
+
+function EditChildDialog({ child, onChildUpdated }: { child: Child; onChildUpdated: () => void }) {
+  const [file, setFile] = React.useState<File | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { upload, progress, isLoading: isUploading } = useUpload();
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      name: child.name,
+      classroom: child.classroom,
+      age: child.age,
+      parent: child.parent,
+    },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files?.[0] ?? null);
+  };
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    let avatarUrl = child.avatar;
+
+    if (file) {
+      const storagePath = `avatars/${Date.now()}_${file.name}`;
+      const uploadedURL = await upload(file, storagePath);
+      if (uploadedURL) {
+        avatarUrl = uploadedURL;
+      } else {
+        toast({ variant: "destructive", title: "Avatar Upload Failed", description: "Could not upload the new avatar. Please try again." });
+        return;
+      }
+    }
+
+    try {
+      await updateChild(child.id, {
+        ...values,
+        avatar: avatarUrl,
+      });
+
+      toast({ title: "Child Updated!", description: `${values.name}'s profile has been updated.` });
+      form.reset(values);
+      setFile(null);
+      setIsOpen(false);
+      onChildUpdated();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Update Failed", description: "Could not update the child's profile. Please try again." });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <DropdownMenuItem onSelect={(e) => e.preventDefault()}>Edit Profile</DropdownMenuItem>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Edit {child.name}'s Profile</DialogTitle>
+          <DialogDescription>
+            Update the details for this child below.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="classroom" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Classroom</FormLabel>
+                <FormControl><Input placeholder="e.g., Bumblebees" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="age" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age</FormLabel>
+                <FormControl><Input type="number" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="parent" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parent's Name</FormLabel>
+                <FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div className="space-y-2">
+              <Label htmlFor="file">Change Avatar</Label>
+              <Input id="file" type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+            {isUploading && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Uploading... {Math.round(progress)}%</p>
+                <Progress value={progress} />
+              </div>
+            )}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit" disabled={isUploading}>
+                {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Save Changes
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+
+function AddChildDialog({ onChildAdded }: { onChildAdded: () => void }) {
+  const [file, setFile] = React.useState<File | null>(null);
+  const [isOpen, setIsOpen] = React.useState(false);
+  const { upload, progress, isLoading: isUploading } = useUpload();
+  const { toast } = useToast();
+
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: { name: "", classroom: "", age: 0, parent: "" },
+  });
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFile(e.target.files?.[0] ?? null);
+  };
+
+  const handleSubmit = async (values: z.infer<typeof formSchema>) => {
+    let avatarUrl = "https://placehold.co/150x150.png";
+
+    if (file) {
+      const storagePath = `avatars/${Date.now()}_${file.name}`;
+      const uploadedURL = await upload(file, storagePath);
+      if (uploadedURL) {
+        avatarUrl = uploadedURL;
+      } else {
+        toast({ variant: "destructive", title: "Avatar Upload Failed", description: "Could not upload the avatar. Please try again." });
+        return;
+      }
+    }
+
+    try {
+      await addChild({
+        ...values,
+        avatar: avatarUrl,
+        parentId: '', // Required field, default to empty
+        gender: 'Not specified', // Required field, default
+        dob: '',
+        allergies: '',
+        emergencyContact: { name: '', relation: '', phone: '' },
+      });
+
+      toast({ title: "Child Added!", description: `${values.name} has been added.` });
+      form.reset();
+      setFile(null);
+      setIsOpen(false);
+      onChildAdded();
+    } catch (error) {
+      toast({ variant: "destructive", title: "Submission Failed", description: "Could not add the child. Please try again." });
+    }
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button>
+          <PlusCircle /> Add Child
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add a New Child</DialogTitle>
+          <DialogDescription>
+            Fill in the details below to add a new child to the center.
+          </DialogDescription>
+        </DialogHeader>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(handleSubmit)} className="space-y-4">
+            <FormField control={form.control} name="name" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Full Name</FormLabel>
+                <FormControl><Input placeholder="e.g., Jane Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="classroom" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Classroom</FormLabel>
+                <FormControl><Input placeholder="e.g., Bumblebees" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="age" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Age</FormLabel>
+                <FormControl><Input type="number" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+             <FormField control={form.control} name="parent" render={({ field }) => (
+              <FormItem>
+                <FormLabel>Parent's Name</FormLabel>
+                <FormControl><Input placeholder="e.g., John Doe" {...field} /></FormControl>
+                <FormMessage />
+              </FormItem>
+            )} />
+            <div className="space-y-2">
+              <Label htmlFor="file">Avatar</Label>
+              <Input id="file" type="file" accept="image/*" onChange={handleFileChange} />
+            </div>
+            {isUploading && (
+              <div className="space-y-2">
+                <p className="text-sm text-muted-foreground">Uploading... {Math.round(progress)}%</p>
+                <Progress value={progress} />
+              </div>
+            )}
+            <DialogFooter>
+              <DialogClose asChild>
+                <Button variant="outline">Cancel</Button>
+              </DialogClose>
+              <Button type="submit" disabled={isUploading}>
+                {isUploading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Add Child
+              </Button>
+            </DialogFooter>
+          </form>
+        </Form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function BulkUploadDialog({ onUploadComplete }: { onUploadComplete: () => void }) {
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [isLoading, setIsLoading] = React.useState(false);
+  const [file, setFile] = React.useState<File | null>(null);
+  const { toast } = useToast();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedFile = e.target.files?.[0];
+    if (selectedFile) {
+        if (selectedFile.type === "text/csv" || selectedFile.name.endsWith('.tsv')) {
+            setFile(selectedFile);
+        } else {
+            toast({ variant: "destructive", title: "Invalid File Type", description: "Please upload a CSV or TSV file." });
+            e.target.value = ''; // Reset file input
+            setFile(null);
+        }
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!file) {
+      toast({ variant: "destructive", title: "No file selected." });
+      return;
+    }
+    setIsLoading(true);
+
+    Papa.parse(file, {
+      header: true,
+      skipEmptyLines: true,
+      complete: async (results) => {
+        const requiredFields = ['name', 'classroom', 'age', 'parent'];
+        const headers = results.meta.fields || [];
+        const missingHeaders = requiredFields.filter(field => !headers.includes(field));
+
+        if (missingHeaders.length > 0) {
+          toast({
+            variant: "destructive",
+            title: "Missing Required Columns",
+            description: `Your file is missing the following columns: ${missingHeaders.join(', ')}`,
+          });
+          setIsLoading(false);
+          return;
+        }
+
+        const childrenData: Omit<Child, 'id'>[] = results.data.map((row: any) => ({
+            name: row.name,
+            classroom: row.classroom,
+            age: parseInt(row.age, 10) || 0,
+            parent: row.parent,
+            parentId: row.parentId || '',
+            gender: row.gender || 'Not specified',
+            avatar: row.avatar || `https://placehold.co/150x150.png`,
+            dob: row.dob || '',
+            allergies: row.allergies || '',
+            emergencyContact: {
+                name: row.emergencyName || '',
+                relation: row.emergencyRelation || '',
+                phone: row.emergencyPhone || '',
+            }
+        }));
+
+        try {
+            await addChildrenBatch(childrenData);
+            toast({
+                title: "Upload Successful!",
+                description: `${childrenData.length} children have been added.`
+            });
+            setFile(null);
+            setIsOpen(false);
+            onUploadComplete();
+        } catch (error) {
+            toast({
+                variant: "destructive",
+                title: "Upload Failed",
+                description: "Could not add the children to the database. Please check the file and try again."
+            });
+        } finally {
+            setIsLoading(false);
+        }
+      },
+      error: (error) => {
+        toast({
+          variant: "destructive",
+          title: "Parsing Error",
+          description: `There was an error parsing the file: ${error.message}`,
+        });
+        setIsLoading(false);
+      },
+    });
+  };
+
+  return (
+    <Dialog open={isOpen} onOpenChange={setIsOpen}>
+      <DialogTrigger asChild>
+        <Button variant="outline">
+          <Upload /> Bulk Upload
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Bulk Upload Children</DialogTitle>
+          <DialogDescription>
+            Upload a CSV or TSV file with children's details. The file must contain headers: name, classroom, age, parent.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="space-y-4 py-4">
+            <div className="space-y-2">
+                <Label htmlFor="bulk-file">CSV / TSV File</Label>
+                <Input id="bulk-file" type="file" accept=".csv, .tsv" onChange={handleFileChange} />
+                <p className="text-xs text-muted-foreground">
+                    Optional headers: avatar, dob, allergies, gender, parentId, emergencyName, emergencyRelation, emergencyPhone.
+                </p>
+            </div>
+        </div>
+        <DialogFooter>
+          <DialogClose asChild>
+            <Button variant="outline">Cancel</Button>
+          </DialogClose>
+          <Button onClick={handleSubmit} disabled={isLoading || !file}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Upload File
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+function ChildrenSkeleton() {
+    return (
+        <Card>
+            <CardHeader>
+                <Skeleton className="h-8 w-48" />
+                <Skeleton className="h-4 w-64" />
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                </div>
+            </CardContent>
+        </Card>
+    )
+}
+
+export default function ChildrenPage() {
+  const router = useRouter();
+  const [children, setChildren] = React.useState<Child[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  const fetchChildren = React.useCallback(async () => {
+    setIsLoading(true);
+    const fetchedChildren = await getChildren();
+    setChildren(fetchedChildren);
+    setIsLoading(false);
+  }, []);
+
+  React.useEffect(() => {
+    fetchChildren();
+  }, [fetchChildren]);
+
+
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="font-headline text-3xl font-bold">Child Management</h1>
+          <p className="text-muted-foreground">
+            View, add, edit, or remove children from your center.
+          </p>
+        </div>
+        <div className="flex gap-2">
+            <BulkUploadDialog onUploadComplete={fetchChildren} />
+            <AddChildDialog onChildAdded={fetchChildren} />
+        </div>
+      </div>
+      {isLoading ? <ChildrenSkeleton /> : (
+            <Card>
+                <CardHeader>
+                <CardTitle>All Children</CardTitle>
+                <CardDescription>
+                    A list of all the children enrolled in your center.
+                </CardDescription>
+                </CardHeader>
+                <CardContent>
+                <Table>
+                    <TableHeader>
+                    <TableRow>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Classroom</TableHead>
+                        <TableHead>Age</TableHead>
+                        <TableHead>Parent</TableHead>
+                        <TableHead>
+                        <span className="sr-only">Actions</span>
+                        </TableHead>
+                    </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                    {children.length > 0 ? (
+                        children.map((child) => (
+                        <TableRow key={child.id}>
+                            <TableCell>
+                            <div className="flex items-center gap-3">
+                                <Avatar>
+                                <AvatarImage src={child.avatar} alt={child.name} />
+                                <AvatarFallback>{child.name.charAt(0)}</AvatarFallback>
+                                </Avatar>
+                                <div className="font-medium">{child.name}</div>
+                            </div>
+                            </TableCell>
+                            <TableCell>
+                            <Badge variant="outline">{child.classroom}</Badge>
+                            </TableCell>
+                            <TableCell>{child.age}</TableCell>
+                            <TableCell>{child.parent}</TableCell>
+                            <TableCell>
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                <Button
+                                    aria-haspopup="true"
+                                    size="icon"
+                                    variant="ghost"
+                                >
+                                    <MoreHorizontal />
+                                    <span className="sr-only">Toggle menu</span>
+                                </Button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end">
+                                <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                <DropdownMenuItem onClick={() => router.push(`/admin/children/${child.id}/report`)}>
+                                    View Daily Report
+                                </DropdownMenuItem>
+                                <EditChildDialog child={child} onChildUpdated={fetchChildren} />
+                                <DropdownMenuItem className="text-destructive focus:text-destructive focus:bg-destructive/10">
+                                    Remove Child
+                                </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                            </TableCell>
+                        </TableRow>
+                        ))
+                    ) : (
+                        <TableRow>
+                        <TableCell colSpan={5} className="h-24 text-center">
+                            No children found. Try seeding the database or adding a child.
+                        </TableCell>
+                        </TableRow>
+                    )}
+                    </TableBody>
+                </Table>
+                </CardContent>
+            </Card>
+        )}
+    </div>
+  );
+}

@@ -1,13 +1,11 @@
+
 "use client";
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "@/lib/firebase";
-import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -18,84 +16,50 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { Loader2, ArrowLeft, Eye, EyeOff } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
-const loginSchema = z.object({
-  email: z.string().email("Please enter a valid email address."),
-  password: z.string().min(1, "Password is required."),
-});
-
-type LoginFormValues = z.infer<typeof loginSchema>;
 type Role = "parent" | "teacher" | "admin";
 
-const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (values: LoginFormValues, role: Role) => void; isLoading: boolean; }) => {
+const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (email: string, password: string) => void; isLoading: boolean; }) => {
     const [showPassword, setShowPassword] = useState(false);
+    const [email, setEmail] = useState(role === 'admin' ? "admin@easyspark.com" : role === 'teacher' ? "teacher@easyspark.com" : "");
+    const [password, setPassword] = useState(role === 'admin' || role === 'teacher' ? "password123" : "");
 
-    const form = useForm<LoginFormValues>({
-        resolver: zodResolver(loginSchema),
-        defaultValues: {
-            email: role === 'admin' ? "admin@easyspark.com" : role === 'teacher' ? "teacher@easyspark.com" : "",
-            password: role === 'admin' || role === 'teacher' ? "password123" : "",
-        },
-    });
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+        onLogin(email, password);
+    }
 
-     return (
-        <Form {...form}>
-            <form onSubmit={form.handleSubmit(values => onLogin(values, role))} className="space-y-4">
-            <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl>
-                    <Input type="email" placeholder="you@example.com" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Password</FormLabel>
-                     <div className="relative">
-                        <FormControl>
-                            <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                        </FormControl>
-                        <Button
-                            type="button"
-                            variant="ghost"
-                            size="icon"
-                            className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                        </Button>
-                    </div>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
+    return (
+        <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+                <Label htmlFor={`email-${role}`}>Email</Label>
+                <Input id={`email-${role}`} type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} disabled={isLoading} />
+            </div>
+            <div className="space-y-2">
+                <Label htmlFor={`password-${role}`}>Password</Label>
+                <div className="relative">
+                    <Input id={`password-${role}`} type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} disabled={isLoading} />
+                    <Button
+                        type="button"
+                        variant="ghost"
+                        size="icon"
+                        className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 text-muted-foreground"
+                        onClick={() => setShowPassword(!showPassword)}
+                    >
+                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </Button>
+                </div>
+            </div>
             <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                 Sign In as {role.charAt(0).toUpperCase() + role.slice(1)}
             </Button>
-            </form>
-        </Form>
+        </form>
     );
 };
 
@@ -105,40 +69,42 @@ export default function LoginPage() {
   const router = useRouter();
   const { toast } = useToast();
 
-  const onSubmit = async (values: LoginFormValues, role: Role) => {
+  const handleLogin = async (email: string, password: string, role: Role) => {
     setIsLoading(true);
     try {
-      if (role === 'admin' && values.email === "admin@easyspark.com" && values.password === "password123") {
-         toast({
-          title: "Admin Login Successful!",
-          description: "Redirecting to the admin dashboard.",
-        });
-        router.push("/admin/dashboard");
+      if (role === 'admin') {
+          if (email === "admin@easyspark.com" && password === "password123") {
+              toast({
+                  title: "Admin Login Successful!",
+                  description: "Redirecting to the admin dashboard.",
+                });
+                router.push("/admin/dashboard");
+            } else {
+                toast({ variant: "destructive", title: "Login Failed", description: "Invalid credentials for this role." });
+            }
         return;
       }
       
-      if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
-        toast({
-          title: "Teacher Login Successful!",
-          description: "Redirecting to the teacher dashboard.",
-        });
-        router.push("/teacher/dashboard");
+      if (role === 'teacher') {
+          if (email === "teacher@easyspark.com" && password === "password123") {
+              toast({
+                title: "Teacher Login Successful!",
+                description: "Redirecting to the teacher dashboard.",
+            });
+            router.push("/teacher/dashboard");
+        } else {
+            toast({ variant: "destructive", title: "Login Failed", description: "Invalid credentials for this role." });
+        }
         return;
       }
       
       if (role === 'parent') {
-        await signInWithEmailAndPassword(auth, values.email, values.password);
+        await signInWithEmailAndPassword(auth, email, password);
         toast({
           title: "Login Successful!",
           description: "Welcome back! Redirecting to your dashboard.",
         });
         router.push("/parent/dashboard");
-      } else {
-         toast({
-            variant: "destructive",
-            title: "Login Failed",
-            description: "Invalid credentials for this role.",
-        });
       }
 
     } catch (error) {
@@ -169,7 +135,7 @@ export default function LoginPage() {
                     <TabsTrigger value="admin">Admin</TabsTrigger>
                 </TabsList>
                 <TabsContent value="parent" className="pt-4">
-                    <LoginForm role="parent" onLogin={onSubmit} isLoading={isLoading} />
+                    <LoginForm role="parent" onLogin={(email, password) => handleLogin(email, password, 'parent')} isLoading={isLoading} />
                     <div className="mt-4 text-center text-sm">
                         Don't have an account?{" "}
                         <Link href="/register/preschool" className="underline">
@@ -178,13 +144,13 @@ export default function LoginPage() {
                     </div>
                 </TabsContent>
                  <TabsContent value="teacher" className="pt-4">
-                    <LoginForm role="teacher" onLogin={onSubmit} isLoading={isLoading} />
+                    <LoginForm role="teacher" onLogin={(email, password) => handleLogin(email, password, 'teacher')} isLoading={isLoading} />
                      <div className="mt-4 text-center text-sm text-muted-foreground">
                         Use teacher@easyspark.com / password123
                     </div>
                 </TabsContent>
                  <TabsContent value="admin" className="pt-4">
-                    <LoginForm role="admin" onLogin={onSubmit} isLoading={isLoading} />
+                    <LoginForm role="admin" onLogin={(email, password) => handleLogin(email, password, 'admin')} isLoading={isLoading} />
                      <div className="mt-4 text-center text-sm text-muted-foreground">
                         Use admin@easyspark.com / password123
                     </div>
