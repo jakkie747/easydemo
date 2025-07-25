@@ -45,7 +45,7 @@ Secrets are encrypted environment variables that you can store in your GitHub re
     
     3.  **`GEMINI_API_KEY`**: If you are using AI features, add your Gemini API key as a secret with this name
 
-### Your New Workflow
+### Your New Workflow ###
 
 Once the secrets are in place, your deployment is fully automated!
 
