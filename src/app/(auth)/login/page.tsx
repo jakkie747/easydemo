@@ -84,7 +84,6 @@ const LoginForm = ({ role, onLogin, isLoading }: { role: Role; onLogin: (values:
                                 onClick={() => setShowPassword(!showPassword)}
                             >
                               {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                              <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
                             </Button>
                         </div>
                     </FormControl>

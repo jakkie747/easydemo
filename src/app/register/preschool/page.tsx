@@ -202,36 +202,54 @@ export default function PreschoolRegistrationPage() {
                      <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem> <FormLabel>Phone Number</FormLabel> <FormControl> <Input type="tel" placeholder="123-456-7890" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
                      <FormField control={form.control} name="address" render={({ field }) => ( <FormItem> <FormLabel>Physical Address</FormLabel> <FormControl> <Input placeholder="123 Sunny Lane, Anytown, USA" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
                      
-                     <FormField control={form.control} name="password" render={({ field }) => ( 
-                        <FormItem> 
-                            <FormLabel>Password</FormLabel> 
+                     <FormField
+                        control={form.control}
+                        name="password"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Password</FormLabel>
                             <FormControl>
-                                <div className="relative">
-                                    <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                                    <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowPassword(!showPassword)}>
-                                        {showPassword ? <EyeOff className="h-4 w-4"/> : <Eye className="h-4 w-4" />}
-                                        <span className="sr-only">{showPassword ? 'Hide password' : 'Show password'}</span>
-                                    </Button>
-                                </div>
-                            </FormControl> 
-                            <FormMessage /> 
-                        </FormItem> 
-                    )}/>
-                    <FormField control={form.control} name="confirmPassword" render={({ field }) => ( 
-                        <FormItem> 
-                            <FormLabel>Confirm Password</FormLabel> 
-                             <FormControl>
-                                <div className="relative">
-                                    <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} />
-                                    <Button type="button" variant="ghost" size="icon" className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
-                                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
-                                        <span className="sr-only">{showConfirmPassword ? 'Hide password' : 'Show password'}</span>
-                                    </Button>
-                                </div>
+                              <div className="relative">
+                                <Input type={showPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                                  onClick={() => setShowPassword(!showPassword)}
+                                >
+                                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </div>
                             </FormControl>
-                            <FormMessage /> 
-                        </FormItem> 
-                    )}/>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="confirmPassword"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Confirm Password</FormLabel>
+                            <FormControl>
+                              <div className="relative">
+                                <Input type={showConfirmPassword ? "text" : "password"} placeholder="••••••••" {...field} />
+                                <Button
+                                  type="button"
+                                  variant="ghost"
+                                  size="icon"
+                                  className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7"
+                                  onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                                >
+                                  {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                </Button>
+                              </div>
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
                   </div>
                 </section>
                 
