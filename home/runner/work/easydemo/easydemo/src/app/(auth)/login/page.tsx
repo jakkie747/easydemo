@@ -116,8 +116,8 @@ export default function LoginPage() {
           description: "Redirecting to the admin dashboard.",
         });
         router.push("/admin/dashboard");
-        return; 
-      } 
+        return;
+      }
       
       if (role === 'teacher' && values.email === "teacher@easyspark.com" && values.password === "password123") {
         toast({
@@ -125,8 +125,8 @@ export default function LoginPage() {
           description: "Redirecting to the teacher dashboard.",
         });
         router.push("/teacher/dashboard");
-        return; 
-      } 
+        return;
+      }
       
       if (role === 'parent') {
         await signInWithEmailAndPassword(auth, values.email, values.password);

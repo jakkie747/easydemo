@@ -202,7 +202,7 @@ export default function PreschoolRegistrationPage() {
                      <FormField control={form.control} name="phone" render={({ field }) => ( <FormItem> <FormLabel>Phone Number</FormLabel> <FormControl> <Input type="tel" placeholder="123-456-7890" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
                      <FormField control={form.control} name="address" render={({ field }) => ( <FormItem> <FormLabel>Physical Address</FormLabel> <FormControl> <Input placeholder="123 Sunny Lane, Anytown, USA" {...field} /> </FormControl> <FormMessage /> </FormItem> )}/>
                      
-                    <FormField control={form.control} name="password" render={({ field }) => ( 
+                     <FormField control={form.control} name="password" render={({ field }) => ( 
                         <FormItem> 
                             <FormLabel>Password</FormLabel> 
                             <div className="relative">
