@@ -11,12 +11,12 @@ export default function AppWithSplashScreen({ children }: { children: React.Reac
     // Start fading out before removing
     const fadeTimer = setTimeout(() => {
       setIsFading(true);
-    }, 4500); // Start fade at 4.5s
+    }, 5500); // Start fade at 5.5s
 
     // Remove the splash screen from the DOM after the fade is complete
     const removeTimer = setTimeout(() => {
       setShowSplash(false);
-    }, 5000); // Total splash screen time is 5s
+    }, 6000); // Total splash screen time is 6s
 
     return () => {
       clearTimeout(fadeTimer);
