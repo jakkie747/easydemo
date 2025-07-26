@@ -5,7 +5,7 @@ This guide provides a step-by-step walkthrough for setting up a new Next.js appl
 
 ---
 
-## **Part 1: Initial Project Setup**
+## **Part 1: Initial Project Setup*
 
 First, you'll create a new Next.js project with the necessary defaults.
 
