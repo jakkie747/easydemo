@@ -125,11 +125,12 @@ export default function Home() {
               </div>
             </div>
             <Image
-                src="https://firebasestorage.googleapis.com/v0/b/easyspark-demo-a42db.appspot.com/o/1722421949175-374a44f7-e45f-4d2d-a117-9152a4e4d77b.png?alt=media"
-                alt="Easyspark Logo"
+                src="/hero.png"
+                alt="Happy children playing"
                 width={600}
                 height={600}
-                className="mx-auto aspect-square w-full rounded-xl object-contain lg:order-last"
+                className="mx-auto aspect-square w-full rounded-xl object-cover lg:order-last"
+                data-ai-hint="children playing school"
                 priority
               />
           </div>
