@@ -25,7 +25,7 @@ export const firebaseConfig = {
   authDomain: "blink-notify-494bf.firebaseapp.com",
   databaseURL: "https://blink-notify-494bf-default-rtdb.firebaseio.com",
   projectId: "blink-notify-494bf",
-  storageBucket: "blink-notify-494bf.firebasestorage.app",
+  storageBucket: "blink-notify-494bf.appspot.com",
   messagingSenderId: "450079883039",
   appId: "1:450079883039:web:4e4162b5a3f6e1beb27a2a",
   measurementId: "G-3H7JE2SJFH"
