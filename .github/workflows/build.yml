@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Build and Deploy to Firebase Hosting
 
 on:
   push:
@@ -9,12 +9,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     strategy:
       matrix:
         node-version: [20.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-
     steps:
     - uses: actions/checkout@v4
     - name: Use Node.js ${{ matrix.node-version }}
@@ -24,3 +21,16 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run build
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
+        with:
+          repoToken: '${{ secrets.GITHUB_TOKEN }}'
+          firebaseServiceAccount: '${{ secrets.FIREBASE_SERVICE_ACCOUNT_EASYSPARK_DEMO_A42DB }}'
+          channelId: live
+          projectId: easyspark-demo-a42db
