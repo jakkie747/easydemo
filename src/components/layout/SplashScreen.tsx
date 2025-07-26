@@ -1,22 +1,8 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Logo } from '@/components/Logo';
 import { cn } from '@/lib/utils';
 
 export const SplashScreen = ({ isFading }: { isFading: boolean }) => {
-  const [animation, setAnimation] = useState<'rotate' | 'pulse' | null>('rotate');
-
-  useEffect(() => {
-    const rotateTimer = setTimeout(() => {
-      setAnimation('pulse');
-    }, 2000); // After 2s, switch to pulse
-
-    return () => {
-      clearTimeout(rotateTimer);
-    };
-  }, []);
-
   return (
     <div
       className={cn(
@@ -24,14 +10,13 @@ export const SplashScreen = ({ isFading }: { isFading: boolean }) => {
         { 'opacity-0': isFading }
       )}
     >
-      <div
-        className={cn({
-          'animate-logo-rotate': animation === 'rotate',
-          'animate-logo-pulse': animation === 'pulse',
-        })}
-      >
-        <Logo className="h-40 w-40 text-primary-foreground" />
-      </div>
+      <video
+        src="/Loge_splash.mp4"
+        autoPlay
+        muted
+        playsInline
+        className="h-full w-full object-contain"
+      />
     </div>
   );
 };
