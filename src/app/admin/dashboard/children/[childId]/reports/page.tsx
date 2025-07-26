@@ -197,53 +197,9 @@ export default function ManageReportsPage() {
 
         if (errorMessage.includes("timed out") || errorMessage.includes("storage/object-not-found") || errorMessage.toLowerCase().includes('network')) {
           errorTitle = "Save Failed: Firebase Storage Not Ready";
-          const errorDescription = (
-              <div className="space-y-4 text-sm">
-                 <p className="font-bold text-base">
-                  This error usually means your Firebase project is not fully configured for file uploads.
-                </p>
-                <p className="mb-2">Please complete the following one-time setup steps.</p>
-                <ol className="list-decimal list-inside space-y-4 pl-2">
-                  <li>
-                    <strong>Crucial First Step: Enable Firebase Storage.</strong>
-                     <ul className="list-disc list-inside pl-4 mt-1 space-y-1">
-                      <li>
-                        Go to your{' '}
-                        <a href={`https://console.firebase.google.com/project/${firebaseConfig.projectId}/storage`} target="_blank" rel="noopener noreferrer" className="underline font-semibold">
-                          Firebase Console Storage section
-                        </a>.
-                      </li>
-                      <li>If you see a "Get Started" screen, you **must** click through the prompts to enable it. This creates the storage bucket.</li>
-                    </ul>
-                  </li>
-                  <li>
-                    <strong>Set Storage CORS Policy using Cloud Shell.</strong>
-                     <ul className="list-disc list-inside pl-4 mt-1 space-y-2">
-                      <li>
-                        Open the{' '}
-                        <a href={`https://console.cloud.google.com/home/dashboard?project=${firebaseConfig.projectId}&cloudshell=true`} target="_blank" rel="noopener noreferrer" className="underline">
-                          Google Cloud Shell
-                        </a>.
-                      </li>
-                      <li>
-                        Run these two commands one by one. Copy them exactly.
-                        <pre className="text-xs bg-muted p-2 rounded-md overflow-x-auto mt-2 select-all">
-                          {`echo '[{"origin": ["*"], "method": ["GET", "PUT", "POST"], "responseHeader": ["Content-Type"], "maxAgeSeconds": 3600}]' > cors.json`}
-                        </pre>
-                        <p className="mt-2 font-semibold">
-                          Crucial Note: For the next command, the Cloud Shell needs your bucket name in the format <code>gs://project-id.appspot.com</code>. Your Firebase Console may show a different URL (ending in `firebasestorage.app`), but for this command to work, you must use the `.appspot.com` version. Copy the command below exactly as it is:
-                        </pre>
-                        <pre className="text-xs bg-muted p-2 rounded-md overflow-x-auto mt-1 select-all">{`gsutil cors set cors.json gs://${firebaseConfig.projectId}.appspot.com`}</pre>
-                      </li>
-                    </ul>
-                  </li>
-                  <li><strong>Try Again.</strong> After completing all steps, refresh and try again.</li>
-                </ol>
-              </div>
-          );
           setSubmissionError({
             title: errorTitle,
-            description: errorDescription,
+            description: "This error usually means your Firebase project is not fully configured for file uploads. Please see the SETUP_GUIDE.md for instructions on how to configure Firebase Storage, especially the CORS settings."
           });
         } else {
            setSubmissionError({ title: errorTitle, description: errorMessage });
@@ -444,5 +400,3 @@ export default function ManageReportsPage() {
     </div>
   );
 }
-
-    
