@@ -11,7 +11,7 @@ export const SplashScreen = ({ isFading }: { isFading: boolean }) => {
       )}
     >
       <video
-        src="/Loge_splash.mp4"
+        src="/Logo_splash.mp4"
         autoPlay
         muted
         playsInline
