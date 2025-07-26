@@ -1,12 +1,12 @@
 
 {
-  "name": "Easyspark Demo",
+  "name": "Easyspark Hub",
   "short_name": "Easyspark",
   "description": "A family hub for modern preschools and afterschool programs.",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#E5F6FE",
-  "theme_color": "#2179E0",
+  "theme_color": "#59ABEF",
   "icons": [
     {
       "src": "/icons/icon-192x192.png",

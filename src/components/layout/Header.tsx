@@ -146,15 +146,6 @@ export function Header() {
             </Button>
           </div>
 
-          <div className="hidden md:flex">
-             <Button asChild>
-                <Link href="tel:+27725953421">
-                  <Phone className="mr-2" />
-                  {t("callUs")}
-                </Link>
-              </Button>
-          </div>
-
           <div className="hidden md:flex items-center gap-2">
             <Button asChild variant="outline">
               <Link href="/parent-login">{t("parentLoginNav")}</Link>
