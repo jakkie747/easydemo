@@ -3,7 +3,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import Link from "next/link";
@@ -20,19 +20,12 @@ export default function Home() {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isConfigured] = useState(isFirebaseConfigured());
-  const [heroImage, setHeroImage] = useState<Activity | null>(null);
 
-  const fetchActivitiesAndSetHero = useCallback(async () => {
+  const fetchActivities = useCallback(async () => {
     setIsLoading(true);
     try {
       const fetchedActivities = await getActivities();
       setActivities(fetchedActivities);
-
-      if (fetchedActivities.length > 0) {
-        // Select a random image client-side to avoid hydration mismatch
-        const randomIndex = Math.floor(Math.random() * fetchedActivities.length);
-        setHeroImage(fetchedActivities[randomIndex]);
-      }
     } catch (error: any) {
       toast({ variant: "destructive", title: "Error", description: error.message || "Could not load activities." });
       setActivities([]);
@@ -43,11 +36,11 @@ export default function Home() {
 
   useEffect(() => {
     if (isConfigured) {
-      fetchActivitiesAndSetHero();
+      fetchActivities();
     } else {
       setIsLoading(false);
     }
-  }, [isConfigured, fetchActivitiesAndSetHero]);
+  }, [isConfigured, fetchActivities]);
 
   const renderRecentActivities = () => {
     if (isLoading) {
@@ -86,7 +79,8 @@ export default function Home() {
     return activities.slice(0, 3).map((activity) => (
       <Card key={activity.id} className="hover:shadow-lg transition-shadow">
         <CardHeader>
-          <CardTitle>{activity.title}</CardTitle>
+          <CardTitle className="font-headline text-xl text-primary/90">{activity.title}</CardTitle>
+          <CardDescription className="text-sm">{activity.description.substring(0, 100)}...</CardDescription>
         </CardHeader>
         <CardContent>
           <Image
@@ -97,7 +91,6 @@ export default function Home() {
             className="rounded-lg mb-4 object-cover aspect-[4/3]"
             data-ai-hint={activity.aiHint || 'children playing'}
           />
-          <p className="text-sm text-muted-foreground">{activity.description}</p>
         </CardContent>
       </Card>
     ));
@@ -108,18 +101,18 @@ export default function Home() {
       <section className="w-full py-12 md:py-24 lg:py-32 bg-primary/10">
         <div className="container px-4 md:px-6">
           <div className="grid gap-6 lg:grid-cols-[1fr_400px] lg:gap-12 xl:grid-cols-[1fr_600px]">
-            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+            <div className="flex flex-col items-center lg:items-start justify-center space-y-4 text-center lg:text-left">
               <div className="space-y-2">
-                <h1 className="font-headline text-4xl font-bold tracking-tighter sm:text-5xl xl:text-6xl/none text-primary">
-                  {t("welcome")}
+                <h1 className="font-headline text-4xl font-bold tracking-tighter text-primary sm:text-5xl xl:text-6xl/none">
+                  Welcome to Easyspark Hub
                 </h1>
                 <p className="max-w-[600px] text-foreground/80 md:text-xl">
-                  {t("welcomeSub")}
+                  The central place for all communication, events, and updates for our school community.
                 </p>
               </div>
               <div className="flex flex-col gap-2 min-[400px]:flex-row">
                 <Button asChild size="lg" className="font-semibold">
-                  <Link href="/register">{t("registerYourChild")}</Link>
+                  <Link href="/register">Register Your Child</Link>
                 </Button>
                 <Button
                   asChild
@@ -127,23 +120,19 @@ export default function Home() {
                   variant="secondary"
                   className="font-semibold"
                 >
-                  <Link href="/events">{t("viewUpcomingEvents")}</Link>
+                  <Link href="/events">View Upcoming Events</Link>
                 </Button>
               </div>
             </div>
-            {isLoading ? (
-              <Skeleton className="mx-auto aspect-square w-full max-w-[600px] rounded-full object-cover lg:order-last" />
-            ) : (
-              <Image
-                src={heroImage?.image || "https://placehold.co/600x600.png"}
-                alt={heroImage?.title || "Children playing at a table"}
+            <Image
+                src="https://placehold.co/600x600.png"
+                alt="Happy children playing"
                 width={600}
                 height={600}
-                className="mx-auto aspect-square w-full rounded-full object-cover lg:order-last"
-                data-ai-hint={heroImage?.aiHint || "children playing"}
+                className="mx-auto aspect-square w-full rounded-xl object-cover lg:order-last"
+                data-ai-hint="children playing school"
                 priority
               />
-            )}
           </div>
         </div>
       </section>
@@ -153,16 +142,21 @@ export default function Home() {
           <div className="flex flex-col items-center justify-center space-y-4 text-center">
             <div className="space-y-2">
               <h2 className="text-3xl font-bold tracking-tighter sm:text-5xl font-headline text-primary">
-                {t("recentActivities")}
+                Recent Activities
               </h2>
               <p className="max-w-[900px] text-foreground/80 md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
-                {t("recentActivitiesSub")}
+                Take a look at the fun and learning happening at our school.
               </p>
             </div>
           </div>
           <div className="mx-auto grid max-w-5xl items-start gap-8 py-12 sm:grid-cols-2 md:grid-cols-3">
              {renderRecentActivities()}
           </div>
+           <div className="text-center mt-4">
+              <Button asChild variant="outline">
+                <Link href="/gallery">View Full Gallery</Link>
+              </Button>
+            </div>
         </div>
       </section>
     </div>

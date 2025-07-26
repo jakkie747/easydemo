@@ -8,8 +8,8 @@ import { LanguageProvider } from "@/context/LanguageContext";
 import AppWithSplashScreen from "@/components/AppWithSplashScreen";
 
 export const metadata: Metadata = {
-  title: "Blinkogies App",
-  description: "A family hub for Blinkogies Pre-school",
+  title: "Easyspark Hub",
+  description: "A family hub for modern preschools and afterschool programs.",
   manifest: "/manifest.json",
   icons: {
     icon: "/icons/icon-192x192.png",
@@ -36,7 +36,7 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Poppins:wght@400;500;600;700&display=swap"
           rel="stylesheet"
         />
-        <meta name="theme-color" content="#59ABEF" />
+        <meta name="theme-color" content="#2179E0" />
       </head>
       <body className={cn("min-h-screen font-body antialiased")}>
         <LanguageProvider>
