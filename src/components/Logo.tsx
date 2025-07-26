@@ -15,7 +15,7 @@ export function Logo({
         alt="Easyspark Hub Logo"
         width={175}
         height={173}
-        className={cn('h-12 w-auto', className)}
+        className={cn('h-16 w-auto', className)}
         priority
       />
   );
