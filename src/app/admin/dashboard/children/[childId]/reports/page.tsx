@@ -197,7 +197,9 @@ export default function ManageReportsPage() {
 
         if (errorMessage.includes("timed out") || errorMessage.includes("storage/object-not-found") || errorMessage.toLowerCase().includes('network')) {
           errorTitle = "Save Failed: Firebase Storage Not Ready";
-          const errorDescription = (
+          setSubmissionError({
+            title: errorTitle,
+            description: (
               <div className="space-y-4 text-sm">
                  <p className="font-bold text-base">
                   This error usually means your Firebase project is not fully configured for file uploads.
@@ -240,8 +242,8 @@ export default function ManageReportsPage() {
                   <li><strong>Try Again.</strong> After completing all steps, refresh and try again.</li>
                 </ol>
               </div>
-          );
-          setSubmissionError({ title: errorTitle, description: errorDescription });
+            )
+          });
         } else {
            setSubmissionError({ title: errorTitle, description: errorMessage });
         }
@@ -441,5 +443,3 @@ export default function ManageReportsPage() {
     </div>
   );
 }
-
-    
