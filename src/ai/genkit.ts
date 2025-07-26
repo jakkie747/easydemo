@@ -1,8 +1,6 @@
 
 'use server';
-import {genkit,
-        GenerationCommonOptions,
-        ModelReference,} from 'genkit';
+import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/googleai';
 
 if (!process.env.GOOGLE_API_KEY) {
