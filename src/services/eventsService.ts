@@ -23,42 +23,42 @@ const seedEvents = async (): Promise<Event[]> => {
             title: "Annual Sports Day",
             date: getFutureDate(30),
             description: "Get ready for a day of fun, games, and friendly competition! Parents are welcome to cheer on our little athletes.",
-            image: "https://picsum.photos/600/400?random=11",
+            image: "https://placehold.co/600x400.png",
             aiHint: "kids sports"
         },
         {
             title: "Pajama & Movie Day",
             date: getFutureDate(45),
             description: "A cozy day at school! Children can come in their favorite pajamas as we watch a fun animated movie and enjoy popcorn.",
-            image: "https://picsum.photos/600/400?random=12",
+            image: "https://placehold.co/600x400.png",
             aiHint: "children movie"
         },
         {
             title: "Parent-Teacher Meetings",
             date: getFutureDate(60),
             description: "A great opportunity to discuss your child's progress and development. Please sign up for a time slot at the front desk.",
-            image: "https://picsum.photos/600/400?random=13",
+            image: "https://placehold.co/600x400.png",
             aiHint: "meeting discussion"
         },
         {
             title: "Bake Sale Fundraiser",
             date: getFutureDate(75),
             description: "Help support our school! We'll be selling delicious baked goods. All proceeds go towards new playground equipment.",
-            image: "https://picsum.photos/600/400?random=14",
+            image: "https://placehold.co/600x400.png",
             aiHint: "bake sale"
         },
         {
             title: "School Concert",
             date: getFutureDate(90),
             description: "Our little stars will be showcasing their talents in our annual concert. A performance you won't want to miss!",
-            image: "https://picsum.photos/600/400?random=15",
+            image: "https://placehold.co/600x400.png",
             aiHint: "kids concert"
         },
         {
             title: "Grandparents' Day",
             date: getFutureDate(105),
             description: "We invite all grandparents to join us for a special morning of activities, stories, and treats with their grandchildren.",
-            image: "https://picsum.photos/600/400?random=16",
+            image: "https://placehold.co/600x400.png",
             aiHint: "grandparents children"
         },
     ];

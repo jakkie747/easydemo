@@ -1,54 +1,74 @@
-// Import the Firebase app and messaging modules.
-// This uses the compatibility library to work in a service worker environment.
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/10.12.2/firebase-messaging-compat.js');
 
-// IMPORTANT: These are your public Firebase project configuration values.
-const firebaseConfig = {
-  apiKey: "AIzaSyDORczgYjyxDvjSAfW7Q9fsT8wkJ4gIe1g",
-  authDomain: "blink-notify-494bf.firebaseapp.com",
-  projectId: "blink-notify-494bf",
-  storageBucket: "blink-notify-494bf.firebasestorage.app",
-  messagingSenderId: "450079883039",
-  appId: "1:450079883039:web:4e4162b5a3f6e1beb27a2a",
-};
+// This is a basic service worker file.
+// It enables offline capabilities for the PWA.
 
-// Initialize the Firebase app in the service worker
-firebase.initializeApp(firebaseConfig);
+const CACHE_NAME = 'easyspark-cache-v1';
+const urlsToCache = [
+  '/',
+  '/offline',
+  '/manifest.json',
+  '/icons/icon-192x192.png',
+  '/icons/icon-512x512.png'
+];
 
-// Retrieve an instance of Firebase Messaging so that it can handle background messages.
-const messaging = firebase.messaging();
-
-messaging.onBackgroundMessage((payload) => {
-  console.log(
-    '[firebase-messaging-sw.js] Received background message ',
-    payload
+self.addEventListener('install', event => {
+  event.waitUntil(
+    caches.open(CACHE_NAME)
+      .then(cache => {
+        console.log('Opened cache');
+        return cache.addAll(urlsToCache);
+      })
   );
-  
-  // Customize the notification here from the data passed in the cloud function
-  const notificationTitle = payload.notification.title;
-  const notificationOptions = {
-    body: payload.notification.body,
-    icon: payload.notification.icon || '/logo-192.png', // A default icon
-    data: {
-        // The fcmOptions.link is passed from the cloud function
-        url: payload.fcmOptions.link 
-    }
-  };
-
-  self.registration.showNotification(notificationTitle, notificationOptions);
 });
 
-// This listener handles what happens when a user clicks the notification.
-self.addEventListener('notificationclick', (event) => {
-    // Close the notification
-    event.notification.close(); 
+self.addEventListener('fetch', event => {
+  event.respondWith(
+    caches.match(event.request)
+      .then(response => {
+        // Cache hit - return response
+        if (response) {
+          return response;
+        }
 
-    // Get the URL from the notification's data payload
-    const urlToOpen = event.notification.data.url || '/';
+        return fetch(event.request).then(
+          response => {
+            // Check if we received a valid response
+            if(!response || response.status !== 200 || response.type !== 'basic') {
+              return response;
+            }
 
-    // Tell the browser to open a new tab/window to that URL
-    event.waitUntil(
-        clients.openWindow(urlToOpen)
-    );
+            // IMPORTANT: Clone the response. A response is a stream
+            // and because we want the browser to consume the response
+            // as well as the cache consuming the response, we need
+            // to clone it so we have two streams.
+            const responseToCache = response.clone();
+
+            caches.open(CACHE_NAME)
+              .then(cache => {
+                cache.put(event.request, responseToCache);
+              });
+
+            return response;
+          }
+        );
+      }).catch(() => {
+        // If the fetch fails (e.g., user is offline), return the offline page.
+        return caches.match('/offline');
+      })
+  );
+});
+
+self.addEventListener('activate', event => {
+  const cacheWhitelist = [CACHE_NAME];
+  event.waitUntil(
+    caches.keys().then(cacheNames => {
+      return Promise.all(
+        cacheNames.map(cacheName => {
+          if (cacheWhitelist.indexOf(cacheName) === -1) {
+            return caches.delete(cacheName);
+          }
+        })
+      );
+    })
+  );
 });
