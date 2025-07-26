@@ -10,7 +10,7 @@ import {
   CardDescription,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Users, Calendar, PlusCircle, AlertTriangle, FileText, GalleryHorizontal, Mail, Briefcase, FileUp, FileDown, Copy, LampDesk, ReceiptText } from "lucide-react";
+import { Users, Calendar, PlusCircle, AlertTriangle, FileText, GalleryHorizontal, Mail, Briefcase, FileUp, FileDown, Copy, LampDesk, ReceiptText, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { useLanguage } from "@/context/LanguageContext";
 import { getChildren, addMultipleChildren } from "@/services/childrenService";
