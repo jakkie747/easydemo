@@ -28,6 +28,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 import { Mail, MessageCircle, AlertTriangle } from "lucide-react";
 import { getChildren } from "@/services/childrenService";
+import { getAfterschoolChildren } from "@/services/afterschoolService";
 import { Skeleton } from "@/components/ui/skeleton";
 import { isFirebaseConfigured } from "@/lib/firebase";
 
@@ -52,14 +53,19 @@ export default function ComposeMessagePage() {
     const fetchParentContactInfo = async () => {
       setIsLoading(true);
       try {
-        const children = await getChildren();
-        const parentEmails = children
+        const [preschoolChildren, afterschoolChildren] = await Promise.all([
+            getChildren(),
+            getAfterschoolChildren()
+        ]);
+        const allChildren = [...preschoolChildren, ...afterschoolChildren];
+
+        const parentEmails = allChildren
           .map((child) => child.parentEmail)
           .filter((email) => !!email);
         const uniqueEmails = [...new Set(parentEmails)];
         setEmails(uniqueEmails);
         
-        const parentPhones = children
+        const parentPhones = allChildren
           .map((child) => child.parentPhone)
           .filter((phone) => !!phone);
         const uniquePhones = [...new Set(parentPhones)];
@@ -70,7 +76,7 @@ export default function ComposeMessagePage() {
           variant: "destructive",
           title: "Error fetching parent info",
           description:
-            "Could not load parent contact details from the children list. Please try again.",
+            "Could not load parent contact details. Please try again.",
         });
       } finally {
         setIsLoading(false);
