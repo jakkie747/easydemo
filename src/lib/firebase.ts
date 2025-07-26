@@ -19,12 +19,12 @@ import { getFunctions, type Functions } from "firebase/functions";
 //    object and paste them into the `firebaseConfig` object below.
 // =================================================================================
 export const firebaseConfig = {
-  apiKey: "PASTE_YOUR_NEW_API_KEY_HERE",
-  authDomain: "PASTE_YOUR_NEW_AUTH_DOMAIN_HERE",
-  projectId: "PASTE_YOUR_NEW_PROJECT_ID_HERE",
-  storageBucket: "PASTE_YOUR_NEW_STORAGE_BUCKET_HERE",
-  messagingSenderId: "PASTE_YOUR_NEW_MESSAGING_SENDER_ID_HERE",
-  appId: "PASTE_YOUR_NEW_APP_ID_HERE",
+  apiKey: "AIzaSyCG1sCyHwG9anUFqpX8rgrvdK4aoMIIn9g",
+  authDomain: "easyspark-demo-a42db.firebaseapp.com",
+  projectId: "easyspark-demo-a42db",
+  storageBucket: "easyspark-demo-a42db.appspot.com",
+  messagingSenderId: "843822001665",
+  appId: "1:843822001665:web:dcde2b002d6a1e97f21a00",
 };
 
 
