@@ -40,27 +40,6 @@ const seedEvents = async (): Promise<Event[]> => {
             image: "https://placehold.co/600x400.png",
             aiHint: "meeting discussion"
         },
-        {
-            title: "Bake Sale Fundraiser",
-            date: getFutureDate(75),
-            description: "Help support our school! We'll be selling delicious baked goods. All proceeds go towards new playground equipment.",
-            image: "https://placehold.co/600x400.png",
-            aiHint: "bake sale"
-        },
-        {
-            title: "School Concert",
-            date: getFutureDate(90),
-            description: "Our little stars will be showcasing their talents in our annual concert. A performance you won't want to miss!",
-            image: "https://placehold.co/600x400.png",
-            aiHint: "kids concert"
-        },
-        {
-            title: "Grandparents' Day",
-            date: getFutureDate(105),
-            description: "We invite all grandparents to join us for a special morning of activities, stories, and treats with their grandchildren.",
-            image: "https://placehold.co/600x400.png",
-            aiHint: "grandparents children"
-        },
     ];
 
     const seededEvents: Event[] = [];
